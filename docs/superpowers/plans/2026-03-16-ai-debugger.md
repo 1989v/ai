@@ -16,23 +16,33 @@
 
 ---
 
-## Chunk 1: IO 인터셉터 템플릿 (Kotlin/Spring)
+## Chunk 1: IO 인터셉터 템플릿 (Kotlin/Spring) — 통합 AOP 아키텍처
 
-### Task 1: IO 로그 스키마 및 공통 인프라 (Kotlin)
+> **아키텍처 결정**: 개별 인터셉터(Filter, AOP, Listener 등) 대신 **통합 AOP + 경량 TraceIdFilter**로 단순화.
+> Clean Architecture의 adapter 패턴을 활용하여 모든 IO를 하나의 Aspect로 캡처한다.
+>
+> | 컴포넌트 | 역할 |
+> |---------|------|
+> | `TraceIdFilter` | X-Trace-Id → MDC 설정만 (경량) |
+> | `IOSnapshotAspect` | **모든 IO 캡처 + 적재** (통합 AOP) |
+> | `IOTraceLogAppender` | 애플리케이션 로그 캡처 (WARN 이상) |
+> | `RedisIOLogStore` | Redis 저장/조회 |
+> | `@IOTraceable` | 커스텀 어노테이션 (명시적 opt-in) |
+>
+> **타겟 식별 3단계**: Spring Data `Repository+` (자동) → `@IOTraceable` (명시적) → `*Adapter` suffix (컨벤션 폴백)
+
+### Task 1: IO 로그 스키마 + @IOTraceable 어노테이션
 
 **Files:**
 - Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-log-schema.kt`
-- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-log-store.kt`
-- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-trace-context.kt`
+- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-traceable.kt`
 
-- [ ] **Step 1: IO 로그 데이터 클래스 작성**
+- [ ] **Step 1: IOEvent 데이터 클래스 + IOType 작성**
 
 ```kotlin
 // io-log-schema.kt
-// IO 이벤트를 표현하는 데이터 클래스. 인터셉터들이 이 형식으로 로그를 생성한다.
 //
-// Note: method, codeLine은 스펙의 JSON 스키마에는 없지만 Redis Hash 키에 포함되는 값.
-//       데이터 클래스에 포함하여 키 생성 시 활용한다.
+// Note: method는 Redis Hash 키에 포함되는 값. 데이터 클래스에 포함하여 키 생성 시 활용.
 // Note: invokedAt/completedAt은 스펙의 timestamp 필드를 세분화한 의도적 확장.
 
 data class IOEvent(
@@ -44,23 +54,56 @@ data class IOEvent(
     val service: String,
     val type: IOType,
     val direction: IODirection,
-    val method: String,        // Redis 키용: 클래스명.메서드명 (정적 매핑)
-    val codeLine: Int = 0,     // Redis 키용: 프레임워크 인터셉터는 0, AOP는 대상 메서드 라인
+    val method: String,        // Redis 키용: 클래스명.메서드명
     var request: String = "",  // JSON serialized
     var response: String = "", // JSON serialized
     var duration: Long = 0,
     var error: String? = null
 )
 
-enum class IOType { HTTP, DB, EXTERNAL_API, KAFKA, REDIS }
+enum class IOType { DB, EXTERNAL_API, KAFKA, REDIS, LOG }
 enum class IODirection { INBOUND, OUTBOUND }
 ```
 
-- [ ] **Step 2: TraceContext 작성**
+- [ ] **Step 2: @IOTraceable 어노테이션 작성**
+
+```kotlin
+// io-traceable.kt
+// Spring Data Repository가 아닌 IO 클래스에 명시적으로 부착하여 AOP 캡처 대상 지정
+
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class IOTraceable(val type: IOType = IOType.EXTERNAL_API)
+
+// 사용 예:
+// @IOTraceable(IOType.EXTERNAL_API)
+// class PaymentClient(private val webClient: WebClient) { ... }
+//
+// @IOTraceable(IOType.KAFKA)
+// class OrderEventProducer(private val kafkaTemplate: KafkaTemplate<String, String>) { ... }
+```
+
+- [ ] **Step 3: 커밋**
+
+```bash
+git add plugins/ai-debugger/templates/interceptors/kotlin-spring/io-log-schema.kt
+git add plugins/ai-debugger/templates/interceptors/kotlin-spring/io-traceable.kt
+git commit -m "feat: add IO log schema and @IOTraceable annotation"
+```
+
+---
+
+### Task 2: TraceContext + Redis LogStore
+
+**Files:**
+- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-trace-context.kt`
+- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-log-store.kt`
+
+- [ ] **Step 1: TraceContext 작성**
 
 ```kotlin
 // io-trace-context.kt
-// traceId별 sequence 채번 및 코루틴 컨텍스트 전파
+// traceId별 sequence 채번
 
 object IOTraceContext {
     private val sequenceMap = ConcurrentHashMap<String, AtomicLong>()
@@ -73,16 +116,9 @@ object IOTraceContext {
         sequenceMap.remove(traceId)
     }
 }
-
-// 코루틴 컨텍스트 요소 — MDC 유실 방지
-class TraceContextElement(
-    val traceId: String
-) : AbstractCoroutineContextElement(Key) {
-    companion object Key : CoroutineContext.Key<TraceContextElement>
-}
 ```
 
-- [ ] **Step 3: Redis LogStore 구현 작성**
+- [ ] **Step 2: Redis LogStore 작성**
 
 ```kotlin
 // io-log-store.kt
@@ -95,11 +131,10 @@ class RedisIOLogStore(
     @Value("\${io-debug.ttl-hours:24}") private val ttlHours: Long
 ) {
     fun store(event: IOEvent) {
-        val key = "io:${event.traceId}:${event.type}:${event.method}:${event.codeLine}"
+        val key = "io:${event.traceId}:${event.type}:${event.method}:${event.sequence}"
         val indexKey = "io:index:${event.traceId}"
         val ttl = Duration.ofHours(ttlHours)
 
-        // Hash에 이벤트 저장
         redisTemplate.opsForHash<String, String>().putAll(key, mapOf(
             "schemaVersion" to event.schemaVersion.toString(),
             "sequence" to event.sequence.toString(),
@@ -114,7 +149,6 @@ class RedisIOLogStore(
         ))
         redisTemplate.expire(key, ttl)
 
-        // 인덱스 Set에 키 추가
         redisTemplate.opsForSet().add(indexKey, key)
         redisTemplate.expire(indexKey, ttl)
     }
@@ -127,34 +161,32 @@ class RedisIOLogStore(
 }
 ```
 
-- [ ] **Step 4: 커밋**
+- [ ] **Step 3: 커밋**
 
 ```bash
-git add plugins/ai-debugger/templates/interceptors/kotlin-spring/
-git commit -m "feat: add IO log schema, trace context, and Redis log store (Kotlin)"
+git add plugins/ai-debugger/templates/interceptors/kotlin-spring/io-trace-context.kt
+git add plugins/ai-debugger/templates/interceptors/kotlin-spring/io-log-store.kt
+git commit -m "feat: add trace context and Redis log store"
 ```
 
 ---
 
-### Task 2: HTTP 인터셉터 (Kotlin/Spring)
+### Task 3: TraceIdFilter (경량 MDC 설정)
 
 **Files:**
-- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/http-filter.kt`
+- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/trace-id-filter.kt`
 
-- [ ] **Step 1: Servlet Filter 작성**
+- [ ] **Step 1: TraceIdFilter 작성**
 
 ```kotlin
-// http-filter.kt
-// HTTP 요청/응답 캡처 Servlet Filter
-// @Profile("debug-trace")로 프로필 미활성 시 빈 등록 안됨
+// trace-id-filter.kt
+// X-Trace-Id 헤더 → MDC 설정만 담당. IO 데이터 캡처 없음 (경량).
+// curl-gen이 생성한 X-Trace-Id가 없으면 아무것도 하지 않음.
 
 @Profile("debug-trace")
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class IOHttpFilter(
-    private val logStore: RedisIOLogStore,
-    @Value("\${spring.application.name}") private val serviceName: String
-) : OncePerRequestFilter() {
+class TraceIdFilter : OncePerRequestFilter() {
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -162,38 +194,12 @@ class IOHttpFilter(
         filterChain: FilterChain
     ) {
         val traceId = request.getHeader("X-Trace-Id")
-            ?: UUID.randomUUID().toString()
-        val sequence = IOTraceContext.nextSequence(traceId)
-        val invokedAt = Instant.now()
+            ?: return filterChain.doFilter(request, response)
 
-        // MDC에 traceId 설정 — 하위 인터셉터(DB AOP 등)에서 참조
         MDC.put("traceId", traceId)
-
-        // 요청 래핑 (body 읽기 위해)
-        val wrappedRequest = ContentCachingRequestWrapper(request)
-        val wrappedResponse = ContentCachingResponseWrapper(response)
-
         try {
-            filterChain.doFilter(wrappedRequest, wrappedResponse)
+            filterChain.doFilter(request, response)
         } finally {
-            val event = IOEvent(
-                traceId = traceId,
-                sequence = sequence,
-                invokedAt = invokedAt,
-                completedAt = Instant.now(),
-                service = serviceName,
-                type = IOType.HTTP,
-                direction = IODirection.INBOUND,
-                method = "${request.method} ${request.requestURI}",
-                codeLine = 0, // HTTP 필터는 코드 라인 해당 없음
-                request = String(wrappedRequest.contentAsByteArray),
-                response = String(wrappedResponse.contentAsByteArray),
-                duration = Duration.between(invokedAt, Instant.now()).toMillis(),
-                error = if (wrappedResponse.status >= 400)
-                    "HTTP ${wrappedResponse.status}" else null
-            )
-            logStore.store(event)
-            wrappedResponse.copyBodyToResponse()
             MDC.remove("traceId")
             IOTraceContext.cleanup(traceId)
         }
@@ -204,38 +210,47 @@ class IOHttpFilter(
 - [ ] **Step 2: 커밋**
 
 ```bash
-git add plugins/ai-debugger/templates/interceptors/kotlin-spring/http-filter.kt
-git commit -m "feat: add HTTP servlet filter for IO capture (Kotlin/Spring)"
+git add plugins/ai-debugger/templates/interceptors/kotlin-spring/trace-id-filter.kt
+git commit -m "feat: add lightweight TraceIdFilter for MDC propagation"
 ```
 
 ---
 
-### Task 3: DB 인터셉터 (Kotlin/Spring AOP)
+### Task 4: IOSnapshotAspect (통합 AOP)
 
 **Files:**
-- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/db-interceptor.kt`
+- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-snapshot-aspect.kt`
 
-- [ ] **Step 1: JPA Repository AOP 인터셉터 작성**
+- [ ] **Step 1: 통합 AOP Aspect 작성**
 
 ```kotlin
-// db-interceptor.kt
-// JPA Repository 메서드 호출을 AOP로 캡처
-// suspend 함수가 아닌 blocking JPA이므로 AOP proceed()로 안전하게 캡처 가능
+// io-snapshot-aspect.kt
+// 모든 IO를 하나의 Aspect로 캡처.
+//
+// 타겟 식별 3단계:
+// 1. Spring Data Repository+ (JPA, ES, Redis 등) → 자동
+// 2. @IOTraceable 어노테이션 → 명시적 opt-in
+// 3. *Adapter suffix → 컨벤션 기반 폴백
 
 @Profile("debug-trace")
 @Aspect
 @Component
-class IODbInterceptor(
+class IOSnapshotAspect(
     private val logStore: RedisIOLogStore,
     @Value("\${spring.application.name}") private val serviceName: String
 ) {
 
-    @Around("execution(* org.springframework.data.repository.Repository+.*(..))")
-    fun interceptRepository(joinPoint: ProceedingJoinPoint): Any? {
+    @Around("""
+        execution(* org.springframework.data.repository.Repository+.*(..))
+        || @within(IOTraceable)
+        || execution(* *..*Adapter.*(..))
+    """)
+    fun captureIO(joinPoint: ProceedingJoinPoint): Any? {
         val traceId = MDC.get("traceId") ?: return joinPoint.proceed()
         val sequence = IOTraceContext.nextSequence(traceId)
         val invokedAt = Instant.now()
         val method = "${joinPoint.target.javaClass.simpleName}.${joinPoint.signature.name}"
+        val ioType = detectIOType(joinPoint)
 
         return try {
             val result = joinPoint.proceed()
@@ -245,12 +260,11 @@ class IODbInterceptor(
                 invokedAt = invokedAt,
                 completedAt = Instant.now(),
                 service = serviceName,
-                type = IOType.DB,
+                type = ioType,
                 direction = IODirection.OUTBOUND,
                 method = method,
-                codeLine = 0,
-                request = joinPoint.args.contentToString(),
-                response = result?.toString()?.take(1000) ?: "null",
+                request = joinPoint.args.contentToString().take(2000),
+                response = result?.toString()?.take(2000) ?: "null",
                 duration = Duration.between(invokedAt, Instant.now()).toMillis()
             ))
             result
@@ -261,15 +275,34 @@ class IODbInterceptor(
                 invokedAt = invokedAt,
                 completedAt = Instant.now(),
                 service = serviceName,
-                type = IOType.DB,
+                type = ioType,
                 direction = IODirection.OUTBOUND,
                 method = method,
-                codeLine = 0,
-                request = joinPoint.args.contentToString(),
+                request = joinPoint.args.contentToString().take(2000),
                 duration = Duration.between(invokedAt, Instant.now()).toMillis(),
                 error = "${e.javaClass.simpleName}: ${e.message}"
             ))
             throw e
+        }
+    }
+
+    private fun detectIOType(joinPoint: ProceedingJoinPoint): IOType {
+        // 1. @IOTraceable 어노테이션 우선
+        val annotation = joinPoint.target.javaClass.getAnnotation(IOTraceable::class.java)
+        if (annotation != null) return annotation.type
+
+        // 2. Spring Data Repository
+        if (Repository::class.java.isAssignableFrom(joinPoint.target.javaClass))
+            return IOType.DB
+
+        // 3. 클래스명 기반 폴백
+        val className = joinPoint.target.javaClass.simpleName
+        return when {
+            className.contains("Client")   -> IOType.EXTERNAL_API
+            className.contains("Producer") -> IOType.KAFKA
+            className.contains("Consumer") -> IOType.KAFKA
+            className.contains("Cache")    -> IOType.REDIS
+            else -> IOType.EXTERNAL_API
         }
     }
 }
@@ -278,68 +311,59 @@ class IODbInterceptor(
 - [ ] **Step 2: 커밋**
 
 ```bash
-git add plugins/ai-debugger/templates/interceptors/kotlin-spring/db-interceptor.kt
-git commit -m "feat: add DB AOP interceptor for JPA repository capture (Kotlin)"
+git add plugins/ai-debugger/templates/interceptors/kotlin-spring/io-snapshot-aspect.kt
+git commit -m "feat: add unified IOSnapshotAspect with 3-layer target detection"
 ```
 
 ---
 
-### Task 4: WebClient 인터셉터 (논블러킹 외부 API)
+### Task 5: IOTraceLogAppender (애플리케이션 로그 캡처)
 
 **Files:**
-- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/webclient-filter.kt`
+- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/io-trace-log-appender.kt`
 
-- [ ] **Step 1: ExchangeFilterFunction 작성**
+- [ ] **Step 1: Logback Appender 작성**
 
 ```kotlin
-// webclient-filter.kt
-// WebClient 외부 API 호출 캡처
-// 리액티브 체인 내에서 동작, 응답 수신 완료 시점에 스냅샷
-// MDC의 traceId를 outbound 요청 헤더에 자동 전파
+// io-trace-log-appender.kt
+// 요청 처리 중 발생한 애플리케이션 로그를 같은 traceId로 적재.
+// 기본 레벨: WARN (application-debug-trace.yml에서 변경 가능)
 
 @Profile("debug-trace")
 @Component
-class IOWebClientFilter(
+class IOTraceLogAppender(
     private val logStore: RedisIOLogStore,
-    @Value("\${spring.application.name}") private val serviceName: String
-) {
+    @Value("\${spring.application.name}") private val serviceName: String,
+    @Value("\${io-debug.log-level:WARN}") private val minLevel: String
+) : AppenderBase<ILoggingEvent>(), SmartLifecycle {
 
-    fun filter(): ExchangeFilterFunction = ExchangeFilterFunction { request, next ->
-        // MDC에서 traceId 가져와서 outbound 헤더에 주입
-        val traceId = MDC.get("traceId") ?: return@ExchangeFilterFunction next.exchange(request)
-        val sequence = IOTraceContext.nextSequence(traceId)
-        val invokedAt = Instant.now()
-        val method = "${request.method()} ${request.url().path}"
+    override fun append(event: ILoggingEvent) {
+        val traceId = event.mdcPropertyMap["traceId"] ?: return
+        if (event.level.toInt() < Level.toLevel(minLevel).toInt()) return
 
-        val mutatedRequest = ClientRequest.from(request)
-            .header("X-Trace-Id", traceId)
-            .build()
+        logStore.store(IOEvent(
+            traceId = traceId,
+            sequence = IOTraceContext.nextSequence(traceId),
+            invokedAt = Instant.ofEpochMilli(event.timeStamp),
+            completedAt = Instant.ofEpochMilli(event.timeStamp),
+            service = serviceName,
+            type = IOType.LOG,
+            direction = IODirection.INBOUND,
+            method = event.loggerName.substringAfterLast('.'),
+            request = "${event.level}: ${event.formattedMessage}",
+            response = event.throwableProxy?.let {
+                ThrowableProxyUtil.asString(it).take(2000)
+            } ?: "",
+            duration = 0
+        ))
+    }
 
-        next.exchange(mutatedRequest)
-            .flatMap { response ->
-                // 응답 바디를 버퍼링하여 캡처
-                response.bodyToMono(String::class.java)
-                    .defaultIfEmpty("")
-                    .map { body ->
-                        logStore.store(IOEvent(
-                            traceId = traceId,
-                            sequence = sequence,
-                            invokedAt = invokedAt,
-                            completedAt = Instant.now(),
-                            service = serviceName,
-                            type = IOType.EXTERNAL_API,
-                            direction = IODirection.OUTBOUND,
-                            method = method,
-                            request = mutatedRequest.url().toString(),
-                            response = body.take(2000), // 응답 바디 (최대 2KB)
-                            duration = Duration.between(invokedAt, Instant.now()).toMillis(),
-                            error = if (response.statusCode().isError)
-                                "HTTP ${response.statusCode().value()}" else null
-                        ))
-                        // 바디를 다시 ClientResponse로 래핑하여 반환
-                        response.mutate().body(body).build()
-                    }
-            }
+    // SmartLifecycle: 앱 시작 시 Logback에 자동 등록
+    override fun start() {
+        val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+        this.context = loggerContext
+        super.start()
+        loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(this)
     }
 }
 ```
@@ -347,35 +371,8 @@ class IOWebClientFilter(
 - [ ] **Step 2: 커밋**
 
 ```bash
-git add plugins/ai-debugger/templates/interceptors/kotlin-spring/webclient-filter.kt
-git commit -m "feat: add WebClient ExchangeFilterFunction for external API capture"
-```
-
----
-
-### Task 5: Kafka + Redis 인터셉터 (Kotlin/Spring)
-
-**Files:**
-- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/kafka-interceptor.kt`
-- Create: `plugins/ai-debugger/templates/interceptors/kotlin-spring/redis-listener.kt`
-
-- [ ] **Step 1: Kafka ProducerInterceptor 작성**
-
-Kafka 메시지 발행 캡처. `onAcknowledgement`에서 스냅샷.
-
-- [ ] **Step 2: Kafka ConsumerInterceptor 작성**
-
-Kafka 메시지 수신 캡처. `onConsume`에서 스냅샷.
-
-- [ ] **Step 3: Lettuce CommandListener 작성**
-
-Redis 커맨드 캡처. `commandCompleted`에서 스냅샷.
-
-- [ ] **Step 4: 커밋**
-
-```bash
-git add plugins/ai-debugger/templates/interceptors/kotlin-spring/
-git commit -m "feat: add Kafka and Redis interceptors for IO capture (Kotlin)"
+git add plugins/ai-debugger/templates/interceptors/kotlin-spring/io-trace-log-appender.kt
+git commit -m "feat: add IOTraceLogAppender for application log capture (WARN+)"
 ```
 
 ---
@@ -395,16 +392,7 @@ git commit -m "feat: add Kafka and Redis interceptors for IO capture (Kotlin)"
 @Profile("debug-trace")
 @Configuration
 @EnableAspectJAutoProxy
-class DebugTraceConfig {
-
-    @Bean
-    fun debugTraceWebClient(
-        builder: WebClient.Builder,
-        filter: IOWebClientFilter
-    ): WebClient = builder
-        .filter(filter.filter())
-        .build()
-}
+class DebugTraceConfig
 ```
 
 - [ ] **Step 2: application-debug-trace.yml 작성**
@@ -415,7 +403,7 @@ class DebugTraceConfig {
 
 io-debug:
   ttl-hours: 24
-  enabled: true
+  log-level: WARN     # WARN 이상 애플리케이션 로그 수집
 
 spring:
   data:
@@ -445,56 +433,72 @@ git commit -m "feat: add debug-trace Spring profile config and application yml"
 ```markdown
 ---
 name: io-interceptor
-description: Use when setting up IO capture in a target service - injects interceptors for HTTP, DB, external API, Kafka, Redis with profile-based activation
+description: Use when setting up IO capture in a target service - injects unified AOP interceptor with profile-based activation and @IOTraceable annotation
 ---
 
 # IO Interceptor Setup
 
 ## Overview
 
-대상 서비스에 IO 인터셉터를 주입한다. 서비스의 코드 컨벤션을 준수하며,
-프로필/헤더 기반으로 활성화하여 평상시 성능 영향 없음.
+대상 서비스에 통합 AOP 기반 IO 인터셉터를 주입한다. 서비스의 코드 컨벤션을 준수하며,
+`@Profile("debug-trace")`로 활성화하여 평상시 성능 영향 없음.
+
+## 아키텍처: 통합 AOP
+
+5개 개별 인터셉터 대신 **1개 AOP Aspect**로 모든 IO 캡처:
+
+| 컴포넌트 | 역할 |
+|---------|------|
+| `TraceIdFilter` | X-Trace-Id → MDC 설정만 (경량) |
+| `IOSnapshotAspect` | 모든 IO 캡처 + 적재 (통합 AOP) |
+| `IOTraceLogAppender` | 애플리케이션 로그 캡처 (WARN 이상) |
+| `RedisIOLogStore` | Redis 저장/조회 |
+| `@IOTraceable` | 커스텀 어노테이션 (명시적 opt-in) |
+
+## 타겟 식별 3단계
+
+```
+execution(* org.springframework.data.repository.Repository+.*(..))  ← 1. Spring Data (자동)
+|| @within(IOTraceable)                                              ← 2. 어노테이션 (명시적)
+|| execution(* *..*Adapter.*(..))                                    ← 3. *Adapter suffix (폴백)
+```
+
+대상 프로젝트에서 할 일:
+- Spring Data Repository → **추가 작업 없음** (자동 캡처)
+- WebClient 래퍼, Kafka Producer 등 → `@IOTraceable(IOType.EXTERNAL_API)` 부착
+- *Adapter suffix 클래스 → **추가 작업 없음** (컨벤션 폴백)
 
 ## 활성화 전략
 
-- **Spring**: `@Profile("debug-trace")` — `SPRING_PROFILES_ACTIVE=debug-trace`로 활성화
-- **비Spring**: 헤더 기반 `X-Debug-Trace: true`
+- **Spring**: `@Profile("debug-trace")` — 프로필 미활성 시 빈 자체 미등록, 오버헤드 0
+- **비Spring**: 헤더 기반 `X-Debug-Trace: true` (향후)
 
 ## 주입 프로세스
 
 ### 1. 프로젝트 분석
 - 언어/프레임워크 감지
-- 기존 인터셉터/필터 구조 확인 (충돌 방지)
 - Redis 의존성 존재 여부 확인
+- adapter/repository 패키지 구조 파악
 
 ### 2. 의존성 추가
 - Redis 클라이언트 (없으면 추가)
 - Spring AOP (없으면 추가)
 
 ### 3. 코드 주입
-`templates/interceptors/{lang}/` 의 템플릿을 대상 프로젝트 컨벤션에 맞게 조정 후 주입:
+`templates/interceptors/kotlin-spring/` 의 템플릿을 대상 프로젝트에 주입:
 - 패키지명을 프로젝트 컨벤션에 맞게 변경
-- infrastructure/config/ 또는 프로젝트의 설정 패키지에 배치
+- infrastructure/config/ 패키지에 배치
 - application-debug-trace.yml 추가
+- Spring Data가 아닌 IO 클래스에 `@IOTraceable` 부착 안내
 
 ### 4. 검증
 - 컴파일 확인 (`./gradlew compileKotlin`)
 - debug-trace 프로필 없이 기존 테스트 통과 확인
 
-## 캡처 대상
-
-| 구간 | Kotlin/Spring | 스냅샷 시점 |
-|------|---------------|------------|
-| HTTP req/res | Servlet Filter | 필터 체인 완료 |
-| DB (JPA) | AOP @Around | proceed() 반환 |
-| 외부 API | ExchangeFilterFunction | 응답 수신 완료 |
-| Kafka | Producer/ConsumerInterceptor | ACK/consume 시점 |
-| Redis | Lettuce CommandListener | commandCompleted |
-
 ## 순서 보장
 
-- sequence: 호출 진입 시 AtomicLong 채번
-- 데이터 쓰기: 결과 물리화 시점에 1회만
+- sequence: 호출 진입 시 AtomicLong 채번 (AOP proceed 전)
+- 데이터 쓰기: proceed() 반환 시점에 1회만 (blocking/suspend 모두 동일)
 
 ## Integration
 
