@@ -1,0 +1,8 @@
+{
+  "name": "ai-debugger",
+  "description": "API debugging agent with full IO capture, log analysis, and codebase exploration",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["debugging", "api", "io-interceptor", "log-analysis"]
+}
