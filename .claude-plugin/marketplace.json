@@ -1,0 +1,18 @@
+{
+  "name": "ai-common",
+  "owner": {
+    "name": "gideok-kwon"
+  },
+  "plugins": [
+    {
+      "name": "doc-scaffolding",
+      "source": "./plugins/doc-scaffolding",
+      "description": "AI workspace scaffolding: generates CLAUDE.md and standardized docs tree for any project"
+    },
+    {
+      "name": "ai-debugger",
+      "source": "./plugins/ai-debugger",
+      "description": "API debugging agent with full IO capture, log analysis, and codebase exploration"
+    }
+  ]
+}
