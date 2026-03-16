@@ -1,0 +1,12 @@
+# application-debug-trace.yml
+# SPRING_PROFILES_ACTIVE=debug-trace 로 활성화
+
+io-debug:
+  ttl-hours: 24
+  log-level: WARN     # WARN 이상 애플리케이션 로그 수집
+
+spring:
+  data:
+    redis:
+      host: ${IO_DEBUG_REDIS_HOST:localhost}
+      port: ${IO_DEBUG_REDIS_PORT:6379}
