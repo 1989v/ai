@@ -1,0 +1,8 @@
+{
+  "name": "doc-scaffolding",
+  "description": "AI workspace scaffolding: generates CLAUDE.md and standardized docs tree for any project",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["scaffolding", "docs", "claude-md", "ai-workspace"]
+}
