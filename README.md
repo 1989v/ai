@@ -13,17 +13,12 @@
 
 ## 설치 방법
 
-### 방법 1: CLI로 마켓플레이스 등록 (권장)
+### 방법 1: CLI로 설치 (권장)
 
 대상 프로젝트에서 Claude Code 실행 후:
 
 ```
-/plugin marketplace add /path/to/ai
-```
-
-이후 플러그인 설치:
-
-```
+/plugin marketplace add --github 1989v/ai
 /plugin install doc-scaffolding@ai-common
 /plugin install ai-debugger@ai-common
 ```
@@ -37,29 +32,14 @@
   "extraKnownMarketplaces": {
     "ai-common": {
       "source": {
-        "source": "directory",
-        "path": "/path/to/ai"
+        "source": "github",
+        "repo": "1989v/ai"
       }
     }
   },
   "enabledPlugins": {
     "doc-scaffolding@ai-common": true,
     "ai-debugger@ai-common": true
-  }
-}
-```
-
-### 방법 3: GitHub 원격 레포 (배포 후)
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "ai-common": {
-      "source": {
-        "source": "github",
-        "repo": "1989v/ai"
-      }
-    }
   }
 }
 ```
