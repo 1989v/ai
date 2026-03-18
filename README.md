@@ -57,7 +57,7 @@
     "ai-common": {
       "source": {
         "source": "github",
-        "repo": "your-org/ai"
+        "repo": "1989v/ai"
       }
     }
   }
