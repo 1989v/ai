@@ -21,6 +21,7 @@
 /plugin marketplace add --github 1989v/ai
 /plugin install doc-scaffolding@ai-common
 /plugin install ai-debugger@ai-common
+/reload-plugins
 ```
 
 ### 방법 2: settings.json 직접 편집
@@ -47,6 +48,10 @@
 ---
 
 ## 사용법
+
+플러그인 설치 후 `/reload-plugins`를 실행하면 아래 slash command가 자동완성에 나타난다.
+
+스킬(`skills/`)은 플러그인 내부 구현 리소스이고, 사용자는 기본적으로 `commands/`에 정의된 slash command를 통해 진입한다.
 
 ### doc-scaffolding
 
@@ -85,6 +90,8 @@
 
 #### 2단계: 디버깅
 
+`ai-debugger`는 `/io-setup`, `/curl-gen` 명령과 내부 분석용 skill/agent 리소스를 제공한다.
+
 이슈 상황을 자연어로 전달하면 debug-agent가 자동 분석:
 
 ```
@@ -115,6 +122,11 @@ ai/
 ├── plugins/
 │   ├── doc-scaffolding/              # AI 워크스페이스 스캐폴딩
 │   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/
+│   │   │   ├── scaffold.md
+│   │   │   ├── doc-gen.md
+│   │   │   ├── doc-validate.md
+│   │   │   └── doc-site.md
 │   │   ├── skills/
 │   │   │   ├── scaffold/SKILL.md
 │   │   │   ├── doc-gen/SKILL.md
@@ -125,6 +137,9 @@ ai/
 │   │
 │   └── ai-debugger/                  # API 디버그 에이전트
 │       ├── .claude-plugin/plugin.json
+│       ├── commands/
+│       │   ├── io-setup.md
+│       │   └── curl-gen.md
 │       ├── skills/
 │       │   ├── io-interceptor/SKILL.md
 │       │   ├── curl-gen/SKILL.md

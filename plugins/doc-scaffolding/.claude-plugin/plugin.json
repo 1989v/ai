@@ -4,5 +4,11 @@
   "version": "0.1.0",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
-  "keywords": ["scaffolding", "docs", "claude-md", "ai-workspace"]
+  "keywords": ["scaffolding", "docs", "claude-md", "ai-workspace"],
+  "commands": [
+    "./commands/scaffold.md",
+    "./commands/doc-gen.md",
+    "./commands/doc-validate.md",
+    "./commands/doc-site.md"
+  ]
 }
