@@ -4,5 +4,9 @@
   "version": "0.1.0",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
-  "keywords": ["debugging", "api", "io-interceptor", "log-analysis"]
+  "keywords": ["debugging", "api", "io-interceptor", "log-analysis"],
+  "commands": [
+    "./commands/io-setup.md",
+    "./commands/curl-gen.md"
+  ]
 }
