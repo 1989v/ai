@@ -8,7 +8,7 @@
 |---------|------|----------|
 | **doc-scaffolding** | AI 워크스페이스 스캐폴딩 | `/scaffold`, `/doc-gen`, `/doc-validate`, `/doc-site` |
 | **ai-debugger** | API 디버깅 에이전트 | `/io-setup`, `/curl-gen` + debug-agent |
-| **private-repo** | 디렉토리를 private repo + submodule로 분리 | `/private-repo` |
+| **private-repo** | git submodule로 디렉토리별 public/private 가시성 제어 | `/private-repo` |
 
 ---
 
@@ -118,16 +118,29 @@ SPRING_PROFILES_ACTIVE=debug-trace ./gradlew :order:app:bootRun
 
 ### private-repo
 
-모노레포 내 특정 디렉토리를 private GitHub repo + git submodule로 분리:
+git submodule을 활용해 모노레포 내 디렉토리별 **public/private 가시성을 제어**:
 
 ```
 /private-repo my-service
 ```
 
+디렉토리를 별도 GitHub repo로 분리하면서 public 또는 private 중 선택할 수 있다.
+private으로 분리된 디렉토리는 권한 없는 사용자에게 빈 폴더로 보이고, 나머지 public 코드에는 영향 없음.
+
+```
+my-project/              (public repo)
+├── core/                (inline — 모두 접근 가능)
+├── feature-a/           (submodule → public repo)
+├── feature-b/           (submodule → private repo — 권한 없으면 빈 폴더)
+└── my-ideas/            (submodule → private repo — 권한 없으면 빈 폴더)
+```
+
+동작 순서:
 1. 대상 디렉토리 확인 (git 히스토리 유무 자동 감지)
-2. GitHub private repo 생성 (`gh` CLI)
-3. 히스토리 보존하여 push (있으면 `subtree split`, 없으면 fresh init)
-4. 원본에서 디렉토리를 submodule로 교체
+2. **public/private 가시성 선택**
+3. GitHub repo 생성 (`gh` CLI)
+4. 히스토리 보존하여 push (있으면 `subtree split`, 없으면 fresh init)
+5. 원본에서 디렉토리를 submodule로 교체
 
 자연어도 지원: "이거 프라이빗으로 분리해줘", "make this directory private"
 
