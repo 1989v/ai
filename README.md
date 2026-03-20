@@ -144,6 +144,42 @@ my-project/              (public repo)
 
 자연어도 지원: "이거 프라이빗으로 분리해줘", "make this directory private"
 
+#### Submodule Auto-Push Hook (권장)
+
+submodule로 분리한 뒤 Claude Code로 작업하면 **2단계 커밋** 문제가 생긴다:
+1. submodule 내부 커밋+push
+2. 부모 repo에서 submodule 포인터 업데이트 커밋+push
+
+이 hook을 설치하면 Claude가 submodule 내 파일을 수정할 때 **자동으로 커밋+push**한다.
+
+**설치**: `plugins/private-repo/hooks/submodule-auto-push.sh`를 프로젝트에 복사 후 `.claude/settings.local.json`에 추가:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/path/to/your/project/.claude/hooks/submodule-auto-push.sh",
+            "timeout": 30,
+            "statusMessage": "Syncing submodule..."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**특징**:
+- Claude Code 세션에서만 동작 (터미널 직접 git 작업에는 영향 없음)
+- submodule 외부 파일 수정 시 무시
+- 변경사항이 없으면 무시
+- repo root 자동 감지 (경로 하드코딩 불필요)
+
 ---
 
 ## 레포 구조
@@ -184,7 +220,8 @@ ai/
 │   └── private-repo/                 # Private repo 분리
 │       ├── .claude-plugin/plugin.json
 │       ├── commands/private-repo.md
-│       └── skills/private-repo/SKILL.md
+│       ├── skills/private-repo/SKILL.md
+│       └── hooks/submodule-auto-push.sh
 │
 ├── shared/
 └── docs/
