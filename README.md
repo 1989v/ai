@@ -8,6 +8,7 @@
 |---------|------|----------|
 | **doc-scaffolding** | AI 워크스페이스 스캐폴딩 | `/scaffold`, `/doc-gen`, `/doc-validate`, `/doc-site` |
 | **ai-debugger** | API 디버깅 에이전트 | `/io-setup`, `/curl-gen` + debug-agent |
+| **private-repo** | 디렉토리를 private repo + submodule로 분리 | `/private-repo` |
 
 ---
 
@@ -21,6 +22,7 @@
 /plugin marketplace add --github 1989v/ai
 /plugin install doc-scaffolding@ai-common
 /plugin install ai-debugger@ai-common
+/plugin install private-repo@ai-common
 /reload-plugins
 ```
 
@@ -40,7 +42,8 @@
   },
   "enabledPlugins": {
     "doc-scaffolding@ai-common": true,
-    "ai-debugger@ai-common": true
+    "ai-debugger@ai-common": true,
+    "private-repo@ai-common": true
   }
 }
 ```
@@ -113,6 +116,21 @@ debug-agent 동작 순서:
 SPRING_PROFILES_ACTIVE=debug-trace ./gradlew :order:app:bootRun
 ```
 
+### private-repo
+
+모노레포 내 특정 디렉토리를 private GitHub repo + git submodule로 분리:
+
+```
+/private-repo my-service
+```
+
+1. 대상 디렉토리 확인 (git 히스토리 유무 자동 감지)
+2. GitHub private repo 생성 (`gh` CLI)
+3. 히스토리 보존하여 push (있으면 `subtree split`, 없으면 fresh init)
+4. 원본에서 디렉토리를 submodule로 교체
+
+자연어도 지원: "이거 프라이빗으로 분리해줘", "make this directory private"
+
 ---
 
 ## 레포 구조
@@ -135,20 +153,25 @@ ai/
 │   │   ├── agents/scaffolding-agent.md
 │   │   └── templates/
 │   │
-│   └── ai-debugger/                  # API 디버그 에이전트
+│   ├── ai-debugger/                  # API 디버그 에이전트
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/
+│   │   │   ├── io-setup.md
+│   │   │   └── curl-gen.md
+│   │   ├── skills/
+│   │   │   ├── io-interceptor/SKILL.md
+│   │   │   ├── curl-gen/SKILL.md
+│   │   │   ├── log-query/SKILL.md
+│   │   │   ├── code-explore/SKILL.md
+│   │   │   ├── data-analyze/SKILL.md
+│   │   │   └── answer-gen/SKILL.md
+│   │   ├── agents/debug-agent.md
+│   │   └── templates/interceptors/
+│   │
+│   └── private-repo/                 # Private repo 분리
 │       ├── .claude-plugin/plugin.json
-│       ├── commands/
-│       │   ├── io-setup.md
-│       │   └── curl-gen.md
-│       ├── skills/
-│       │   ├── io-interceptor/SKILL.md
-│       │   ├── curl-gen/SKILL.md
-│       │   ├── log-query/SKILL.md
-│       │   ├── code-explore/SKILL.md
-│       │   ├── data-analyze/SKILL.md
-│       │   └── answer-gen/SKILL.md
-│       ├── agents/debug-agent.md
-│       └── templates/interceptors/
+│       ├── commands/private-repo.md
+│       └── skills/private-repo/SKILL.md
 │
 ├── shared/
 └── docs/
@@ -162,3 +185,4 @@ ai/
 |---|:---:|:---:|:---:|
 | doc-scaffolding | v1 | v1 | v1 |
 | ai-debugger IO 캡처 | v1 | 향후 | 향후 |
+| private-repo | v1 | v1 | v1 |
