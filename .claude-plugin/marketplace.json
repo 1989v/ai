@@ -13,6 +13,11 @@
       "name": "ai-debugger",
       "source": "./plugins/ai-debugger",
       "description": "API debugging agent with full IO capture, log analysis, and codebase exploration"
+    },
+    {
+      "name": "private-repo",
+      "source": "./plugins/private-repo",
+      "description": "Extract directories into private GitHub repos as git submodules"
     }
   ]
 }

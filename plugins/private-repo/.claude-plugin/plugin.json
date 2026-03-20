@@ -1,0 +1,8 @@
+{
+  "name": "private-repo",
+  "description": "Extract directories into private GitHub repositories as git submodules. Automates repo creation, history preservation, and submodule setup.",
+  "version": "1.0.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["git", "submodule", "private-repo", "monorepo", "split"]
+}
