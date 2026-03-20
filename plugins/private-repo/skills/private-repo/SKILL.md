@@ -1,19 +1,30 @@
 ---
 name: private-repo
-description: Extract directories into private GitHub repos as git submodules. Handles repo creation, history preservation, and submodule replacement. Responds to natural language like "make this private", "split into private repo", "separate as submodule".
+description: Separate directories from a public repo into private or public GitHub repos using git submodules. Controls visibility (public/private) per directory while keeping the monorepo structure intact. Responds to natural language like "make this private", "split into private repo", "separate as submodule".
 argument-hint: [directory ...]
 ---
 
-# Private Repo — Extract Directory as Private Git Submodule
+# Private Repo — Split Directories with Public/Private Visibility via Git Submodules
 
-Extracts one or more directories from the current repository into separate private GitHub repositories, replacing them with git submodules. Preserves git history when available.
+Separates directories from the current repository into independent GitHub repositories using git submodules, with explicit **public/private visibility control** per directory.
+
+**Core concept**: A public monorepo can contain a mix of public and private submodules. Other users who clone the public repo will see the full project structure, but private submodule directories appear as empty folders — the private code is only accessible to authorized users.
+
+```
+my-project/              (public repo)
+├── core/                (inline — visible to everyone)
+├── docs/                (inline — visible to everyone)
+├── feature-a/           (submodule → public repo — visible to everyone)
+├── feature-b/           (submodule → private repo — empty folder for others)
+└── my-ideas/            (submodule → private repo — empty folder for others)
+```
 
 ## Trigger
 
 - `/private-repo` — list eligible directories and choose
 - `/private-repo my-service` — extract `my-service/` immediately
 - `/private-repo dir1 dir2` — batch extract multiple directories
-- Natural language: "make this private", "split into private repo", "separate as submodule", "move to private", "extract as private"
+- Natural language: "make this private", "split into private repo", "separate as submodule", "move to private", "extract as public submodule"
 
 ## Prerequisites
 
@@ -49,18 +60,22 @@ Before proceeding, display and confirm:
 - **Target directory**: name and file count
 - **GitHub account**: detected via `gh api user --jq '.login'`
 - **Repo name**: default `{current-repo-name}-{directory}`, customizable
-- **Visibility**: private (default)
 - **History**: will be preserved if commits exist, otherwise fresh init
+
+**Visibility selection** — Use AskUserQuestion:
+- **Private (Recommended)**: only you (and collaborators) can access this repo. Other users who clone the parent repo will see an empty folder.
+- **Public**: anyone can see and clone this submodule repo.
 
 Use AskUserQuestion for repo name:
 - Option 1: default name `{repo-name}-{directory}` (Recommended)
 - Option 2: custom name
 
-### 3. Create Private Repository
+### 3. Create Repository
 
 ```bash
-gh repo create {owner}/{repo-name} --private \
-  --description "{directory} — private submodule extracted from {current-repo}"
+# --private or --public based on user's visibility choice
+gh repo create {owner}/{repo-name} --{visibility} \
+  --description "{directory} — submodule extracted from {current-repo}"
 ```
 
 ### 4. Extract and Push
@@ -119,10 +134,11 @@ git commit -m "chore: extract {directory} as private submodule → {owner}/{repo
 ```
 
 Report to user:
-- Private repo URL
+- Repo URL and visibility (public/private)
 - Submodule status (`git submodule status`)
 - Clone note: `git clone --recurse-submodules` required for full checkout
-- Access note: collaborators need repo access to clone private submodules
+- **If private**: other users who clone the parent repo will see this directory as an empty folder. Only users with access to the private repo can pull the submodule contents.
+- **If public**: all users can clone this submodule normally.
 
 ## Batch Processing
 

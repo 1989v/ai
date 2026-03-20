@@ -17,7 +17,7 @@
     {
       "name": "private-repo",
       "source": "./plugins/private-repo",
-      "description": "Extract directories into private GitHub repos as git submodules"
+      "description": "Control per-directory public/private visibility via git submodules"
     }
   ]
 }

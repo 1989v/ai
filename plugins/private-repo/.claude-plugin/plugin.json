@@ -1,6 +1,6 @@
 {
   "name": "private-repo",
-  "description": "Extract directories into private GitHub repositories as git submodules. Automates repo creation, history preservation, and submodule setup.",
+  "description": "Control per-directory public/private visibility via git submodules. Extracts directories into separate GitHub repos with visibility choice, history preservation, and submodule setup.",
   "version": "1.0.0",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
