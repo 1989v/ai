@@ -1,9 +1,6 @@
 ---
 name: session
-description: >
-  Use when starting a new session or recovering from compaction.
-  Loads project context, active task state, and key decisions.
-compatibility: claude-code
+description: Use when starting a new session or recovering from compaction to load project context and key decisions
 ---
 
 # Session Management

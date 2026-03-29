@@ -1,9 +1,6 @@
 ---
 name: review-architecture
-description: >
-  Use when reviewing specs for architecture compliance. Checks layer separation,
-  dependency direction, module boundaries, and structural patterns.
-compatibility: claude-code
+description: Use when reviewing specs for architecture compliance - checks layer separation, dependency direction, module boundaries
 ---
 
 # Architecture Review

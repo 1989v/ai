@@ -1,10 +1,6 @@
 ---
 name: compaction
-description: >
-  Use when context usage exceeds 75%, when completing a task group, or when
-  transitioning between phases. Guides strategic compaction timing and
-  post-compaction context recovery.
-compatibility: claude-code
+description: Use when context usage exceeds 75%, completing a task group, or transitioning between phases
 ---
 
 # Strategic Compaction

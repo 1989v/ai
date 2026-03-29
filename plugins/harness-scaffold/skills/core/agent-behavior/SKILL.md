@@ -1,10 +1,6 @@
 ---
 name: agent-behavior
-description: >
-  Use when starting any coding task, classifying risk, setting up verification loops,
-  or performing post-implementation review. Covers L1/L2/L3 risk classification,
-  Ralph Loop (BUILD→TEST→FIX, max 3), self-review, doc impact scan.
-compatibility: claude-code
+description: Use when starting any coding task, classifying risk, setting up verification loops, or performing post-implementation review
 ---
 
 # Agent Behavior Protocols

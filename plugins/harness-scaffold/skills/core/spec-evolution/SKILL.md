@@ -1,10 +1,6 @@
 ---
 name: spec-evolution
-description: >
-  Use when implementing a spec-driven feature and discovering new edge cases,
-  race conditions, contract gaps, or requirement changes. Forces recording
-  via open-questions.yml and spec amendments instead of silent code-only fixes.
-compatibility: claude-code
+description: Use when implementing a spec-driven feature and discovering new edge cases, contract gaps, or requirement changes
 ---
 
 # Spec Evolution
