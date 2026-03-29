@@ -1,0 +1,20 @@
+{
+  "name": "harness-scaffold",
+  "description": "Universal AI harness scaffolding: SDD pipeline, agent-OS, behavior standards, spec-review, hooks, and parallel execution for any project",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["harness", "sdd", "agent-os", "scaffolding", "spec-driven", "ai-harness"],
+  "commands": [
+    "./commands/init.md",
+    "./commands/shape-spec.md",
+    "./commands/write-spec.md",
+    "./commands/create-tasks.md",
+    "./commands/implement-tasks.md",
+    "./commands/orchestrate-tasks.md",
+    "./commands/drift-check.md",
+    "./commands/interview-capture.md",
+    "./commands/verify.md",
+    "./commands/spec-review.md"
+  ]
+}

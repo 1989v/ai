@@ -13,6 +13,16 @@
       "name": "ai-debugger",
       "source": "./plugins/ai-debugger",
       "description": "API debugging agent with full IO capture, log analysis, and codebase exploration"
+    },
+    {
+      "name": "content-analyzer",
+      "source": "./plugins/content-analyzer",
+      "description": "Analyze content from URLs (YouTube, LinkedIn, web posts, Git repos) and generate structured learning plans or analysis documents"
+    },
+    {
+      "name": "harness-scaffold",
+      "source": "./plugins/harness-scaffold",
+      "description": "Universal AI harness scaffolding: SDD pipeline, agent-OS, behavior standards, spec-review, hooks, and parallel execution for any project"
     }
   ]
 }
