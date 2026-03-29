@@ -15,6 +15,11 @@
       "description": "API debugging agent with full IO capture, log analysis, and codebase exploration"
     },
     {
+      "name": "private-repo",
+      "source": "./plugins/private-repo",
+      "description": "Control per-directory public/private visibility via git submodules"
+    },
+    {
       "name": "content-analyzer",
       "source": "./plugins/content-analyzer",
       "description": "Analyze content from URLs (YouTube, LinkedIn, web posts, Git repos) and generate structured learning plans or analysis documents"

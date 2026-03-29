@@ -8,6 +8,7 @@
 |---------|------|----------|
 | **doc-scaffolding** | AI 워크스페이스 스캐폴딩 | `/scaffold`, `/doc-gen`, `/doc-validate`, `/doc-site` |
 | **ai-debugger** | API 디버깅 에이전트 | `/io-setup`, `/curl-gen` + debug-agent |
+| **private-repo** | git submodule로 디렉토리별 public/private 가시성 제어 | `/private-repo` |
 | **harness-scaffold** | AI 하네스 엔지니어링 셋업 | `/hnsf:init`, `/hnsf:shape-spec`, `/hnsf:write-spec`, `/hnsf:create-tasks`, `/hnsf:implement-tasks`, `/hnsf:orchestrate-tasks`, `/hnsf:drift-check`, `/hnsf:interview-capture`, `/hnsf:verify`, `/hnsf:spec-review` |
 
 ---
@@ -22,6 +23,7 @@
 /plugin marketplace add --github 1989v/ai
 /plugin install doc-scaffolding@ai-common
 /plugin install ai-debugger@ai-common
+/plugin install private-repo@ai-common
 /plugin install harness-scaffold@ai-common
 /reload-plugins
 ```
@@ -43,6 +45,7 @@
   "enabledPlugins": {
     "doc-scaffolding@ai-common": true,
     "ai-debugger@ai-common": true,
+    "private-repo@ai-common": true,
     "harness-scaffold@ai-common": true
   }
 }
@@ -116,6 +119,70 @@ debug-agent 동작 순서:
 SPRING_PROFILES_ACTIVE=debug-trace ./gradlew :order:app:bootRun
 ```
 
+### private-repo
+
+git submodule을 활용해 모노레포 내 디렉토리별 **public/private 가시성을 제어**:
+
+```
+/private-repo my-service
+```
+
+디렉토리를 별도 GitHub repo로 분리하면서 public 또는 private 중 선택할 수 있다.
+private으로 분리된 디렉토리는 권한 없는 사용자에게 빈 폴더로 보이고, 나머지 public 코드에는 영향 없음.
+
+```
+my-project/              (public repo)
+├── core/                (inline — 모두 접근 가능)
+├── feature-a/           (submodule → public repo)
+├── feature-b/           (submodule → private repo — 권한 없으면 빈 폴더)
+└── my-ideas/            (submodule → private repo — 권한 없으면 빈 폴더)
+```
+
+동작 순서:
+1. 대상 디렉토리 확인 (git 히스토리 유무 자동 감지)
+2. **public/private 가시성 선택**
+3. GitHub repo 생성 (`gh` CLI)
+4. 히스토리 보존하여 push (있으면 `subtree split`, 없으면 fresh init)
+5. 원본에서 디렉토리를 submodule로 교체
+
+자연어도 지원: "이거 프라이빗으로 분리해줘", "make this directory private"
+
+#### Submodule Auto-Push Hook (권장)
+
+submodule로 분리한 뒤 Claude Code로 작업하면 **2단계 커밋** 문제가 생긴다:
+1. submodule 내부 커밋+push
+2. 부모 repo에서 submodule 포인터 업데이트 커밋+push
+
+이 hook을 설치하면 Claude가 submodule 내 파일을 수정할 때 **자동으로 커밋+push**한다.
+
+**설치**: `plugins/private-repo/hooks/submodule-auto-push.sh`를 프로젝트에 복사 후 `.claude/settings.local.json`에 추가:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/path/to/your/project/.claude/hooks/submodule-auto-push.sh",
+            "timeout": 30,
+            "statusMessage": "Syncing submodule..."
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**특징**:
+- Claude Code 세션에서만 동작 (터미널 직접 git 작업에는 영향 없음)
+- submodule 외부 파일 수정 시 무시
+- 변경사항이 없으면 무시
+- repo root 자동 감지 (경로 하드코딩 불필요)
+
 ---
 
 ### harness-scaffold
@@ -174,20 +241,26 @@ ai/
 │   │   ├── templates/                # 프로젝트 생성 템플릿
 │   │   └── references/               # 실행 프로토콜 문서
 │   │
-│   └── ai-debugger/                  # API 디버그 에이전트
+│   ├── ai-debugger/                  # API 디버그 에이전트
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/
+│   │   │   ├── io-setup.md
+│   │   │   └── curl-gen.md
+│   │   ├── skills/
+│   │   │   ├── io-interceptor/SKILL.md
+│   │   │   ├── curl-gen/SKILL.md
+│   │   │   ├── log-query/SKILL.md
+│   │   │   ├── code-explore/SKILL.md
+│   │   │   ├── data-analyze/SKILL.md
+│   │   │   └── answer-gen/SKILL.md
+│   │   ├── agents/debug-agent.md
+│   │   └── templates/interceptors/
+│   │
+│   └── private-repo/                 # Private repo 분리
 │       ├── .claude-plugin/plugin.json
-│       ├── commands/
-│       │   ├── io-setup.md
-│       │   └── curl-gen.md
-│       ├── skills/
-│       │   ├── io-interceptor/SKILL.md
-│       │   ├── curl-gen/SKILL.md
-│       │   ├── log-query/SKILL.md
-│       │   ├── code-explore/SKILL.md
-│       │   ├── data-analyze/SKILL.md
-│       │   └── answer-gen/SKILL.md
-│       ├── agents/debug-agent.md
-│       └── templates/interceptors/
+│       ├── commands/private-repo.md
+│       ├── skills/private-repo/SKILL.md
+│       └── hooks/submodule-auto-push.sh
 │
 ├── shared/
 └── docs/
@@ -201,4 +274,5 @@ ai/
 |---|:---:|:---:|:---:|
 | doc-scaffolding | v1 | v1 | v1 |
 | ai-debugger IO 캡처 | v1 | 향후 | 향후 |
+| private-repo | v1 | v1 | v1 |
 | harness-scaffold | v1 | v1 | v1 |
