@@ -1,0 +1,11 @@
+{
+  "name": "content-analyzer",
+  "description": "Analyze content from URLs (YouTube, LinkedIn, web posts, Git repos) and generate structured learning plans or analysis documents",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["content-analysis", "learning", "youtube", "linkedin", "web", "git"],
+  "commands": [
+    "./commands/analyze.md"
+  ]
+}
