@@ -1,0 +1,13 @@
+# Open Questions Registry
+# Categories: pre-impl | impl-discovery | test-discovery | closure | waiver-revisit
+
+questions: []
+# Example:
+#   - id: OQ-001
+#     category: pre-impl
+#     question: "description"
+#     raised_by: agent-name
+#     raised_at: YYYY-MM-DD
+#     status: open  # open | resolved | deferred
+#     resolution: null
+#     resolved_at: null

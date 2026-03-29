@@ -8,6 +8,7 @@
 |---------|------|----------|
 | **doc-scaffolding** | AI 워크스페이스 스캐폴딩 | `/scaffold`, `/doc-gen`, `/doc-validate`, `/doc-site` |
 | **ai-debugger** | API 디버깅 에이전트 | `/io-setup`, `/curl-gen` + debug-agent |
+| **harness-scaffold** | AI 하네스 엔지니어링 셋업 | `/hnsf:init`, `/hnsf:shape-spec`, `/hnsf:write-spec`, `/hnsf:create-tasks`, `/hnsf:implement-tasks`, `/hnsf:orchestrate-tasks`, `/hnsf:drift-check`, `/hnsf:interview-capture`, `/hnsf:verify`, `/hnsf:spec-review` |
 
 ---
 
@@ -21,6 +22,7 @@
 /plugin marketplace add --github 1989v/ai
 /plugin install doc-scaffolding@ai-common
 /plugin install ai-debugger@ai-common
+/plugin install harness-scaffold@ai-common
 /reload-plugins
 ```
 
@@ -40,7 +42,8 @@
   },
   "enabledPlugins": {
     "doc-scaffolding@ai-common": true,
-    "ai-debugger@ai-common": true
+    "ai-debugger@ai-common": true,
+    "harness-scaffold@ai-common": true
   }
 }
 ```
@@ -115,6 +118,34 @@ SPRING_PROFILES_ACTIVE=debug-trace ./gradlew :order:app:bootRun
 
 ---
 
+### harness-scaffold
+
+프로젝트에 AI 하네스 환경을 구축 (SDD 파이프라인, Agent-OS, 행동 표준, 스펙 리뷰, Hooks, 병렬 실행):
+
+```
+/hnsf:init
+```
+
+1. 프로젝트 자동 스캔 (언어, 프레임워크, 모듈 구조 감지)
+2. 대화형 셋업 (3-5개 질문)
+3. CLAUDE.md + agent-os/ + hooks + docs/specs/ 생성
+
+SDD (Spec-Driven Development) 파이프라인:
+
+```
+/hnsf:shape-spec          # 요구사항 수집
+/hnsf:write-spec           # 스펙 작성
+/hnsf:create-tasks         # 태스크 분해
+/hnsf:interview-capture    # 구현 전 게이트 인터뷰
+/hnsf:implement-tasks      # 구현 (워크트리 옵션)
+/hnsf:orchestrate-tasks    # 순차/병렬 오케스트레이션
+/hnsf:verify               # 검증 (표준→린트→빌드→테스트)
+/hnsf:drift-check          # 구현-스펙 불일치 감지
+/hnsf:spec-review          # 다관점 스펙 리뷰
+```
+
+---
+
 ## 레포 구조
 
 ```
@@ -134,6 +165,14 @@ ai/
 │   │   │   └── doc-site/SKILL.md
 │   │   ├── agents/scaffolding-agent.md
 │   │   └── templates/
+│   │
+│   ├── harness-scaffold/              # AI 하네스 엔지니어링 셋업
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── commands/                 # 10 SDD 커맨드
+│   │   ├── skills/                   # Core(4) + SDD(3) + Review(3) 스킬
+│   │   ├── agents/                   # 7 전문 에이전트
+│   │   ├── templates/                # 프로젝트 생성 템플릿
+│   │   └── references/               # 실행 프로토콜 문서
 │   │
 │   └── ai-debugger/                  # API 디버그 에이전트
 │       ├── .claude-plugin/plugin.json
@@ -162,3 +201,4 @@ ai/
 |---|:---:|:---:|:---:|
 | doc-scaffolding | v1 | v1 | v1 |
 | ai-debugger IO 캡처 | v1 | 향후 | 향후 |
+| harness-scaffold | v1 | v1 | v1 |
