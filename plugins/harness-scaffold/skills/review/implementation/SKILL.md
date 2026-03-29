@@ -1,9 +1,6 @@
 ---
 name: review-implementation
-description: >
-  Use when reviewing specs for implementation feasibility. Checks code conflicts,
-  referenced module existence, complexity, NFR anti-patterns, and rollout strategy.
-compatibility: claude-code
+description: Use when reviewing specs for implementation feasibility - checks code conflicts, complexity, NFR anti-patterns
 ---
 
 # Implementation Review

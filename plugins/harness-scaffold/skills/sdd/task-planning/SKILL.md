@@ -1,9 +1,6 @@
 ---
 name: task-planning
-description: >
-  Use when breaking down specs into task groups. Defines grouping strategy,
-  dependency management, metadata requirements, and test limits.
-compatibility: claude-code
+description: Use when breaking down specs into task groups - defines grouping strategy, dependencies, and test limits
 ---
 
 # Task Planning Rules

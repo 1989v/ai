@@ -1,9 +1,6 @@
 ---
 name: implementation
-description: >
-  Use when implementing task groups from tasks.md. Defines source-of-truth gates,
-  standard loading, Ralph Loop integration, and verification requirements.
-compatibility: claude-code
+description: Use when implementing task groups from tasks.md - defines source-of-truth gates, Ralph Loop, and verification
 ---
 
 # Implementation Rules

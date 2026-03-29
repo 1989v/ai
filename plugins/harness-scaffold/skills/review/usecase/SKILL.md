@@ -1,9 +1,6 @@
 ---
 name: review-usecase
-description: >
-  Use when reviewing specs for usecase coverage. Checks actor-goal pairs,
-  scenario flows, acceptance criteria traceability, and edge case expansion.
-compatibility: claude-code
+description: Use when reviewing specs for usecase coverage - checks actor-goal pairs, scenario flows, AC traceability
 ---
 
 # Usecase Review

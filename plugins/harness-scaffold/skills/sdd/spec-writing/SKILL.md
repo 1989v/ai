@@ -1,9 +1,6 @@
 ---
 name: spec-writing
-description: >
-  Use when writing spec.md documents. Defines structure, quality contracts,
-  and documentation-only constraints for spec writers.
-compatibility: claude-code
+description: Use when writing spec.md documents - defines structure, quality contracts, and documentation-only constraints
 ---
 
 # Spec Writing Rules
