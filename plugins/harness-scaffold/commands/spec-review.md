@@ -1,18 +1,20 @@
 ---
 name: spec-review
-description: "Multi-perspective spec review: architecture, implementation, usecase"
+description: "Multi-perspective spec review: architecture, implementation, usecase, domain, test-strategy"
+requires: []
+auto_reference: true
 ---
 
 # /hnsf:spec-review
 
 ## Purpose
-Review a spec from multiple perspectives to catch issues before implementation.
+Review a spec from 5 perspectives to catch issues before implementation.
 
 ## Required Inputs
 - Spec folder with spec.md
 
 ## Expected Outputs
-- `context/engineer-review-{type}.md` per reviewer
+- `context/engineer-review-{type}.md` per reviewer (5 files)
 - Overall verdict
 
 ---
@@ -24,17 +26,25 @@ Review a spec from multiple perspectives to catch issues before implementation.
 
 ## PHASE 2: Run Reviews
 
-Execute 3 reviewers sequentially. Each applies the Seed Discovery Protocol from `@references/review-protocol.md`.
+Execute 5 reviewers sequentially. Each applies the Seed Discovery Protocol from `@references/review-protocol.md`.
 
 ### Review 1: Architecture
 Load `harness-scaffold:review-architecture` skill.
 Focus: layer separation, dependency direction, module boundaries, patterns.
 
-### Review 2: Implementation
+### Review 2: Domain
+Load `harness-scaffold:review-domain` skill.
+Focus: bounded contexts, ubiquitous language, aggregate invariants.
+
+### Review 3: Implementation
 Load `harness-scaffold:review-implementation` skill.
 Focus: feasibility, code conflicts, complexity, NFR anti-patterns.
 
-### Review 3: Usecase
+### Review 4: Test Strategy
+Load `harness-scaffold:review-test-strategy` skill.
+Focus: AC→test derivation, test layer assignment, mock boundaries.
+
+### Review 5: Usecase
 Load `harness-scaffold:review-usecase` skill.
 Focus: actor-goal pairs, flows, AC traceability, edge cases.
 
@@ -51,7 +61,9 @@ Output verdict table:
 | Reviewer | Verdict | Issues |
 |----------|---------|--------|
 | Architecture | SHIP | 0 |
+| Domain | SHIP | 0 |
 | Implementation | REVISE | 2 |
+| Test Strategy | SHIP | 0 |
 | Usecase | SHIP | 0 |
 
 Overall: REVISE
@@ -61,5 +73,5 @@ Action: Address implementation issues, then re-review
 Save individual reports to `context/engineer-review-{type}.md`.
 
 ## Mode Behavior
-- **Quality mode**: Run all 3 reviewers always
+- **Quality mode**: Run all 5 reviewers always
 - **Efficient mode**: Ask user which reviewers to run
