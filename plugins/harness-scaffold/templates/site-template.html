@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{projectName}} Docs</title>
+  <style>
+    /* CSS Variables for theming */
+    :root {
+      --color-bg: #ffffff;
+      --color-bg-sidebar: #f7f7f8;
+      --color-bg-sidebar-hover: #ebebed;
+      --color-bg-sidebar-active: #e0e0ff;
+      --color-bg-code: #f4f4f5;
+      --color-bg-pre: #1e1e2e;
+      --color-border: #e2e2e5;
+      --color-text: #1a1a2e;
+      --color-text-muted: #6b7280;
+      --color-text-sidebar: #374151;
+      --color-text-active: #4f46e5;
+      --color-text-code: #d4d4d8;
+      --color-link: #4f46e5;
+      --color-link-hover: #3730a3;
+      --color-heading: #111827;
+      --color-blockquote-border: #c7d2fe;
+      --color-blockquote-bg: #f5f3ff;
+      /* Syntax highlighting */
+      --color-syntax-keyword: #c792ea;
+      --color-syntax-string: #a3be8c;
+      --color-syntax-comment: #7c6f8e;
+      --color-syntax-number: #f78c6c;
+      --color-syntax-function: #82aaff;
+      --color-syntax-type: #ffcb6b;
+      /* Layout */
+      --sidebar-width: 260px;
+      --header-height: 56px;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Fira Code', 'Cascadia Code', Consolas, 'Courier New', monospace;
+      --border-radius: 6px;
+      --transition: 150ms ease;
+    }
+
+    /* Reset */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--color-text);
+      background: var(--color-bg);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--color-bg-sidebar);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg-sidebar);
+      flex-shrink: 0;
+    }
+
+    .sidebar-header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-heading);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-header .subtitle {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .nav-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .nav-scroll::-webkit-scrollbar { width: 4px; }
+    .nav-scroll::-webkit-scrollbar-track { background: transparent; }
+    .nav-scroll::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+
+    /* Navigation tree */
+    .nav-tree, .nav-subtree {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav-subtree {
+      padding-left: 12px;
+      border-left: 1px solid var(--color-border);
+      margin-left: 16px;
+    }
+
+    .nav-subtree.collapsed { display: none; }
+    .nav-subtree.expanded { display: block; }
+
+    .nav-file a {
+      display: block;
+      padding: 5px 20px;
+      color: var(--color-text-sidebar);
+      text-decoration: none;
+      font-size: 13.5px;
+      border-radius: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .nav-file a:hover {
+      background: var(--color-bg-sidebar-hover);
+      color: var(--color-text);
+    }
+
+    .nav-file.active a {
+      background: var(--color-bg-sidebar-active);
+      color: var(--color-text-active);
+      font-weight: 600;
+    }
+
+    .nav-folder > .folder-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      user-select: none;
+      transition: color var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-folder > .folder-toggle:hover { color: var(--color-text); }
+
+    .folder-toggle .arrow {
+      display: inline-block;
+      width: 12px;
+      transition: transform var(--transition);
+      font-style: normal;
+      font-size: 10px;
+    }
+
+    .nav-folder.open > .folder-toggle .arrow { transform: rotate(90deg); }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .main-header {
+      height: var(--header-height);
+      min-height: var(--header-height);
+      padding: 0 32px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-bg);
+    }
+
+    .breadcrumb {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    .breadcrumb span { color: var(--color-text); font-weight: 500; }
+
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 48px;
+      max-width: 860px;
+      width: 100%;
+    }
+
+    .content-scroll::-webkit-scrollbar { width: 6px; }
+    .content-scroll::-webkit-scrollbar-track { background: transparent; }
+    .content-scroll::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+
+    /* Markdown content styles */
+    .doc-content h1 {
+      font-size: 2em;
+      font-weight: 700;
+      color: var(--color-heading);
+      margin-bottom: 8px;
+      line-height: 1.3;
+      border-bottom: 2px solid var(--color-border);
+      padding-bottom: 12px;
+    }
+
+    .doc-content h2 {
+      font-size: 1.4em;
+      font-weight: 600;
+      color: var(--color-heading);
+      margin-top: 36px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .doc-content h3 {
+      font-size: 1.15em;
+      font-weight: 600;
+      color: var(--color-heading);
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    .doc-content h4 {
+      font-size: 1em;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      margin-top: 20px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .doc-content p { margin-bottom: 16px; }
+
+    .doc-content a {
+      color: var(--color-link);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color var(--transition);
+    }
+
+    .doc-content a:hover {
+      color: var(--color-link-hover);
+      border-bottom-color: var(--color-link-hover);
+    }
+
+    .doc-content ul, .doc-content ol {
+      margin: 0 0 16px 24px;
+    }
+
+    .doc-content li { margin-bottom: 4px; }
+    .doc-content li > ul, .doc-content li > ol { margin-top: 4px; margin-bottom: 4px; }
+
+    .doc-content code {
+      font-family: var(--font-mono);
+      font-size: 0.875em;
+      background: var(--color-bg-code);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: var(--color-text);
+    }
+
+    .doc-content pre {
+      background: var(--color-bg-pre);
+      border-radius: var(--border-radius);
+      padding: 20px 24px;
+      margin: 20px 0;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .doc-content pre code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      background: none;
+      padding: 0;
+      color: var(--color-text-code);
+      white-space: pre;
+    }
+
+    .doc-content pre .lang-label {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 11px;
+      color: #6b7280;
+      font-family: var(--font-sans);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .doc-content blockquote {
+      border-left: 4px solid var(--color-blockquote-border);
+      background: var(--color-blockquote-bg);
+      padding: 12px 20px;
+      margin: 20px 0;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    }
+
+    .doc-content blockquote p { margin: 0; color: #4338ca; }
+
+    .doc-content hr {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 32px 0;
+    }
+
+    .doc-content strong { font-weight: 700; }
+    .doc-content em { font-style: italic; }
+
+    .doc-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+
+    .doc-content th, .doc-content td {
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .doc-content th {
+      background: var(--color-bg-sidebar);
+      font-weight: 600;
+    }
+
+    .doc-content tr:nth-child(even) { background: #fafafa; }
+
+    /* Syntax highlighting */
+    .sh-keyword { color: var(--color-syntax-keyword); }
+    .sh-string   { color: var(--color-syntax-string); }
+    .sh-comment  { color: var(--color-syntax-comment); font-style: italic; }
+    .sh-number   { color: var(--color-syntax-number); }
+    .sh-function { color: var(--color-syntax-function); }
+    .sh-type     { color: var(--color-syntax-type); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 80px 40px;
+      color: var(--color-text-muted);
+    }
+
+    .empty-state h2 { font-size: 1.2em; margin-bottom: 8px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -var(--sidebar-width);
+        z-index: 100;
+        transition: left var(--transition);
+      }
+      .sidebar.open { left: 0; }
+      .content-scroll { padding: 24px 20px; }
+    }
+
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--color-text);
+      font-size: 20px;
+    }
+
+    @media (max-width: 768px) { .menu-toggle { display: block; } }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>{{projectName}}</h1>
+      <div class="subtitle">Documentation</div>
+    </div>
+    <nav class="nav-scroll">
+      <ul class="nav-tree" id="navTree">
+        {{navigation}}
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <header class="main-header">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">&#9776;</button>
+      <div class="breadcrumb" id="breadcrumb">
+        {{projectName}} / <span id="breadcrumbCurrent">Home</span>
+      </div>
+    </header>
+    <div class="content-scroll">
+      <article class="doc-content" id="docContent">
+        {{content}}
+      </article>
+    </div>
+  </main>
+
+  <script>
+    // =========================================================
+    // Document data - injected by doc-site skill
+    // Each key is a doc path, value is the rendered HTML content
+    // =========================================================
+    const DOCS = {
+      // "path/to/doc": "<h1>Title</h1><p>Content...</p>",
+      // populated by doc-site skill generation
+    };
+
+    // =========================================================
+    // Syntax highlighting (no external library)
+    // =========================================================
+    const LANG_RULES = {
+      kotlin: {
+        keywords: /\b(fun|val|var|class|object|interface|data|sealed|enum|when|if|else|for|while|return|import|package|null|true|false|this|super|override|open|abstract|private|protected|public|internal|companion|suspend|inline|reified|by|in|out|is|as|typealias|init|constructor|lateinit|lazy|const|crossinline|noinline)\b/g,
+        types: /\b(String|Int|Long|Double|Float|Boolean|Unit|Any|Nothing|List|Map|Set|MutableList|MutableMap|MutableSet|Pair|Triple)\b/g,
+      },
+      java: {
+        keywords: /\b(public|private|protected|class|interface|enum|extends|implements|import|package|return|if|else|for|while|do|switch|case|break|continue|new|this|super|static|final|abstract|void|null|true|false|instanceof|throws|throw|try|catch|finally|synchronized|volatile|transient|native)\b/g,
+        types: /\b(String|Integer|Long|Double|Float|Boolean|Object|List|Map|Set|ArrayList|HashMap)\b/g,
+      },
+      typescript: {
+        keywords: /\b(const|let|var|function|class|interface|type|enum|import|export|from|return|if|else|for|while|async|await|new|this|extends|implements|null|undefined|true|false|typeof|instanceof|void|never|any|unknown|readonly|abstract|override|declare|namespace|module)\b/g,
+        types: /\b(string|number|boolean|object|Array|Promise|Record|Partial|Required|Pick|Omit|Readonly)\b/g,
+      },
+      python: {
+        keywords: /\b(def|class|import|from|return|if|elif|else|for|while|async|await|with|as|lambda|pass|break|continue|yield|raise|try|except|finally|and|or|not|in|is|None|True|False|self|cls|global|nonlocal|del)\b/g,
+        types: /\b(str|int|float|bool|list|dict|set|tuple|bytes|type|object)\b/g,
+      },
+      bash: {
+        keywords: /\b(if|then|else|elif|fi|for|while|do|done|case|esac|function|return|local|export|echo|cd|ls|mkdir|rm|cp|mv|grep|sed|awk|find|source)\b/g,
+      },
+      json: {},
+      yaml: {},
+    };
+
+    function highlightCode(code, lang) {
+      // Escape HTML first
+      let html = code
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      if (!lang || !LANG_RULES[lang]) return html;
+
+      const rules = LANG_RULES[lang];
+
+      // Comments first (line and block)
+      if (lang === 'python' || lang === 'bash' || lang === 'yaml') {
+        html = html.replace(/(#[^\n]*)/g, '<span class="sh-comment">$1</span>');
+      } else {
+        html = html.replace(/(\/\/[^\n]*)/g, '<span class="sh-comment">$1</span>');
+        html = html.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="sh-comment">$1</span>');
+      }
+
+      // Strings
+      html = html.replace(/(&quot;(?:[^&]|&(?!quot;))*&quot;|&#039;(?:[^&]|&(?!#039;))*&#039;)/g,
+        '<span class="sh-string">$1</span>');
+      html = html.replace(/(`[^`]*`)/g, '<span class="sh-string">$1</span>');
+
+      // Numbers
+      html = html.replace(/\b(\d+\.?\d*)\b/g, '<span class="sh-number">$1</span>');
+
+      // Types before keywords to avoid double-wrapping
+      if (rules.types) {
+        html = html.replace(rules.types, '<span class="sh-type">$&</span>');
+      }
+
+      // Keywords
+      if (rules.keywords) {
+        html = html.replace(rules.keywords, '<span class="sh-keyword">$&</span>');
+      }
+
+      return html;
+    }
+
+    // =========================================================
+    // Navigation: folder expand/collapse
+    // =========================================================
+    function initNavigation() {
+      document.querySelectorAll('.folder-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const folder = toggle.closest('.nav-folder');
+          const subtree = folder.querySelector('.nav-subtree');
+          if (!subtree) return;
+
+          const isOpen = folder.classList.contains('open');
+          folder.classList.toggle('open', !isOpen);
+          subtree.classList.toggle('collapsed', isOpen);
+          subtree.classList.toggle('expanded', !isOpen);
+        });
+      });
+    }
+
+    // =========================================================
+    // Document loading
+    // =========================================================
+    function loadDoc(docKey) {
+      const content = DOCS[docKey];
+      const docEl = document.getElementById('docContent');
+
+      if (!content) {
+        docEl.innerHTML = '<div class="empty-state"><h2>Document not found</h2><p>The requested document could not be loaded.</p></div>';
+        return;
+      }
+
+      docEl.innerHTML = content;
+
+      // Apply syntax highlighting to code blocks
+      docEl.querySelectorAll('pre code').forEach(block => {
+        const lang = (block.className.match(/language-(\w+)/) || [])[1];
+        if (lang) {
+          block.innerHTML = highlightCode(block.textContent, lang);
+        }
+      });
+
+      // Add language labels to pre blocks
+      docEl.querySelectorAll('pre').forEach(pre => {
+        const code = pre.querySelector('code');
+        if (!code) return;
+        const lang = (code.className.match(/language-(\w+)/) || [])[1];
+        if (lang) {
+          const label = document.createElement('span');
+          label.className = 'lang-label';
+          label.textContent = lang;
+          pre.appendChild(label);
+        }
+      });
+
+      // Update active nav item
+      document.querySelectorAll('.nav-file').forEach(item => {
+        const link = item.querySelector('a');
+        item.classList.toggle('active', link && link.dataset.doc === docKey);
+      });
+
+      // Update breadcrumb
+      const activeLink = document.querySelector(`a[data-doc="${docKey}"]`);
+      const title = activeLink ? activeLink.textContent : docKey;
+      document.getElementById('breadcrumbCurrent').textContent = title;
+
+      // Expand parent folders of active item
+      if (activeLink) {
+        let parent = activeLink.closest('.nav-subtree');
+        while (parent) {
+          parent.classList.remove('collapsed');
+          parent.classList.add('expanded');
+          const folder = parent.closest('.nav-folder');
+          if (folder) folder.classList.add('open');
+          parent = parent.parentElement?.closest('.nav-subtree');
+        }
+      }
+
+      // Scroll to top
+      document.querySelector('.content-scroll').scrollTop = 0;
+
+      // Update URL hash
+      history.replaceState(null, '', '#' + docKey);
+    }
+
+    // =========================================================
+    // Click handlers for nav links
+    // =========================================================
+    function initDocLinks() {
+      document.getElementById('navTree').addEventListener('click', e => {
+        const link = e.target.closest('a[data-doc]');
+        if (!link) return;
+        e.preventDefault();
+        loadDoc(link.dataset.doc);
+      });
+
+      // Also handle inline links in content
+      document.getElementById('docContent').addEventListener('click', e => {
+        const link = e.target.closest('a[data-doc]');
+        if (!link) return;
+        e.preventDefault();
+        loadDoc(link.dataset.doc);
+      });
+    }
+
+    // =========================================================
+    // Mobile sidebar toggle
+    // =========================================================
+    function initMobileMenu() {
+      const toggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener('click', e => {
+        if (window.innerWidth <= 768 &&
+            !sidebar.contains(e.target) &&
+            e.target !== toggle) {
+          sidebar.classList.remove('open');
+        }
+      });
+    }
+
+    // =========================================================
+    // Initialization
+    // =========================================================
+    function init() {
+      initNavigation();
+      initDocLinks();
+      initMobileMenu();
+
+      // Load doc from URL hash or default
+      const hash = location.hash.slice(1);
+      const defaultDoc = Object.keys(DOCS)[0] || 'index';
+      loadDoc(hash && DOCS[hash] ? hash : defaultDoc);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
