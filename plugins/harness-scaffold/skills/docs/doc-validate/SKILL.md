@@ -98,6 +98,6 @@ docs/policies/ 하위 문서에 명시된 규칙:
 
 ## Integration
 
-- **Called by:** harness-scaffold:init, harness-scaffold:harness-gc
-- **Standalone:** `/hnsf:doc-validate`로 직접 호출 가능
+- **Called by:** hns:init, hns:harness-gc
+- **Standalone:** `/hns:doc-validate`로 직접 호출 가능
 - **Calls:** 없음 (검증 전용 스킬)

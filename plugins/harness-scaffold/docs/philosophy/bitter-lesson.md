@@ -17,7 +17,7 @@
 | 다른 규칙의 하위 규칙인가? | 통합/제거 | 유지 |
 
 ## harness-diet 연계
-- `/hnsf:harness-diet` 실행 시 이 프레임워크로 판단
+- `/hns:harness-diet` 실행 시 이 프레임워크로 판단
 - 제거된 규칙은 `docs/changelog/harness-changelog.md`에 기록
 - 제거 후 문제 발생 시 `harness-evolve`로 복원 가능
 

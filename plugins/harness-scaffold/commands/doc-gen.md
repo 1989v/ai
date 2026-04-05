@@ -6,7 +6,7 @@ requires:
 auto_reference: false
 ---
 
-# /hnsf:doc-gen
+# /hns:doc-gen
 
 ## Purpose
 프로젝트에 CLAUDE.md와 docs/ 트리를 생성한다.
@@ -20,4 +20,4 @@ auto_reference: false
 
 ---
 
-Delegate to `harness-scaffold:doc-gen-agent` with `harness-scaffold:doc-gen` skill loaded.
+Delegate to `hns:doc-gen-agent` with `hns:doc-gen` skill loaded.

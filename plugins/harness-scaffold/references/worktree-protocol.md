@@ -1,6 +1,6 @@
 # Worktree Protocol
 
-Use this protocol when worktree isolation is enabled in /hnsf:implement-tasks or /hnsf:orchestrate-tasks.
+Use this protocol when worktree isolation is enabled in /hns:implement-tasks or /hns:orchestrate-tasks.
 
 ## 1) Resolve Project Root
 
@@ -15,7 +15,7 @@ Could not locate .claude/scripts/parallel-work.sh from:
   [current working directory]
 
 To fix:
-- Run /hnsf:init first to set up parallel execution
+- Run /hns:init first to set up parallel execution
 - Or run this command from inside the project directory
 - Or answer "no" to worktree isolation
 ```
@@ -44,7 +44,7 @@ To fix:
 
 ## 4) Parallel Execution Protocol
 
-For /hnsf:orchestrate-tasks with `execution: parallel`:
+For /hns:orchestrate-tasks with `execution: parallel`:
 
 1. Build dependency phases from `dependencies` field in orchestration.yml
 2. Execute dependency-free groups first

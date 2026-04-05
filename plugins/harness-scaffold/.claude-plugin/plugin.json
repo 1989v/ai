@@ -1,5 +1,5 @@
 {
-  "name": "harness-scaffold",
+  "name": "hns",
   "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, 5-dimension review, lifecycle (GC/evolve/diet/audit), enforcement hooks, context routing, and doc generation",
   "version": "0.2.0",
   "author": { "name": "gideok-kwon" },
@@ -9,7 +9,7 @@
     "./commands/init.md",
     "./commands/shape-spec.md",
     "./commands/write-spec.md",
-    "./commands/spec-pipeline.md",
+    "./commands/new-feature.md",
     "./commands/spec-review.md",
     "./commands/create-tasks.md",
     "./commands/implement-tasks.md",

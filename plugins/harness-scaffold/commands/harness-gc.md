@@ -6,7 +6,7 @@ requires:
 auto_reference: true
 ---
 
-# /hnsf:harness-gc
+# /hns:harness-gc
 
 ## Purpose
 프로젝트의 코드/문서/하네스를 청소한다.
@@ -21,8 +21,8 @@ auto_reference: true
 
 ## Execution
 
-1. Load `harness-scaffold:gc` skill
-2. Delegate to `harness-scaffold:gc-agent`
+1. Load `hns:gc` skill
+2. Delegate to `hns:gc-agent`
 3. Agent performs full scan per `@references/gc-protocol.md`
 4. Report generated at project root
 5. User reviews and approves auto-fixes

@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hnsf:harness-diet
+# /hns:harness-diet
 
 ## Purpose
 하네스 복잡도를 점검하고 불필요한 규칙을 제거한다.
@@ -22,7 +22,7 @@ auto_reference: false
 
 ## Execution
 
-1. Load `harness-scaffold:diet` skill
+1. Load `hns:diet` skill
 2. Measure current harness token count
 3. Apply `@references/diet-criteria.md`
 4. Present candidates to user

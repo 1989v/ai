@@ -6,7 +6,7 @@ requires:
 auto_reference: true
 ---
 
-# /hnsf:verify-crosscheck
+# /hns:verify-crosscheck
 
 ## Purpose
 프로젝트의 문서, 스펙, 태스크, 코드 간 교차 일관성을 6개 레이어에서 검증.

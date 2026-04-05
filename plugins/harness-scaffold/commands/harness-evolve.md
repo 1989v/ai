@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hnsf:harness-evolve
+# /hns:harness-evolve
 
 ## Purpose
 실패 패턴을 하네스 규칙으로 인코딩하여 재발 방지.
@@ -21,7 +21,7 @@ auto_reference: false
 
 ## Execution
 
-1. Load `harness-scaffold:evolve` skill
+1. Load `hns:evolve` skill
 2. Ask user to describe the failure (or detect from recent session)
 3. Classify failure type
 4. Propose rule addition with target location

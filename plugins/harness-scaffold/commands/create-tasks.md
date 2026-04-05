@@ -3,7 +3,7 @@ name: create-tasks
 description: "Break down a spec into actionable task groups with dependencies"
 ---
 
-# /hnsf:create-tasks
+# /hns:create-tasks
 
 ## Purpose
 Create a task breakdown from a spec for implementation.
@@ -39,7 +39,7 @@ Delegate to `tasks-list-creator` agent with:
 Tasks created: [spec-folder]/tasks.md
 
 Next:
-- /hnsf:interview-capture (recommended pre-implementation gate)
-- /hnsf:implement-tasks (start implementation)
-- /hnsf:orchestrate-tasks (plan execution order)
+- /hns:interview-capture (recommended pre-implementation gate)
+- /hns:implement-tasks (start implementation)
+- /hns:orchestrate-tasks (plan execution order)
 ```

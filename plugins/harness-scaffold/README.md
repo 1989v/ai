@@ -1,4 +1,4 @@
-# harness-scaffold v0.2.0
+# hns (Harness Scaffold) v0.2.0
 
 AI 하네스 엔지니어링 완전체 플러그인.
 하네스 3기둥(Context, Enforcement, Evolution)을 6레이어 아키텍처로 구현한다.
@@ -11,7 +11,7 @@ AI 하네스 엔지니어링 완전체 플러그인.
 
 | Command | Description |
 |---------|-------------|
-| `/hnsf:init` | 하네스 전체 셋업 — auto-scan → doc-gen → hooks → context routing |
+| `/hns:init` | 하네스 스캐폴딩 — auto-scan → doc-gen → hooks → context routing |
 
 프로젝트에 처음 적용할 때 사용. CLAUDE.md, agent-os/, docs/, hooks를 한번에 생성한다.
 이미 CLAUDE.md가 있는 프로젝트에도 사용 가능 (idempotency check로 병합/건너뛰기 선택).
@@ -20,32 +20,32 @@ AI 하네스 엔지니어링 완전체 플러그인.
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hnsf:spec-pipeline` | shape→write→review→tasks 통합 | 새 기능 시작 시 (권장) |
-| `/hnsf:shape-spec` | 요구사항 수집 + 스펙 폴더 초기화 | 파이프라인 없이 단계별로 할 때 |
-| `/hnsf:write-spec` | spec.md 작성 | shape 후 스펙 문서화 |
-| `/hnsf:spec-review` | 5차원 스펙 리뷰 | 스펙 품질 검증 |
-| `/hnsf:create-tasks` | spec → task group 분해 | 스펙 승인 후 태스크 생성 |
-| `/hnsf:implement-tasks` | task group 실행 (Ralph Loop) | 구현 시작 |
-| `/hnsf:orchestrate-tasks` | 순차/병렬 오케스트레이션 | 여러 그룹 동시 실행 |
-| `/hnsf:interview-capture` | 구현 전 게이트 인터뷰 | open-questions 해소 |
+| `/hns:new-feature` | shape→write→review→tasks 통합 | 새 기능 시작 시 (권장) |
+| `/hns:shape-spec` | 요구사항 수집 + 스펙 폴더 초기화 | 파이프라인 없이 단계별로 할 때 |
+| `/hns:write-spec` | spec.md 작성 | shape 후 스펙 문서화 |
+| `/hns:spec-review` | 5차원 스펙 리뷰 | 스펙 품질 검증 |
+| `/hns:create-tasks` | spec → task group 분해 | 스펙 승인 후 태스크 생성 |
+| `/hns:implement-tasks` | task group 실행 (Ralph Loop) | 구현 시작 |
+| `/hns:orchestrate-tasks` | 순차/병렬 오케스트레이션 | 여러 그룹 동시 실행 |
+| `/hns:interview-capture` | 구현 전 게이트 인터뷰 | open-questions 해소 |
 
 **일반적인 흐름:**
 ```
-/hnsf:spec-pipeline  →  /hnsf:implement-tasks  →  /hnsf:verify
+/hns:new-feature  →  /hns:implement-tasks  →  /hns:verify
 ```
 
 또는 단계별:
 ```
-/hnsf:shape-spec → /hnsf:write-spec → /hnsf:spec-review → /hnsf:create-tasks → /hnsf:implement-tasks
+/hns:shape-spec → /hns:write-spec → /hns:spec-review → /hns:create-tasks → /hns:implement-tasks
 ```
 
 ### 검증
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hnsf:verify` | 표준 → 린트 → 빌드 → 테스트 | 구현 완료 후 |
-| `/hnsf:verify-crosscheck` | 6레이어 교차 일관성 검증 | docs/specs/tasks/code 간 불일치 점검 |
-| `/hnsf:drift-check` | 구현-스펙 불일치 감지 | 구현 중 스펙 변경 의심 시 |
+| `/hns:verify` | 표준 → 린트 → 빌드 → 테스트 | 구현 완료 후 |
+| `/hns:verify-crosscheck` | 6레이어 교차 일관성 검증 | docs/specs/tasks/code 간 불일치 점검 |
+| `/hns:drift-check` | 구현-스펙 불일치 감지 | 구현 중 스펙 변경 의심 시 |
 
 **verify-crosscheck 6레이어:**
 ```
@@ -61,18 +61,18 @@ Layer 6: tasks ↔ code
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hnsf:doc-gen` | CLAUDE.md + docs/ 트리 생성 | 프로젝트 문서 초기화 |
-| `/hnsf:doc-validate` | docs ↔ 코드 일치 검증 | 문서 정합성 점검 |
-| `/hnsf:doc-html` | docs/ → HTML 사이트 생성 | 문서를 브라우저로 볼 때 |
+| `/hns:doc-gen` | CLAUDE.md + docs/ 트리 생성 | 프로젝트 문서 초기화 |
+| `/hns:doc-validate` | docs ↔ 코드 일치 검증 | 문서 정합성 점검 |
+| `/hns:doc-html` | docs/ → HTML 사이트 생성 | 문서를 브라우저로 볼 때 |
 
 ### 하네스 자가관리 (Lifecycle)
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hnsf:harness-gc` | 가비지 컬렉션 | dead code, doc drift, stale rules 청소 |
-| `/hnsf:harness-evolve` | 실패 패턴 → 규칙 인코딩 | 같은 실수 반복 방지 |
-| `/hnsf:harness-diet` | 불필요한 규칙 제거 | 하네스 복잡도 점검 (Bitter Lesson) |
-| `/hnsf:harness-audit` | 외부 벤치마크 비교 | 다른 레포/포스트와 비교 개선 |
+| `/hns:harness-gc` | 가비지 컬렉션 | dead code, doc drift, stale rules 청소 |
+| `/hns:harness-evolve` | 실패 패턴 → 규칙 인코딩 | 같은 실수 반복 방지 |
+| `/hns:harness-diet` | 불필요한 규칙 제거 | 하네스 복잡도 점검 (Bitter Lesson) |
+| `/hns:harness-audit` | 외부 벤치마크 비교 | 다른 레포/포스트와 비교 개선 |
 
 **Lifecycle 순환 사이클:**
 ```
@@ -81,7 +81,7 @@ harness-audit (외부 비교) → harness-evolve (규칙 추가) → harness-die
 
 ### 5차원 Spec Review
 
-`/hnsf:spec-review` 실행 시 5개 리뷰어가 순차 실행:
+`/hns:spec-review` 실행 시 5개 리뷰어가 순차 실행:
 
 | Reviewer | Focus | Skillsets |
 |----------|-------|-----------|
@@ -133,7 +133,7 @@ Level 2: index.yml keyword match (자동, max 3개, threshold 2+)
 
 ## Enforcement Hooks — 3 Tiers
 
-`/hnsf:init` 시 프로젝트 성격에 맞는 훅 수준을 선택:
+`/hns:init` 시 프로젝트 성격에 맞는 훅 수준을 선택:
 
 | Tier | File | Behavior |
 |------|------|----------|
@@ -195,13 +195,13 @@ harness-scaffold/
 
 ```bash
 # ai-common marketplace에서 설치 (msa 프로젝트 기준)
-claude plugins install harness-scaffold@ai-common
+claude plugins install hns@ai-common
 
 # 또는 settings.json에 직접 추가
-# .claude/settings.json → "enabledPlugins": { "harness-scaffold@ai-common": true }
+# .claude/settings.json → "enabledPlugins": { "hns@ai-common": true }
 ```
 
-플러그인 설치 후 `/hnsf:init`으로 프로젝트 하네스를 초기화하거나, 이미 하네스가 있는 프로젝트에서 바로 `/hnsf:spec-pipeline`으로 기능 개발을 시작한다.
+플러그인 설치 후 `/hns:init`으로 프로젝트 하네스를 초기화하거나, 이미 하네스가 있는 프로젝트에서 바로 `/hns:new-feature`으로 기능 개발을 시작한다.
 
 ---
 

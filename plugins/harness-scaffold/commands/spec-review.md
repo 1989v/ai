@@ -5,7 +5,7 @@ requires: []
 auto_reference: true
 ---
 
-# /hnsf:spec-review
+# /hns:spec-review
 
 ## Purpose
 Review a spec from 5 perspectives to catch issues before implementation.
@@ -29,23 +29,23 @@ Review a spec from 5 perspectives to catch issues before implementation.
 Execute 5 reviewers sequentially. Each applies the Seed Discovery Protocol from `@references/review-protocol.md`.
 
 ### Review 1: Architecture
-Load `harness-scaffold:review-architecture` skill.
+Load `hns:review-architecture` skill.
 Focus: layer separation, dependency direction, module boundaries, patterns.
 
 ### Review 2: Domain
-Load `harness-scaffold:review-domain` skill.
+Load `hns:review-domain` skill.
 Focus: bounded contexts, ubiquitous language, aggregate invariants.
 
 ### Review 3: Implementation
-Load `harness-scaffold:review-implementation` skill.
+Load `hns:review-implementation` skill.
 Focus: feasibility, code conflicts, complexity, NFR anti-patterns.
 
 ### Review 4: Test Strategy
-Load `harness-scaffold:review-test-strategy` skill.
+Load `hns:review-test-strategy` skill.
 Focus: AC→test derivation, test layer assignment, mock boundaries.
 
 ### Review 5: Usecase
-Load `harness-scaffold:review-usecase` skill.
+Load `hns:review-usecase` skill.
 Focus: actor-goal pairs, flows, AC traceability, edge cases.
 
 ## PHASE 3: Verdict Progression

@@ -3,7 +3,7 @@ name: interview-capture
 description: "Pre-implementation gate interview to surface missing assumptions"
 ---
 
-# /hnsf:interview-capture
+# /hns:interview-capture
 
 ## Purpose
 Surface missing assumptions and detect document-state drift before implementation.
@@ -75,14 +75,14 @@ Emit exactly one:
 Gate: BLOCKED
 Reason: [N] pre-impl questions unresolved
 Questions: [list]
-Action: Resolve before proceeding to /hnsf:implement-tasks
+Action: Resolve before proceeding to /hns:implement-tasks
 ```
 
 **READY WITH DISCOVERIES TRACKED**
 ```
 Gate: READY
 Discoveries: [N] tracked in open-questions.yml
-Action: Proceed to /hnsf:implement-tasks
+Action: Proceed to /hns:implement-tasks
 ```
 
 This command MUST NOT exit without emitting a gate state.

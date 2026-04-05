@@ -22,7 +22,7 @@ harness-scaffold 플러그인을 하네스 엔지니어링의 3기둥(Context, E
 
 1. **doc-scaffolding 흡수** — doc-gen, doc-validate, doc-html을 harness-scaffold 하위로 통합
 2. **5차원 spec-review** — domain + test-strategy 리뷰어 추가 + skillset 프로시저 체계
-3. **spec-pipeline 통합 커맨드** — shape→write→review→create-tasks 일괄 파이프라인
+3. **new-feature 통합 커맨드** — shape→write→review→create-tasks 일괄 파이프라인
 4. **verify-crosscheck** — 6레이어 교차 일관성 검증
 5. **Lifecycle 레이어 신설** — GC, 자가진화, 다이어트, 벤치마크
 6. **Enforcement 훅 체계** — reminder → feedback → enforcement 3단계
@@ -103,7 +103,7 @@ auto_reference: true   # Level 2 키워드 매칭 허용
 
 | 모드 | 트리거 | 범위 |
 |------|--------|------|
-| 수동 | `/hnsf:harness-gc` | full scan |
+| 수동 | `/hns:harness-gc` | full scan |
 | 이벤트 | PostToolUse hook (커밋 후) | light scan |
 | 스케줄 | `/schedule` 크론 | full scan |
 
@@ -316,7 +316,7 @@ Stage 4: Code    — Grep/Glob으로 참조된 클래스/모듈 확인
 
 ---
 
-## 7. spec-pipeline (통합 파이프라인)
+## 7. new-feature (통합 파이프라인)
 
 개별 커맨드를 수동 연결하는 대신 한 번에 흐르는 파이프라인.
 
@@ -470,7 +470,7 @@ harness-scaffold/
 │   ├── init.md                        (확장: doc-gen + 훅 선택 + index.yml)
 │   ├── shape-spec.md
 │   ├── write-spec.md
-│   ├── spec-pipeline.md               ★ 신규
+│   ├── new-feature.md               ★ 신규
 │   ├── spec-review.md                 (확장: 5차원)
 │   ├── create-tasks.md
 │   ├── implement-tasks.md
@@ -568,6 +568,6 @@ harness-scaffold/
 
 ### 기존 프로젝트 영향
 
-- 기존 `/hnsf:*` 커맨드 경로 변경 없음 (하위 호환)
+- 기존 `/hns:*` 커맨드 경로 변경 없음 (하위 호환)
 - 신규 커맨드 추가만 발생
 - `init` 재실행 시 idempotency check로 기존 파일 보존

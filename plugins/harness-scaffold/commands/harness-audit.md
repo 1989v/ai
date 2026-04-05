@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hnsf:harness-audit
+# /hns:harness-audit
 
 ## Purpose
 외부 소스와 비교하여 하네스 개선 기회를 식별한다.
@@ -20,9 +20,9 @@ auto_reference: false
 
 ## Execution
 
-1. Load `harness-scaffold:audit` skill
+1. Load `hns:audit` skill
 2. Ask user for source (or use "auto" for web search)
 3. Analyze source's harness structure
 4. Compare with current harness-scaffold
 5. Generate benchmark report
-6. User decides adoption → delegate to `/hnsf:harness-evolve`
+6. User decides adoption → delegate to `/hns:harness-evolve`
