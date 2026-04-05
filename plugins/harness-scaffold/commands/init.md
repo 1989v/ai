@@ -1,6 +1,6 @@
 ---
 name: init
-description: "Initialize AI harness for any project — auto-scan + interactive setup"
+description: "Initialize AI harness for any project — auto-scan + interactive setup + doc-gen + hooks + routing"
 ---
 
 # /hnsf:init
@@ -17,7 +17,9 @@ Set up a complete AI harness environment for the current project.
 - CLAUDE.md (project-customized)
 - PLANS.md
 - agent-os/ directory tree
-- .claude/hooks/hnsf-automation.json
+- docs/ directory tree (architecture, adr, index)
+- docs/index.yml (context routing map)
+- .claude/hooks/ (selected tier)
 - .claude/COMPACTION-GUIDE.md
 - docs/specs/ directory
 - (Optional) .claude/scripts/parallel-work.sh
@@ -42,14 +44,8 @@ Analyze the project root to build a profile:
    - Multiple `*/src/main` patterns → multi-service
 
 3. **Test Framework**: Detect from dependencies
-   - JUnit, Spock, Kotest → JVM
-   - Jest, Vitest, Mocha → JS/TS
-   - pytest, unittest → Python
 
-4. **Existing AI Settings**: Check for
-   - `.claude/` directory
-   - `CLAUDE.md`, `AGENTS.md`
-   - `docs/` structure
+4. **Existing AI Settings**: Check for `.claude/`, `CLAUDE.md`, `AGENTS.md`, `docs/`
 
 5. **Build/Test Commands**: Extract from build config
 
@@ -57,45 +53,60 @@ Present scan results to user.
 
 ## PHASE 2: Interactive Setup (3-5 questions)
 
-Ask sequentially:
-
 **Q1**: "프로젝트 프로파일이 맞나요?" + [scan results summary]
 **Q2**: "아키텍처 패턴은?" (Clean Architecture / Layered / Monolith / Microservice / Other)
 **Q3**: (If CLAUDE.md exists) "기존 CLAUDE.md와 병합할까요, 새로 만들까요?"
-**Q4**: "모드 선택 — 품질 모드(기본, 비용 무관 최고 품질) / 효율 모드(토큰 절약)?"
+**Q4**: "모드 선택 — 품질 모드(기본) / 효율 모드(토큰 절약)?"
 **Q5**: "병렬 실행(git worktree) 지원이 필요한가요?"
 
-## PHASE 3: Generate Files
+## PHASE 3: Doc Generation
 
-Using templates from the harness-scaffold plugin, generate all files.
-Replace `{{PLACEHOLDER}}` values with scan results and user answers.
+Delegate to `harness-scaffold:doc-gen` skill:
+1. Select CLAUDE.md template based on language/framework
+2. Generate CLAUDE.md with scan results + user answers
+3. Generate docs/ tree (index.md, architecture/, adr/, plans/)
+4. Run `harness-scaffold:doc-validate` for validation
 
-**Always generate:**
-- `CLAUDE.md` — from `templates/claude-md/default.md`
+## PHASE 4: Hook Tier Selection
+
+Ask user:
+```
+프로젝트에 적용할 훅 수준을 선택하세요:
+  (A) Light  — 리마인더만 (신규 프로젝트, 탐색 단계)
+  (B) Medium — 린트/컴파일 피드백 (개발 진행 중)
+  (C) Strict — 실패 시 차단 (안정 운영 단계)
+```
+
+Copy selected template from `templates/hooks/hnsf-hooks-{tier}.json` to `.claude/hooks/`.
+
+## PHASE 5: Context Routing Setup
+
+1. Copy `templates/docs-index.yml` → `docs/index.yml`
+2. Replace placeholders with scan results
+3. Add project-specific entries based on detected structure
+
+## PHASE 6: Generate Remaining Files
+
+Using templates, generate:
 - `PLANS.md` — from `templates/plans-md.md`
 - `agent-os/config.yml` — mode + layer settings
 - `agent-os/product/mission.md` — from user input
 - `agent-os/product/tech-stack.md` — from scan results
-- `agent-os/standards/agent-behavior/` — all 6 files from templates
+- `agent-os/standards/agent-behavior/` — all 6 files
 - `agent-os/standards/global/conventions.md` — from scan + user input
-- `.claude/hooks/hnsf-automation.json` — from template
 - `.claude/COMPACTION-GUIDE.md` — from template
 - `docs/specs/` — empty directory
+- (Conditional) `.claude/scripts/parallel-work.sh`
 
-**Conditional:**
-- `.claude/scripts/parallel-work.sh` — if Q5 = yes
-- `agent-os/parallel-execution-rules.md` — if Q5 = yes
+## PHASE 7: Idempotency Check
 
-## PHASE 4: Idempotency Check
-
-For each file to generate:
-- If file doesn't exist → create
-- If file exists and identical → skip with note
-- If file exists and different → show diff → ask user: merge / skip / overwrite
+For each file:
+- If not exists → create
+- If exists and identical → skip
+- If exists and different → show diff → ask: merge / skip / overwrite
 
 ## Completion
 
-Output summary of generated files and suggest next steps:
 ```
 AI harness initialized for [project-name]!
 
@@ -103,8 +114,13 @@ Generated:
 - CLAUDE.md (project configuration)
 - PLANS.md (execution plan rules)
 - agent-os/ (standards, product, config)
-- .claude/hooks/ (automation)
+- docs/ (architecture, adr, index, routing)
+- .claude/hooks/ ({tier} tier)
 - docs/specs/ (SDD spec directory)
 
+Harness philosophy: docs/philosophy/
+Context routing: docs/index.yml
+
 Next: Use /hnsf:shape-spec to start your first feature spec.
+      Use /hnsf:harness-audit to compare with external benchmarks.
 ```
