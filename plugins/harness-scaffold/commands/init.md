@@ -3,9 +3,9 @@ name: init
 description: "Initialize AI harness for any project — auto-scan + interactive setup + doc-gen + hooks + routing"
 ---
 
-# /hnsf:init
+# /hns:init
 
-Use the `harness-scaffold:session` skill context for this command.
+Use the `hns:session` skill context for this command.
 
 ## Purpose
 Set up a complete AI harness environment for the current project.
@@ -61,11 +61,11 @@ Present scan results to user.
 
 ## PHASE 3: Doc Generation
 
-Delegate to `harness-scaffold:doc-gen` skill:
+Delegate to `hns:doc-gen` skill:
 1. Select CLAUDE.md template based on language/framework
 2. Generate CLAUDE.md with scan results + user answers
 3. Generate docs/ tree (index.md, architecture/, adr/, plans/)
-4. Run `harness-scaffold:doc-validate` for validation
+4. Run `hns:doc-validate` for validation
 
 ## PHASE 4: Hook Tier Selection
 
@@ -121,6 +121,6 @@ Generated:
 Harness philosophy: docs/philosophy/
 Context routing: docs/index.yml
 
-Next: Use /hnsf:shape-spec to start your first feature spec.
-      Use /hnsf:harness-audit to compare with external benchmarks.
+Next: Use /hns:shape-spec to start your first feature spec.
+      Use /hns:harness-audit to compare with external benchmarks.
 ```

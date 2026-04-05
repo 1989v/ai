@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hnsf:doc-validate
+# /hns:doc-validate
 
 ## Purpose
 CLAUDE.md와 docs/가 실제 코드 구조와 일치하는지 검증한다.
@@ -18,5 +18,5 @@ CLAUDE.md와 docs/가 실제 코드 구조와 일치하는지 검증한다.
 
 ---
 
-Load `harness-scaffold:doc-validate` skill and execute all checks.
+Load `hns:doc-validate` skill and execute all checks.
 Output report to terminal.

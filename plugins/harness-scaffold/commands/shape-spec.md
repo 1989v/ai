@@ -3,7 +3,7 @@ name: shape-spec
 description: "Gather requirements and initialize spec folder for a new feature"
 ---
 
-# /hnsf:shape-spec
+# /hns:shape-spec
 
 ## Purpose
 Gather clear, testable requirements before writing a formal spec.md.
@@ -74,5 +74,5 @@ Created:
 - planning/test-quality.md
 - context/open-questions.yml
 
-Next: /hnsf:write-spec to create the specification
+Next: /hns:write-spec to create the specification
 ```
