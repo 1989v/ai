@@ -1,0 +1,71 @@
+{
+  "description": "harness-scaffold enforcement hooks — compile/lint failures block actions",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "pattern": "git commit*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{COMPILE_COMMAND}}",
+            "onFailure": "block",
+            "message": "Compile failed — commit blocked. Fix compilation errors first."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "pattern": "{{SOURCE_GLOB}}",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{LINT_COMMAND}}",
+            "onSuccess": "silent",
+            "onFailure": "feedback",
+            "message": "Lint violations found — please fix before continuing"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "pattern": "**/spec.md",
+        "hooks": [
+          {
+            "type": "reminder",
+            "message": "Spec Checklist:\n  [ ] Overview 30s readable?\n  [ ] Sections independent?\n  [ ] open-questions.yml updated?\n  [ ] Under 400 lines?"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "pattern": "**/tasks.md",
+        "hooks": [
+          {
+            "type": "reminder",
+            "message": "Tasks Checklist:\n  [ ] Dependencies specified?\n  [ ] Verification sub-tasks?\n  [ ] phase + required_skills metadata?\n  [ ] Under 600 lines?"
+          }
+        ]
+      }
+    ],
+    "PrePrompt": [
+      {
+        "matcher": "Always",
+        "hooks": [
+          {
+            "type": "reminder",
+            "condition": "context.usage > 0.75",
+            "message": "Context 75% — Consider strategic compaction at next task completion"
+          },
+          {
+            "type": "reminder",
+            "condition": "context.usage > 0.90",
+            "message": "Context 90% — COMPACTION REQUIRED (run Pre-Compact checklist NOW)"
+          }
+        ]
+      }
+    ]
+  }
+}
