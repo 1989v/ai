@@ -3,7 +3,7 @@ name: init
 description: "Initialize AI harness for any project — auto-scan + interactive setup + doc-gen + hooks + routing"
 ---
 
-# /hns:init
+# /harness-scaffold:init
 
 Use the `hns:session` skill context for this command.
 
@@ -121,6 +121,6 @@ Generated:
 Harness philosophy: docs/philosophy/
 Context routing: docs/index.yml
 
-Next: Use /hns:shape-spec to start your first feature spec.
-      Use /hns:harness-audit to compare with external benchmarks.
+Next: Use /harness-scaffold:shape-spec to start your first feature spec.
+      Use /harness-scaffold:harness-audit to compare with external benchmarks.
 ```

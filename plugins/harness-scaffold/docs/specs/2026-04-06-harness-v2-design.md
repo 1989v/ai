@@ -103,7 +103,7 @@ auto_reference: true   # Level 2 키워드 매칭 허용
 
 | 모드 | 트리거 | 범위 |
 |------|--------|------|
-| 수동 | `/hns:harness-gc` | full scan |
+| 수동 | `/harness-scaffold:harness-gc` | full scan |
 | 이벤트 | PostToolUse hook (커밋 후) | light scan |
 | 스케줄 | `/schedule` 크론 | full scan |
 
@@ -568,6 +568,6 @@ harness-scaffold/
 
 ### 기존 프로젝트 영향
 
-- 기존 `/hns:*` 커맨드 경로 변경 없음 (하위 호환)
+- 기존 `/harness-scaffold:*` 커맨드 경로 변경 없음 (하위 호환)
 - 신규 커맨드 추가만 발생
 - `init` 재실행 시 idempotency check로 기존 파일 보존

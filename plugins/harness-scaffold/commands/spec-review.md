@@ -5,7 +5,7 @@ requires: []
 auto_reference: true
 ---
 
-# /hns:spec-review
+# /harness-scaffold:spec-review
 
 ## Purpose
 Review a spec from 5 perspectives to catch issues before implementation.

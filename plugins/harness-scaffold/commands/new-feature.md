@@ -7,7 +7,7 @@ requires:
 auto_reference: true
 ---
 
-# /hns:new-feature
+# /harness-scaffold:new-feature
 
 ## Purpose
 shape-spec → write-spec → spec-review → create-tasks를 한 번에 실행하는 통합 파이프라인.
@@ -34,7 +34,7 @@ shape-spec → write-spec → spec-review → create-tasks를 한 번에 실행�
 
 ## PHASE 1: Shape Spec
 
-Delegate to `/hns:shape-spec` flow:
+Delegate to `/harness-scaffold:shape-spec` flow:
 1. spec-initializer → create spec folder
 2. spec-shaper → requirements.md
 3. Build test strategy → test-quality.md
@@ -42,7 +42,7 @@ Delegate to `/hns:shape-spec` flow:
 
 ## PHASE 2: Write Spec
 
-Delegate to `/hns:write-spec` flow:
+Delegate to `/harness-scaffold:write-spec` flow:
 1. Load open-questions context
 2. spec-writer → spec.md
 
@@ -52,7 +52,7 @@ Update open-questions.yml with any new unknowns from spec writing.
 
 ## PHASE 3: Spec Review (5-Dimension)
 
-Delegate to `/hns:spec-review` flow:
+Delegate to `/harness-scaffold:spec-review` flow:
 1. Run 5 reviewers sequentially
 2. If BLOCK → return to PHASE 2 with feedback (max 2 iterations)
 3. If REVISE → auto-revise spec.md (max 2 iterations)
@@ -60,7 +60,7 @@ Delegate to `/hns:spec-review` flow:
 
 ## PHASE 4: Create Tasks
 
-Delegate to `/hns:create-tasks` flow:
+Delegate to `/harness-scaffold:create-tasks` flow:
 1. tasks-list-creator → tasks.md
 
 ## PHASE 5: User Approval Gate
@@ -78,4 +78,4 @@ Artifacts:
 Review the spec folder and approve to proceed with implementation.
 ```
 
-Wait for user approval before suggesting `/hns:implement-tasks`.
+Wait for user approval before suggesting `/harness-scaffold:implement-tasks`.

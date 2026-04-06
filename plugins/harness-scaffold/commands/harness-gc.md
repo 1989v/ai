@@ -6,7 +6,7 @@ requires:
 auto_reference: true
 ---
 
-# /hns:harness-gc
+# /harness-scaffold:harness-gc
 
 ## Purpose
 프로젝트의 코드/문서/하네스를 청소한다.

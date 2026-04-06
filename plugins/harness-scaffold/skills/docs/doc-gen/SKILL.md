@@ -128,5 +128,5 @@ CLAUDE.md 또는 docs/가 이미 존재하는 경우:
 ## Integration
 
 - **Called by:** hns:init (Phase 3)
-- **Standalone:** `/hns:doc-gen`으로 직접 호출 가능
+- **Standalone:** `/harness-scaffold:doc-gen`으로 직접 호출 가능
 - **Calls:** 없음 (최종 생성 스킬)

@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hns:doc-html
+# /harness-scaffold:doc-html
 
 ## Purpose
 docs/ 디렉터리를 단일 index.html 문서 사이트로 변환한다.

@@ -3,7 +3,7 @@ name: drift-check
 description: "Detect implementation-spec drift using 4-lens analysis with evidence"
 ---
 
-# /hns:drift-check
+# /harness-scaffold:drift-check
 
 ## Purpose
 Evaluate whether implementation has drifted from the active spec.

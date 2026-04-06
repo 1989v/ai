@@ -8,7 +8,7 @@ description: Use when implementing a spec-driven feature and discovering new edg
 ## Trigger Scope
 - Spec-based implementation discovers new edge case, contract gap
 - open-questions.yml exists for the feature
-- During /hns:implement-tasks, /hns:drift-check context
+- During /harness-scaffold:implement-tasks, /harness-scaffold:drift-check context
 
 ## Context-First: MUST READ
 1. docs/specs/{feature}/spec.md

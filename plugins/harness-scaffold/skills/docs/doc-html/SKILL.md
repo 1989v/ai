@@ -103,6 +103,6 @@ MSA 멀티 모듈 프로젝트의 경우:
 ## Integration
 
 - **Called by:** 없음 (독립 실행)
-- **Standalone:** `/hns:doc-html`로 직접 호출 가능
+- **Standalone:** `/harness-scaffold:doc-html`로 직접 호출 가능
 - **Calls:** 없음 (최종 생성 스킬)
 - **Template:** `templates/site-template.html` 참조
