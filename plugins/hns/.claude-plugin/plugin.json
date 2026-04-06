@@ -21,9 +21,10 @@
     "./commands/doc-gen.md",
     "./commands/validate.md",
     "./commands/doc-html.md",
-    "./commands/harness-gc.md",
-    "./commands/harness-evolve.md",
-    "./commands/harness-diet.md",
-    "./commands/harness-audit.md"
+    "./commands/gc.md",
+    "./commands/evolve.md",
+    "./commands/diet.md",
+    "./commands/audit.md",
+    "./commands/wrapup.md"
   ]
 }
