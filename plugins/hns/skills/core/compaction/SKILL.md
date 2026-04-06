@@ -19,6 +19,11 @@ user-invocable: false
 ## Pre-Compact Checklist
 - [ ] git commit current work
 - [ ] Record decisions in key-decisions.md
+- [ ] Save progress state to `docs/specs/{feature}/context/progress.md`:
+  - Current task group and step
+  - What was completed this session
+  - What to do next (specific, actionable)
+  - Blockers or open issues
 - [ ] Confirm next task clarity
 - [ ] Verify work completion
 
@@ -26,8 +31,9 @@ user-invocable: false
 1. Read CLAUDE.md
 2. Read docs/specs/{feature}/context/key-decisions.md
 3. Read docs/specs/{feature}/context/open-questions.yml
-4. Check tasks.md checkboxes
-5. git log recent commits
+4. Read docs/specs/{feature}/context/progress.md (if exists)
+5. Check tasks.md checkboxes
+6. git log recent commits
 
 ## NEVER
 - Compact during implementation
