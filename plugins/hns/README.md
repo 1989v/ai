@@ -62,7 +62,7 @@ Layer 6: tasks ↔ code
 | Command | Description | When to use |
 |---------|-------------|-------------|
 | `/hns:doc-gen` | CLAUDE.md + docs/ 트리 생성 | 프로젝트 문서 초기화 |
-| `/hns:doc-validate` | docs ↔ 코드 일치 검증 | 문서 정합성 점검 |
+| `/hns:validate` | docs 일관성 + 코드 규칙 준수 검증 (dual-mode) | 문서/코드 정합성 점검 |
 | `/hns:doc-html` | docs/ → HTML 사이트 생성 | 문서를 브라우저로 볼 때 |
 
 ### 하네스 자가관리 (Lifecycle)
