@@ -232,15 +232,15 @@ marketplace 설치 없이 직접 로드. 변경 시 `/reload-plugins`로 핫 리
 
 ---
 
-## 9. Troubleshooting: 자동완성 목록 갱신 안 되는 경우
+## 9. Troubleshooting
 
-### 증상
-plugin.json의 commands[]를 수정했는데 `/reload-plugins` 후에도 이전 커맨드가 계속 보임.
+### 9.1 자동완성 목록 갱신 안 되는 경우
 
-### 원인
-`hns@ai-common`처럼 marketplace에서 설치된 플러그인은 **`~/.claude/plugins/cache/`에 캐시**된다. 로컬 소스(`ai/plugins/hns/`)를 수정해도 캐시가 갱신되지 않으면 이전 버전이 로드됨.
+**증상**: plugin.json의 commands[]를 수정했는데 `/reload-plugins` 후에도 이전 커맨드가 계속 보임.
 
-### 해결 순서
+**원인**: `hns@ai-common`처럼 marketplace에서 설치된 플러그인은 **`~/.claude/plugins/cache/`에 캐시**된다. 로컬 소스(`ai/plugins/hns/`)를 수정해도 캐시가 갱신되지 않으면 이전 버전이 로드됨.
+
+**해결 순서**:
 
 ```bash
 # 1. plugin.json version bump (필수)
@@ -249,21 +249,78 @@ plugin.json의 commands[]를 수정했는데 `/reload-plugins` 후에도 이전 
 # 2. commit + push (marketplace 소스 갱신)
 git add -A && git commit -m "chore: version bump" && git push
 
-# 3. marketplace 소스 pull
+# 3. marketplace 소스 pull (force push 이력이 있으면 reset --hard 필요)
 cd ~/.claude/plugins/marketplaces/ai-common && git pull origin main
+# diverge 에러 발생 시:
+cd ~/.claude/plugins/marketplaces/ai-common && git reset --hard origin/main
 
 # 4. 재설치 (캐시 강제 갱신)
 claude plugins uninstall hns@ai-common
 claude plugins install hns@ai-common
 
-# 5. 새 세션 시작
+# 5. 반드시 새 세션 시작 (현재 세션은 이전 캐시 유지)
 ```
 
-### 주의사항
-- `~/.claude/plugins/cache/` 수동 삭제만으로는 부족 — marketplace 소스도 pull 필요
-- `/reload-plugins`는 현재 세션 캐시만 리로드, marketplace 캐시와 무관
-- `commands/` 디렉토리 안의 모든 .md 파일은 plugin.json 등록 여부와 무관하게 자동 발견됨 — 자동완성에서 숨기려면 `commands/` 밖으로 이동하거나 `skills/{name}/SKILL.md`로 전환
-- `skills/{name}/SKILL.md`에 `user-invocable: false` frontmatter 설정하면 자동완성에 노출되지 않음
+### 9.2 commands/ 자동 발견 문제
+
+**증상**: plugin.json commands[]에서 제거한 커맨드가 자동완성에 계속 보임.
+
+**원인**: Claude Code는 `commands/` 디렉토리 안의 **모든 .md 파일을 재귀 스캔**하여 자동완성에 등록한다. plugin.json 등록 여부와 **무관**.
+
+**시도했으나 실패한 방법들**:
+1. ❌ `commands/_internal/`로 하위 디렉토리 이동 — 재귀 스캔으로 여전히 발견됨
+2. ❌ frontmatter에서 description 제거 — 여전히 파일명 기반으로 발견됨
+3. ❌ `commands/` 밖의 별도 디렉토리(`internal/`)로 이동 — 파일명으로 여전히 발견됨
+
+**해결**: `skills/{name}/SKILL.md` 디렉토리 구조로 전환 + `user-invocable: false` frontmatter 설정.
+
+```
+# Before (자동완성에 노출됨)
+commands/shape-spec.md
+
+# After (자동완성에서 숨겨짐)
+skills/commands/shape-spec/SKILL.md  ← user-invocable: false
+```
+
+**핵심 규칙**:
+- `commands/*.md` = **항상 자동완성 노출** (숨길 수 없음)
+- `skills/{name}/SKILL.md` + `user-invocable: false` = **자동완성 미노출**, 내부 호출 가능
+
+### 9.3 marketplace diverge 에러
+
+**증상**: `git pull origin main` 시 "divergent branches" 에러.
+
+**원인**: `git filter-repo` 등으로 force push한 이력이 있으면 marketplace 로컬 캐시와 remote가 diverge.
+
+**해결**:
+```bash
+cd ~/.claude/plugins/marketplaces/ai-common && git reset --hard origin/main
+```
+
+### 9.4 현재 세션에서 변경사항 미반영
+
+**증상**: 플러그인 재설치 + `/reload-plugins` 후에도 이전 스킬 목록이 보임.
+
+**원인**: Claude Code 세션은 시작 시점에 스킬 목록을 메모리에 올려놓고, 세션 중에는 갱신하지 않음. `/reload-plugins`도 marketplace 캐시를 교체하지 못함.
+
+**해결**: **반드시 새 터미널에서 새 세션 시작**. 현재 세션에서는 확인 불가.
+
+### 9.5 실제 적용 사례: hns v0.3.1 → v0.4.0 (2026-04-06)
+
+20개 커맨드를 8개로 축소하면서 겪은 전체 슈팅 과정:
+
+| 단계 | 시도 | 결과 |
+|------|------|------|
+| 1 | plugin.json에서 commands[] 12개 제거 | ❌ commands/ 디렉토리 자동 스캔으로 여전히 노출 |
+| 2 | `commands/_deprecated/`, `commands/_internal/`로 하위 이동 | ❌ 재귀 스캔으로 여전히 발견 |
+| 3 | 플러그인 루트 밖(`hns-internal/`)으로 이동 | ❌ 여전히 발견 + feat 내부 호출 체인 끊김 우려 |
+| 4 | frontmatter(description) 제거 | ❌ 파일명 기반으로 여전히 발견 |
+| 5 | `skills/commands/{name}/SKILL.md`로 전환 + `user-invocable: false` | ✅ 자동완성에서 숨겨짐 |
+| 6 | 새 세션에서도 이전 목록 보임 | ❌ marketplace 캐시(v0.3.1)가 갱신 안 됨 |
+| 7 | `~/.claude/plugins/cache/` 수동 삭제 | ❌ marketplace 소스 자체가 오래됨 |
+| 8 | version bump(0.4.0) + marketplace git reset --hard + uninstall/install | ✅ 최종 해결 |
+
+**핵심 교훈**: marketplace 설치 플러그인은 로컬 소스 수정이 **자동 반영되지 않는다**. 반드시 version bump → push → marketplace pull → uninstall/install 순서를 거쳐야 한다.
 
 ---
 
