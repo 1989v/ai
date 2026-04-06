@@ -7,7 +7,7 @@
   "keywords": ["harness", "sdd", "agent-os", "scaffolding", "spec-driven", "ai-harness", "gc", "enforcement", "evolution"],
   "commands": [
     "./commands/init.md",
-    "./commands/new-feature.md",
+    "./commands/feat.md",
     "./commands/shape-spec.md",
     "./commands/write-spec.md",
     "./commands/spec-review.md",
