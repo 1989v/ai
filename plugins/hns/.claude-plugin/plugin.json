@@ -19,7 +19,7 @@
     "./commands/verify.md",
     "./commands/verify-crosscheck.md",
     "./commands/doc-gen.md",
-    "./commands/doc-validate.md",
+    "./commands/validate.md",
     "./commands/doc-html.md",
     "./commands/harness-gc.md",
     "./commands/harness-evolve.md",
