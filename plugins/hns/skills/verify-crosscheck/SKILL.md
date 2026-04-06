@@ -1,9 +1,6 @@
 ---
 name: verify-crosscheck
 description: "6-layer cross-consistency verification: docs ↔ code ↔ specs ↔ tasks"
-requires:
-  - agent-os/standards/global/conventions.md
-auto_reference: true
 ---
 
 # /hns:verify-crosscheck

@@ -1,6 +1,7 @@
 ---
 name: review-usecase
 description: Use when reviewing specs for usecase coverage - checks actor-goal pairs, scenario flows, AC traceability
+user-invocable: false
 ---
 
 # Usecase Review

@@ -1,10 +1,6 @@
 ---
 name: new-feature
 description: "End-to-end feature development pipeline: shape → write → review → create-tasks"
-requires:
-  - agent-os/product/mission.md
-  - agent-os/product/tech-stack.md
-auto_reference: true
 ---
 
 # /hns:new-feature

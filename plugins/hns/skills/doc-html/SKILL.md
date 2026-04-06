@@ -1,9 +1,20 @@
 ---
 name: doc-html
-description: Use when generating a navigable HTML documentation site from docs/ markdown files - single index.html with sidebar navigation, no external dependencies
+description: "Generate navigable HTML documentation site from docs/"
 ---
 
-# Documentation Site Generation
+# /hns:doc-html
+
+## Purpose
+docs/ 디렉터리를 단일 index.html 문서 사이트로 변환한다.
+
+## Required Inputs
+- docs/ directory must exist
+
+## Expected Outputs
+- docs-site/index.html
+
+---
 
 ## Overview
 

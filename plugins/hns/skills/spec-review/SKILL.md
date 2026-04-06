@@ -1,8 +1,6 @@
 ---
 name: spec-review
 description: "Multi-perspective spec review: architecture, implementation, usecase, domain, test-strategy"
-requires: []
-auto_reference: true
 ---
 
 # /hns:spec-review

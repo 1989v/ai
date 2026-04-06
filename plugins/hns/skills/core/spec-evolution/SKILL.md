@@ -1,6 +1,7 @@
 ---
 name: spec-evolution
 description: Use when implementing a spec-driven feature and discovering new edge cases, contract gaps, or requirement changes
+user-invocable: false
 ---
 
 # Spec Evolution

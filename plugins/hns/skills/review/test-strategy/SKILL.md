@@ -1,6 +1,7 @@
 ---
 name: review-test-strategy
 description: Use when reviewing specs for test strategy adequacy - checks AC-to-test derivation, test layer assignment, mock boundaries
+user-invocable: false
 ---
 
 # Test Strategy Review
