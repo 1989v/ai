@@ -64,7 +64,7 @@ Delegate to `hns:doc-gen` skill:
 1. Select CLAUDE.md template based on language/framework
 2. Generate CLAUDE.md with scan results + user answers
 3. Generate docs/ tree (index.md, architecture/, adr/, plans/)
-4. Run `hns:doc-validate` for validation
+4. Run `hns:validate --docs` for validation
 
 ## PHASE 4: Hook Tier Selection
 
