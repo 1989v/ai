@@ -56,9 +56,10 @@ All rules are routed via `agent-os/standards/`.
 버그 수정, 리팩토링 등 간단한 작업은 파이프라인 없이 직접 수행 가능.
 
 하네스 Lifecycle 커맨드:
-- 같은 실수 반복 시 → `/hns:harness-evolve`로 규칙 추가
-- 주기적 청소 → `/hns:harness-gc`
-- 하네스 복잡도 점검 → `/hns:harness-diet`
+- 같은 실수 반복 시 → `/hns:evolve`로 규칙 추가
+- 주기적 청소 → `/hns:gc`
+- 하네스 복잡도 점검 → `/hns:diet`
+- 세션 회고 → `/hns:wrapup`
 
 ---
 
@@ -66,7 +67,7 @@ All rules are routed via `agent-os/standards/`.
 
 | Command | Purpose |
 |---------|---------|
-| `/hns:new-feature` | 신규 기능 파이프라인 (shape→write→review→tasks) |
+| `/hns:feat` | 신규 기능 파이프라인 (shape→write→review→tasks→implement→validate) |
 | `/hns:shape-spec` | 요구사항 수집 및 스펙 폴더 초기화 |
 | `/hns:write-spec` | 스펙 문서 작성 |
 | `/hns:spec-review` | 스펙 리뷰 (architecture/implementation/usecase) |
@@ -76,10 +77,13 @@ All rules are routed via `agent-os/standards/`.
 | `/hns:interview-capture` | 구현 전 게이트 인터뷰 |
 | `/hns:drift-check` | 구현-스펙 불일치 감지 |
 | `/hns:verify` | 검증 (표준→린트→빌드→테스트) |
-| `/hns:harness-gc` | 가비지 컬렉션 (dead code, doc drift 청소) |
-| `/hns:harness-evolve` | 실패 패턴 → 규칙 인코딩 |
-| `/hns:harness-diet` | 불필요한 규칙 제거 (Bitter Lesson) |
-| `/hns:harness-audit` | 외부 벤치마크 비교 |
+| `/hns:validate` | docs 일관성 + 코드 규칙 준수 검증 |
+| `/hns:doc-gen` | 문서 생성 (기본: 빈 곳만 채움, --full: 전체) |
+| `/hns:gc` | 가비지 컬렉션 (dead code, doc drift 청소) |
+| `/hns:evolve` | 실패 패턴 → 규칙 인코딩 |
+| `/hns:diet` | 불필요한 규칙 제거 (Bitter Lesson) |
+| `/hns:audit` | 외부 벤치마크 비교 |
+| `/hns:wrapup` | 세션 회고 (evidence 기반, 리스크 분류) |
 
 ---
 
