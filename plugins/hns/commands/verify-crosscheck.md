@@ -1,5 +1,5 @@
 ---
-description: "[hns] 6-layer cross-consistency verification: docs ↔ code ↔ specs ↔ tasks"
+description: "6-layer cross-consistency verification: docs ↔ code ↔ specs ↔ tasks"
 ---
 
 # /hns:verify-crosscheck

@@ -1,5 +1,5 @@
 ---
-description: "[hns] Pre-implementation gate interview to surface missing assumptions"
+description: "Pre-implementation gate interview to surface missing assumptions"
 ---
 
 # /hns:interview-capture
