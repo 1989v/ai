@@ -31,7 +31,7 @@ model: inherit
 hns:doc-gen 스킬의 지침에 따라 CLAUDE.md + docs/ 트리를 생성.
 
 ### 4. 검증
-hns:doc-validate 스킬의 지침에 따라 검증.
+hns:validate --docs 의 지침에 따라 검증.
 
 ## MSA 멀티 모듈 처리
 settings.gradle.kts에 서비스 모듈이 여러 개 포함된 경우:
