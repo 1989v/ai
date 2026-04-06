@@ -1,6 +1,3 @@
----
-description: "Generate navigable HTML documentation site from docs/"
----
 
 # /hns:doc-html
 
