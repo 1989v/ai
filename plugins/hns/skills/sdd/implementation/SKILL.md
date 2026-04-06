@@ -29,7 +29,9 @@ BUILD → TEST → ANALYZE → FIX (max 3 iterations)
 After each group completion:
 1. Run verification command from tasks.md
 2. Record evidence (command + output) in status.md
-3. Mark task group checkbox only on PASS
+3. **git commit with message**: `feat({feature}): complete task group {N} — {group name}`
+4. Update `context/progress.md` with completed group and next step
+5. Mark task group checkbox only on PASS
 
 ## Spec-Evolution Monitoring
 Active during ALL implementation:
