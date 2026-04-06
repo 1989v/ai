@@ -1,6 +1,6 @@
 ---
 name: write-spec
-description: "Create comprehensive specification from shaped requirements"
+description: "[hns] Create comprehensive specification from shaped requirements"
 ---
 
 # /hns:write-spec

@@ -1,6 +1,6 @@
 ---
 name: verify
-description: "Run verification suite: standards → lint → build → test with evidence recording"
+description: "[hns] Run verification suite: standards → lint → build → test with evidence recording"
 ---
 
 # /hns:verify

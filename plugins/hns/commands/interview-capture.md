@@ -1,6 +1,6 @@
 ---
 name: interview-capture
-description: "Pre-implementation gate interview to surface missing assumptions"
+description: "[hns] Pre-implementation gate interview to surface missing assumptions"
 ---
 
 # /hns:interview-capture

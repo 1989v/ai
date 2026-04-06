@@ -1,6 +1,6 @@
 ---
 name: harness-evolve
-description: "Encode a failure pattern as a new harness rule to prevent recurrence"
+description: "[hns] Encode a failure pattern as a new harness rule to prevent recurrence"
 ---
 
 # /hns:harness-evolve

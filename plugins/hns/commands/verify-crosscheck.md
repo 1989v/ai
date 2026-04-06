@@ -1,6 +1,6 @@
 ---
 name: verify-crosscheck
-description: "6-layer cross-consistency verification: docs ↔ code ↔ specs ↔ tasks"
+description: "[hns] 6-layer cross-consistency verification: docs ↔ code ↔ specs ↔ tasks"
 ---
 
 # /hns:verify-crosscheck

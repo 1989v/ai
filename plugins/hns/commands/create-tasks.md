@@ -1,6 +1,6 @@
 ---
 name: create-tasks
-description: "Break down a spec into actionable task groups with dependencies"
+description: "[hns] Break down a spec into actionable task groups with dependencies"
 ---
 
 # /hns:create-tasks

@@ -1,6 +1,6 @@
 ---
 name: init
-description: "Initialize AI harness for any project — auto-scan + interactive setup + doc-gen + hooks + routing"
+description: "[hns] Initialize AI harness for any project — auto-scan + interactive setup + doc-gen + hooks + routing"
 ---
 
 # /hns:init

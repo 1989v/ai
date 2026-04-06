@@ -1,6 +1,6 @@
 ---
 name: drift-check
-description: "Detect implementation-spec drift using 4-lens analysis with evidence"
+description: "[hns] Detect implementation-spec drift using 4-lens analysis with evidence"
 ---
 
 # /hns:drift-check
