@@ -20,7 +20,7 @@ AI 하네스 엔지니어링 완전체 플러그인.
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hns:new-feature` | shape→write→review→tasks 통합 | 새 기능 시작 시 (권장) |
+| `/hns:feat` | shape→write→review→tasks 통합 | 새 기능 시작 시 (권장) |
 | `/hns:shape-spec` | 요구사항 수집 + 스펙 폴더 초기화 | 파이프라인 없이 단계별로 할 때 |
 | `/hns:write-spec` | spec.md 작성 | shape 후 스펙 문서화 |
 | `/hns:spec-review` | 5차원 스펙 리뷰 | 스펙 품질 검증 |
@@ -31,7 +31,7 @@ AI 하네스 엔지니어링 완전체 플러그인.
 
 **일반적인 흐름:**
 ```
-/hns:new-feature  →  /hns:implement-tasks  →  /hns:verify
+/hns:feat  →  /hns:implement-tasks  →  /hns:verify
 ```
 
 또는 단계별:
@@ -204,7 +204,7 @@ claude plugins install hns@ai-common
 # .claude/settings.json → "enabledPlugins": { "hns@ai-common": true }
 ```
 
-플러그인 설치 후 `/hns:init`으로 프로젝트 하네스를 초기화하거나, 이미 하네스가 있는 프로젝트에서 바로 `/hns:new-feature`으로 기능 개발을 시작한다.
+플러그인 설치 후 `/hns:init`으로 프로젝트 하네스를 초기화하거나, 이미 하네스가 있는 프로젝트에서 바로 `/hns:feat`으로 기능 개발을 시작한다.
 
 ---
 
