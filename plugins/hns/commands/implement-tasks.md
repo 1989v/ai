@@ -107,3 +107,14 @@ Overall: PASS / NEEDS_ATTENTION
 
 - **PASS**: 모든 검증 통과
 - **NEEDS_ATTENTION**: WARN/FAIL 항목에 대해 수정 옵션 제안
+
+## PHASE 5: Session Wrapup (Optional)
+
+> 기본 ON. `--no-wrapup` 옵션으로 스킵 가능.
+
+PHASE 4까지 완료 후 `/hns:wrapup`을 자동 호출하여 세션 회고 + 셀프힐링을 수행:
+
+1. 세션 데이터 수집 (progress.md, 커밋, 검증 리포트)
+2. 실패 패턴 분류 (코딩실수/아키텍처위반/스펙부족/도구오용/프롬프트품질)
+3. LOW 리스크 → evolve 자동 호출 (사용자 승인)
+4. 회고 문서 생성 (`docs/retrospectives/{date}-session.md`)
