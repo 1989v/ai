@@ -104,7 +104,7 @@ Layer 1: Core            — agent-behavior, session, compaction, spec-evolution
 Layer 2: SDD             — spec-writing, task-planning, implementation
 Layer 3: Review          — 5-dimension review + skillset procedures
 Layer 4: Docs            — doc-gen, validate, doc-html
-Layer 5: Lifecycle       — GC, evolve, diet, audit
+Layer 5: Lifecycle       — gc, evolve, diet, audit, wrapup
 Layer 6: Project-Adaptive — 프로젝트별 도메인 스킬 (init 시 생성)
 ```
 
