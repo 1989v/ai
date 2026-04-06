@@ -61,7 +61,7 @@ Layer 6: tasks ↔ code
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hns:doc-gen` | CLAUDE.md + docs/ 트리 생성 | 프로젝트 문서 초기화 |
+| `/hns:doc-gen` | CLAUDE.md + docs/ 트리 생성 (기본: 빈 곳만 채움, --full: 전체 재생성) | 프로젝트 문서 초기화/갱신 |
 | `/hns:validate` | docs 일관성 + 코드 규칙 준수 검증 (dual-mode) | 문서/코드 정합성 점검 |
 | `/hns:doc-html` | docs/ → HTML 사이트 생성 | 문서를 브라우저로 볼 때 |
 
@@ -69,14 +69,15 @@ Layer 6: tasks ↔ code
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hns:harness-gc` | 가비지 컬렉션 | dead code, doc drift, stale rules 청소 |
-| `/hns:harness-evolve` | 실패 패턴 → 규칙 인코딩 | 같은 실수 반복 방지 |
-| `/hns:harness-diet` | 불필요한 규칙 제거 | 하네스 복잡도 점검 (Bitter Lesson) |
-| `/hns:harness-audit` | 외부 벤치마크 비교 | 다른 레포/포스트와 비교 개선 |
+| `/hns:gc` | 가비지 컬렉션 | dead code, doc drift, stale rules 청소 |
+| `/hns:evolve` | 실패 패턴 → 규칙 인코딩 | 같은 실수 반복 방지 |
+| `/hns:diet` | 불필요한 규칙 제거 | 하네스 복잡도 점검 (Bitter Lesson) |
+| `/hns:audit` | 외부 벤치마크 비교 | 다른 레포/포스트와 비교 개선 |
+| `/hns:wrapup` | 세션 회고 (자동) | 세션 종료 시 evidence 기반 회고 + 리스크 분류 |
 
 **Lifecycle 순환 사이클:**
 ```
-harness-audit (외부 비교) → harness-evolve (규칙 추가) → harness-diet (규칙 제거) → ...
+audit (외부 비교) → evolve (규칙 추가) → diet (규칙 제거) → wrapup (회고) → ...
 ```
 
 ### 5차원 Spec Review
