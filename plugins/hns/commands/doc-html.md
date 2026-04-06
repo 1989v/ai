@@ -1,5 +1,5 @@
 ---
-description: "[hns] Generate navigable HTML documentation site from docs/"
+description: "Generate navigable HTML documentation site from docs/"
 ---
 
 # /hns:doc-html

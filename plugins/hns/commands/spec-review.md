@@ -1,5 +1,5 @@
 ---
-description: "[hns] Multi-perspective spec review: architecture, implementation, usecase, domain, test-strategy"
+description: "Multi-perspective spec review: architecture, implementation, usecase, domain, test-strategy"
 ---
 
 # /hns:spec-review

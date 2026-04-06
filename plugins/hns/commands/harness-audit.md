@@ -1,5 +1,5 @@
 ---
-description: "[hns] Compare current harness against external benchmarks — repos, posts, best practices"
+description: "Compare current harness against external benchmarks — repos, posts, best practices"
 ---
 
 # /hns:harness-audit

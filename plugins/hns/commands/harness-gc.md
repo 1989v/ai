@@ -1,5 +1,5 @@
 ---
-description: "[hns] Run garbage collection — detect dead code, doc drift, rule violations, stale harness"
+description: "Run garbage collection — detect dead code, doc drift, rule violations, stale harness"
 ---
 
 # /hns:harness-gc
