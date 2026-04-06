@@ -72,3 +72,38 @@ Delegate to `verifier` agent:
 - Verify all tasks marked complete
 - Run full test suite
 - Create `verifications/final-verification.md`
+
+## PHASE 4: Post-Implementation Validation (Optional)
+
+> 기본 ON. `--no-validate` 옵션 또는 `/hns:feat --no-validate`로 스킵 가능.
+
+구현 완료 후 3단계 검증을 자동 수행:
+
+### Step 1: Code Validation (`hns:validate --code`)
+- 아키텍처 원칙 준수 (domain에 Spring 의존성 없음 등)
+- 패키지 네이밍 컨벤션
+- 테스트 규칙 준수
+
+### Step 2: Drift Check (`hns:drift-check`)
+- 구현 코드가 spec.md와 일치하는지
+- 스펙에 없는 기능 추가 또는 누락 여부
+
+### Step 3: Docs Sync (`hns:validate --docs`)
+- 새 모듈/인프라가 CLAUDE.md, README.md, docs/에 반영되었는지
+
+### Validation Report
+
+```
+## Post-Implementation Validation — {date}
+
+| Step | Result | Details |
+|------|--------|---------|
+| Code Validation | PASS/WARN/FAIL | [summary] |
+| Drift Check | PASS/WARN/FAIL | [summary] |
+| Docs Sync | PASS/WARN/FAIL | [summary] |
+
+Overall: PASS / NEEDS_ATTENTION
+```
+
+- **PASS**: 모든 검증 통과
+- **NEEDS_ATTENTION**: WARN/FAIL 항목에 대해 수정 옵션 제안
