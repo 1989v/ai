@@ -1,6 +1,6 @@
 ---
 name: implement-tasks
-description: "Execute task groups with verification gates and optional worktree isolation"
+description: "[hns] Execute task groups with verification gates and optional worktree isolation"
 ---
 
 # /hns:implement-tasks

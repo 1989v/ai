@@ -1,6 +1,6 @@
 ---
 name: new-feature
-description: "End-to-end feature development pipeline: shape → write → review → create-tasks"
+description: "[hns] End-to-end feature development pipeline: shape → write → review → create-tasks"
 ---
 
 # /hns:new-feature

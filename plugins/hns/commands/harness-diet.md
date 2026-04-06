@@ -1,6 +1,6 @@
 ---
 name: harness-diet
-description: "Review harness complexity and remove unnecessary rules — Bitter Lesson applied"
+description: "[hns] Review harness complexity and remove unnecessary rules — Bitter Lesson applied"
 ---
 
 # /hns:harness-diet

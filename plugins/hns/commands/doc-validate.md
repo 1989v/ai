@@ -1,6 +1,6 @@
 ---
 name: doc-validate
-description: "Validate CLAUDE.md and docs/ against actual codebase"
+description: "[hns] Validate CLAUDE.md and docs/ against actual codebase"
 ---
 
 # /hns:doc-validate
