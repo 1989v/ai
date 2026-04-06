@@ -57,7 +57,34 @@ Changed file keywords → agent-os/standards/ match → report related docs
 ```
 Location: `docs/specs/{feature}/context/key-decisions.md`
 
-## 7. Subagent Usage Guidelines
+## 7. External Skill Isolation (HNS Pipeline Guard)
+
+HNS 커맨드(`/hns:*`) 실행 중에는 외부 플러그인 스킬과의 충돌을 방지한다.
+
+**HNS 파이프라인 활성 시**:
+- HNS 자체 스킬만 사용 (agent-behavior, session, compaction, implementation 등)
+- 외부 스킬(superpowers 등)은 자동 invoke하지 않음
+- 기능이 겹치는 경우 HNS 스킬이 우선
+
+**외부 스킬 사용이 필요한 경우**:
+- 사용자에게 먼저 질의: "HNS 파이프라인 중입니다. {skill}을 추가로 사용할까요?"
+- 사용자 승인 후에만 활용
+- HNS와 충돌하지 않는 보조 기능에 한정 (예: debugging은 Ralph Loop 실패 후 보조로 가능)
+
+**HNS 비활성 시 (일반 작업)**:
+- 외부 스킬 자유롭게 사용 가능
+- HNS 커맨드 호출 시점부터 격리 적용
+
+| 겹치는 영역 | HNS 담당 | 외부 스킬 (사용자 승인 시만) |
+|------------|----------|-------------------------|
+| 브레인스토밍 | shape-spec | superpowers:brainstorming |
+| 플랜 작성 | write-spec + create-tasks | superpowers:writing-plans |
+| 구현 실행 | implement-tasks | superpowers:executing-plans |
+| 검증 | verify + verify-crosscheck | superpowers:verification-before-completion |
+| 코드 리뷰 | spec-review | superpowers:requesting-code-review |
+| 워크트리 | implement-tasks worktree | superpowers:using-git-worktrees |
+
+## 8. Subagent Usage Guidelines
 Use subagents when tasks can run in parallel, require isolated context, or involve independent workstreams.
 Work directly (no subagent) when:
 - Single file read/edit
