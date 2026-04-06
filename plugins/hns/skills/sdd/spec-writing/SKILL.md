@@ -1,6 +1,7 @@
 ---
 name: spec-writing
 description: Use when writing spec.md documents - defines structure, quality contracts, and documentation-only constraints
+user-invocable: false
 ---
 
 # Spec Writing Rules

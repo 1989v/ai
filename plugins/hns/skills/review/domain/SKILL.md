@@ -1,6 +1,7 @@
 ---
 name: review-domain
 description: Use when reviewing specs for domain model integrity - checks bounded contexts, ubiquitous language, aggregate invariants
+user-invocable: false
 ---
 
 # Domain Review

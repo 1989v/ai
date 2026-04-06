@@ -1,6 +1,7 @@
 ---
 name: review-implementation
 description: Use when reviewing specs for implementation feasibility - checks code conflicts, complexity, NFR anti-patterns
+user-invocable: false
 ---
 
 # Implementation Review

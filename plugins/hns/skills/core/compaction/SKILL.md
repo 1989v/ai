@@ -1,6 +1,7 @@
 ---
 name: compaction
 description: Use when context usage exceeds 75%, completing a task group, or transitioning between phases
+user-invocable: false
 ---
 
 # Strategic Compaction

@@ -1,6 +1,7 @@
 ---
 name: agent-behavior
 description: Use when starting any coding task, classifying risk, setting up verification loops, or performing post-implementation review
+user-invocable: false
 ---
 
 # Agent Behavior Protocols

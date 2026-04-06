@@ -1,6 +1,7 @@
 ---
 name: task-planning
 description: Use when breaking down specs into task groups - defines grouping strategy, dependencies, and test limits
+user-invocable: false
 ---
 
 # Task Planning Rules

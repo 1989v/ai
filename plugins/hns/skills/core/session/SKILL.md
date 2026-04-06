@@ -1,6 +1,7 @@
 ---
 name: session
 description: Use when starting a new session or recovering from compaction to load project context and key decisions
+user-invocable: false
 ---
 
 # Session Management

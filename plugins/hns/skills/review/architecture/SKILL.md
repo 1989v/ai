@@ -1,6 +1,7 @@
 ---
 name: review-architecture
 description: Use when reviewing specs for architecture compliance - checks layer separation, dependency direction, module boundaries
+user-invocable: false
 ---
 
 # Architecture Review

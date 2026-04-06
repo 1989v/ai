@@ -1,9 +1,22 @@
 ---
-name: diet
-description: Use when reviewing harness complexity to remove unnecessary rules — models improve, harness should simplify
+name: harness-diet
+description: "Review harness complexity and remove unnecessary rules — Bitter Lesson applied"
 ---
 
-# Harness Diet
+# /hns:harness-diet
+
+## Purpose
+하네스 복잡도를 점검하고 불필요한 규칙을 제거한다.
+
+## Required Inputs
+- Access to harness files (CLAUDE.md, skills/, agents/, hooks/)
+
+## Expected Outputs
+- Diet proposal (candidate list)
+- Updated harness (after user approval)
+- Entry in docs/changelog/harness-changelog.md
+
+---
 
 ## Philosophy
 See `@references/diet-criteria.md` and `docs/philosophy/bitter-lesson.md`.

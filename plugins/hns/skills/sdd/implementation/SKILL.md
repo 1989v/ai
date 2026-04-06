@@ -1,6 +1,7 @@
 ---
 name: implementation
 description: Use when implementing task groups from tasks.md - defines source-of-truth gates, Ralph Loop, and verification
+user-invocable: false
 ---
 
 # Implementation Rules

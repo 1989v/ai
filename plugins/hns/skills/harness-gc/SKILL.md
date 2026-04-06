@@ -1,9 +1,20 @@
 ---
-name: gc
-description: Use when performing garbage collection on the project — detects dead code, doc drift, rule violations, stale harness rules
+name: harness-gc
+description: "Run garbage collection — detect dead code, doc drift, rule violations, stale harness"
 ---
 
-# Garbage Collection
+# /hns:harness-gc
+
+## Purpose
+프로젝트의 코드/문서/하네스를 청소한다.
+
+## Required Inputs
+- Access to project root
+
+## Expected Outputs
+- harness-gc-report.md
+
+---
 
 ## Protocol
 Follow `@references/gc-protocol.md` for scan modes and report format.
@@ -18,6 +29,12 @@ Follow `@references/gc-protocol.md` for scan modes and report format.
 - Dead imports → auto-remove (사용자 확인 불필요)
 - Doc path typos → auto-correct
 - 나머지 → 사용자 확인 필요
+
+## Execution
+
+1. Perform full scan per `@references/gc-protocol.md`
+2. Report generated at project root
+3. User reviews and approves auto-fixes
 
 ## Output
 `harness-gc-report.md` in project root (overwritten each run)

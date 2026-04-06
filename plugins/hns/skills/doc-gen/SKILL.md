@@ -1,9 +1,21 @@
 ---
 name: doc-gen
-description: Use when generating CLAUDE.md and docs/ tree for a project - selects templates based on language/framework, writes custom requirements directly into docs
+description: "Generate CLAUDE.md and docs/ tree for the current project"
 ---
 
-# Document Generation
+# /hns:doc-gen
+
+## Purpose
+프로젝트에 CLAUDE.md와 docs/ 트리를 생성한다.
+
+## Required Inputs
+- Access to project root directory
+
+## Expected Outputs
+- CLAUDE.md
+- docs/ directory tree
+
+---
 
 ## Overview
 
