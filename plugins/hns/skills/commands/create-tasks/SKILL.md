@@ -1,3 +1,6 @@
+---
+user-invocable: false
+---
 
 # /hns:create-tasks
 
