@@ -161,7 +161,7 @@ CLAUDE.md에 명시된 `{domain}.{entity}.{event}` 형식:
 
 ## Integration
 
-- **Called by:** hns:init (Phase 3), hns:harness-gc
+- **Called by:** hns:init (Phase 3), hns:gc
 - **Standalone:** `/hns:validate`, `/hns:validate --docs`, `/hns:validate --code`
 - **Calls:** 없음 (검증 전용)
 - **Supersedes:** hns:doc-validate (이 커맨드로 통합)
