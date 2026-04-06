@@ -29,6 +29,20 @@ If yes → apply `@references/worktree-protocol.md`
 3. IF any `pre-impl` + `open` → **BLOCK**: "Pre-implementation questions must be resolved first"
 4. List unresolved questions and ask user to resolve
 
+## PHASE 0.8: Session Type Detection
+
+Determine current session type:
+
+**First Window** (no prior progress):
+- Create `context/progress.md` with initial state
+- Set up verification scripts if needed (e.g., `./verify.sh`)
+- Focus on foundation task groups first
+
+**Continuation Window** (progress.md exists):
+- Read `context/progress.md` → resume from recorded next step
+- Run quick smoke test on prior work before continuing
+- Do NOT re-implement completed groups
+
 ## PHASE 1: Select Scope
 
 Present task groups from tasks.md. Ask: "Which groups to implement? (all / specific numbers)"
