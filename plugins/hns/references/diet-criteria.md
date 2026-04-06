@@ -33,7 +33,7 @@
 ## 공통 프로세스
 1. 후보 목록 생성 → 사용자 승인 → 실행
 2. changelog에 기록: `[date] [diet] [action] [reason]`
-3. 문제 발생 시: `harness-evolve`로 즉시 복원
+3. 문제 발생 시: `evolve`로 즉시 복원
 
 ## 절대 제거 불가 항목
 - CLAUDE.md 자체 (압축은 가능)
