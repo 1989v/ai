@@ -154,7 +154,7 @@ harness-scaffold/
 │   ├── core/         (4)           agent-behavior, compaction, session, spec-evolution
 │   ├── sdd/          (3)           spec-writing, task-planning, implementation
 │   ├── review/       (5 + 14)      5 SKILL.md + 14 skillset procedures
-│   ├── docs/         (3)           doc-gen, doc-validate, doc-html
+│   ├── docs/         (3)           doc-gen, validate, doc-html
 │   └── lifecycle/    (4)           gc, evolve, diet, audit
 ├── commands/         (19)
 ├── agents/           (10)
