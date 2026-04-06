@@ -1,5 +1,4 @@
 ---
-name: harness-gc
 description: "[hns] Run garbage collection — detect dead code, doc drift, rule violations, stale harness"
 ---
 

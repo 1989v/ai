@@ -1,5 +1,4 @@
 ---
-name: spec-review
 description: "[hns] Multi-perspective spec review: architecture, implementation, usecase, domain, test-strategy"
 ---
 

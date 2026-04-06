@@ -1,5 +1,4 @@
 ---
-name: verify
 description: "[hns] Run verification suite: standards → lint → build → test with evidence recording"
 ---
 

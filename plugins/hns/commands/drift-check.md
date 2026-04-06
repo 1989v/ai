@@ -1,5 +1,4 @@
 ---
-name: drift-check
 description: "[hns] Detect implementation-spec drift using 4-lens analysis with evidence"
 ---
 

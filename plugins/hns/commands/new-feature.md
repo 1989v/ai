@@ -1,5 +1,4 @@
 ---
-name: new-feature
 description: "[hns] End-to-end feature development pipeline: shape → write → review → create-tasks"
 ---
 

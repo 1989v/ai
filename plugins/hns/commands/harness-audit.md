@@ -1,5 +1,4 @@
 ---
-name: harness-audit
 description: "[hns] Compare current harness against external benchmarks — repos, posts, best practices"
 ---
 
