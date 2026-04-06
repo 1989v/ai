@@ -64,7 +64,7 @@ description: "Initialize harness"
 }
 ```
 
-자동 발견도 되지만, 명시적 등록이 확실하다.
+**주의**: `commands/` 디렉토리 안의 .md 파일은 `plugin.json` 등록 여부와 무관하게 **자동 발견되어 자동완성에 노출**된다. 자동완성에서 숨기려면 `commands/` 밖으로 이동해야 한다 (예: `internal/`, `deprecated/`).
 
 ### description은 간결하고 검색 가능하게
 
