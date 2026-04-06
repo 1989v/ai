@@ -38,7 +38,7 @@ Active during ALL implementation:
 
 ## Final Verification
 After all groups complete:
-- Run `/hns:verify` or equivalent
+- Run `/harness-scaffold:verify` or equivalent
 - Create `verifications/final-verification.md`
 - Update status.md with comprehensive evidence
 

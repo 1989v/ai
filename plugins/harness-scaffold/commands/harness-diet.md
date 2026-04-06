@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hns:harness-diet
+# /harness-scaffold:harness-diet
 
 ## Purpose
 하네스 복잡도를 점검하고 불필요한 규칙을 제거한다.

@@ -1,5 +1,5 @@
 # Context Routing Map Template
-# Replace {{PLACEHOLDER}} values during /hns:init
+# Replace {{PLACEHOLDER}} values during /harness-scaffold:init
 schema_version: 1
 
 entries:

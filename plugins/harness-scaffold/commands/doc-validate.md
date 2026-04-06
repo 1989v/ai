@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hns:doc-validate
+# /harness-scaffold:doc-validate
 
 ## Purpose
 CLAUDE.md와 docs/가 실제 코드 구조와 일치하는지 검증한다.

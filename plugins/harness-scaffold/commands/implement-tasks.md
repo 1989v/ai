@@ -3,7 +3,7 @@ name: implement-tasks
 description: "Execute task groups with verification gates and optional worktree isolation"
 ---
 
-# /hns:implement-tasks
+# /harness-scaffold:implement-tasks
 
 ## Purpose
 Execute task groups from tasks.md with verification gates.

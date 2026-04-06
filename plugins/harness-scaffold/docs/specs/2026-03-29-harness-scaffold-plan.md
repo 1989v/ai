@@ -4,7 +4,7 @@
 
 **Goal:** mrt3-order의 검증된 AI 하네스 엔지니어링을 범용 Claude Code 플러그인으로 구현
 
-**Architecture:** 단일 플러그인 내 4-Layer 모듈 구조 (Core/SDD/Review/Project-Adaptive). 각 레이어는 skills/, commands/, agents/로 구성. 프로젝트 스캔 → 대화형 셋업 → 산출물 생성의 `/hns:init` 진입점.
+**Architecture:** 단일 플러그인 내 4-Layer 모듈 구조 (Core/SDD/Review/Project-Adaptive). 각 레이어는 skills/, commands/, agents/로 구성. 프로젝트 스캔 → 대화형 셋업 → 산출물 생성의 `/harness-scaffold:init` 진입점.
 
 **Tech Stack:** Markdown (commands, skills, agents), JSON (plugin.json, hooks), Bash (parallel-work.sh), YAML (templates)
 
@@ -137,7 +137,7 @@ git commit -m "feat(hnsf): add plugin skeleton and marketplace entry"
 **Dependencies:** Task Group 1
 **Phase:** foundation
 
-All templates use `{{PLACEHOLDER}}` syntax for `/hns:init` to replace at generation time.
+All templates use `{{PLACEHOLDER}}` syntax for `/harness-scaffold:init` to replace at generation time.
 
 - [ ] **Step 1: Create CLAUDE.md template**
 
@@ -199,15 +199,15 @@ All rules are routed via `agent-os/standards/`.
 
 | Command | Purpose |
 |---------|---------|
-| `/hns:shape-spec` | 요구사항 수집 및 스펙 폴더 초기화 |
-| `/hns:write-spec` | 스펙 문서 작성 |
-| `/hns:create-tasks` | 태스크 분해 |
-| `/hns:implement-tasks` | 구현 (워크트리 옵션) |
-| `/hns:orchestrate-tasks` | 순차/병렬 오케스트레이션 |
-| `/hns:drift-check` | 구현-스펙 불일치 감지 |
-| `/hns:interview-capture` | 구현 전 게이트 인터뷰 |
-| `/hns:verify` | 검증 (표준→린트→빌드→테스트) |
-| `/hns:spec-review` | 스펙 리뷰 (architecture/implementation/usecase) |
+| `/harness-scaffold:shape-spec` | 요구사항 수집 및 스펙 폴더 초기화 |
+| `/harness-scaffold:write-spec` | 스펙 문서 작성 |
+| `/harness-scaffold:create-tasks` | 태스크 분해 |
+| `/harness-scaffold:implement-tasks` | 구현 (워크트리 옵션) |
+| `/harness-scaffold:orchestrate-tasks` | 순차/병렬 오케스트레이션 |
+| `/harness-scaffold:drift-check` | 구현-스펙 불일치 감지 |
+| `/harness-scaffold:interview-capture` | 구현 전 게이트 인터뷰 |
+| `/harness-scaffold:verify` | 검증 (표준→린트→빌드→테스트) |
+| `/harness-scaffold:spec-review` | 스펙 리뷰 (architecture/implementation/usecase) |
 
 ---
 
@@ -864,7 +864,7 @@ compatibility: claude-code
 ## Trigger Scope
 - spec 기반 구현 중 새 edge case, contract gap 발견
 - open-questions.yml이 존재하는 feature 구현
-- /hns:implement-tasks, /hns:drift-check 문맥
+- /harness-scaffold:implement-tasks, /harness-scaffold:drift-check 문맥
 
 ## Context-First: MUST READ
 1. docs/specs/{feature}/spec.md
@@ -1363,7 +1363,7 @@ The most complex command. 3 phases:
 
 ```bash
 git add plugins/harness-scaffold/commands/init.md
-git commit -m "feat(hnsf): add /hns:init entry point command"
+git commit -m "feat(hnsf): add /harness-scaffold:init entry point command"
 ```
 
 ---

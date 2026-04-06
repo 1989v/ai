@@ -3,13 +3,13 @@ name: write-spec
 description: "Create comprehensive specification from shaped requirements"
 ---
 
-# /hns:write-spec
+# /harness-scaffold:write-spec
 
 ## Purpose
 Create a comprehensive specification for a feature from shaped requirements.
 
 ## Required Inputs
-- Spec folder with `planning/requirements.md` (from /hns:shape-spec)
+- Spec folder with `planning/requirements.md` (from /harness-scaffold:shape-spec)
 
 ## Expected Outputs
 - `spec.md` in the spec folder
@@ -35,5 +35,5 @@ Delegate to `spec-writer` agent with:
 ```
 Spec written: [spec-folder]/spec.md
 
-Next: /hns:create-tasks to break down into implementable tasks
+Next: /harness-scaffold:create-tasks to break down into implementable tasks
 ```

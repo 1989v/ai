@@ -3,7 +3,7 @@ name: create-tasks
 description: "Break down a spec into actionable task groups with dependencies"
 ---
 
-# /hns:create-tasks
+# /harness-scaffold:create-tasks
 
 ## Purpose
 Create a task breakdown from a spec for implementation.
@@ -39,7 +39,7 @@ Delegate to `tasks-list-creator` agent with:
 Tasks created: [spec-folder]/tasks.md
 
 Next:
-- /hns:interview-capture (recommended pre-implementation gate)
-- /hns:implement-tasks (start implementation)
-- /hns:orchestrate-tasks (plan execution order)
+- /harness-scaffold:interview-capture (recommended pre-implementation gate)
+- /harness-scaffold:implement-tasks (start implementation)
+- /harness-scaffold:orchestrate-tasks (plan execution order)
 ```

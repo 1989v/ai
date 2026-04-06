@@ -6,7 +6,7 @@ requires:
 auto_reference: false
 ---
 
-# /hns:doc-gen
+# /harness-scaffold:doc-gen
 
 ## Purpose
 프로젝트에 CLAUDE.md와 docs/ 트리를 생성한다.

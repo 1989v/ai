@@ -3,7 +3,7 @@ name: orchestrate-tasks
 description: "Create orchestration plan and execute tasks sequentially or in parallel"
 ---
 
-# /hns:orchestrate-tasks
+# /harness-scaffold:orchestrate-tasks
 
 ## Purpose
 Plan and execute task groups with explicit routing and optional parallel execution.

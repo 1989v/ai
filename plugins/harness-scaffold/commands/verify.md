@@ -3,7 +3,7 @@ name: verify
 description: "Run verification suite: standards → lint → build → test with evidence recording"
 ---
 
-# /hns:verify
+# /harness-scaffold:verify
 
 ## Purpose
 Verify implementation against standards, lint, build, and tests. Record evidence.

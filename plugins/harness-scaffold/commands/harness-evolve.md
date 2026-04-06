@@ -5,7 +5,7 @@ requires: []
 auto_reference: false
 ---
 
-# /hns:harness-evolve
+# /harness-scaffold:harness-evolve
 
 ## Purpose
 실패 패턴을 하네스 규칙으로 인코딩하여 재발 방지.
