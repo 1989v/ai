@@ -1,5 +1,5 @@
 ---
-description: "Generate CLAUDE.md and docs/ tree for the current project"
+description: "Generate CLAUDE.md and docs/ tree — default: fill gaps only, --full for regeneration"
 ---
 
 # /hns:doc-gen
