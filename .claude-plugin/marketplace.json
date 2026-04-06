@@ -5,11 +5,6 @@
   },
   "plugins": [
     {
-      "name": "doc-scaffolding",
-      "source": "./plugins/doc-scaffolding",
-      "description": "AI workspace scaffolding: generates CLAUDE.md and standardized docs tree for any project"
-    },
-    {
       "name": "ai-debugger",
       "source": "./plugins/ai-debugger",
       "description": "API debugging agent with full IO capture, log analysis, and codebase exploration"
@@ -25,9 +20,9 @@
       "description": "Analyze content from URLs (YouTube, LinkedIn, web posts, Git repos) and generate structured learning plans or analysis documents"
     },
     {
-      "name": "harness-scaffold",
-      "source": "./plugins/harness-scaffold",
-      "description": "Universal AI harness scaffolding: SDD pipeline, agent-OS, behavior standards, spec-review, hooks, and parallel execution for any project"
+      "name": "hns",
+      "source": "./plugins/hns",
+      "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, 5-dimension review, lifecycle (GC/evolve/diet/audit), enforcement hooks, context routing, and doc generation"
     }
   ]
 }
