@@ -8,23 +8,11 @@
   "commands": [
     "./commands/init.md",
     "./commands/feat.md",
-    "./commands/shape-spec.md",
-    "./commands/write-spec.md",
-    "./commands/spec-review.md",
-    "./commands/create-tasks.md",
-    "./commands/implement-tasks.md",
-    "./commands/orchestrate-tasks.md",
-    "./commands/interview-capture.md",
-    "./commands/drift-check.md",
-    "./commands/verify.md",
-    "./commands/verify-crosscheck.md",
-    "./commands/doc-gen.md",
     "./commands/validate.md",
-    "./commands/doc-html.md",
-    "./commands/gc.md",
-    "./commands/evolve.md",
-    "./commands/diet.md",
+    "./commands/verify.md",
     "./commands/audit.md",
-    "./commands/wrapup.md"
+    "./commands/wrapup.md",
+    "./commands/gc.md",
+    "./commands/doc-gen.md"
   ]
 }
