@@ -232,6 +232,41 @@ marketplace 설치 없이 직접 로드. 변경 시 `/reload-plugins`로 핫 리
 
 ---
 
+## 9. Troubleshooting: 자동완성 목록 갱신 안 되는 경우
+
+### 증상
+plugin.json의 commands[]를 수정했는데 `/reload-plugins` 후에도 이전 커맨드가 계속 보임.
+
+### 원인
+`hns@ai-common`처럼 marketplace에서 설치된 플러그인은 **`~/.claude/plugins/cache/`에 캐시**된다. 로컬 소스(`ai/plugins/hns/`)를 수정해도 캐시가 갱신되지 않으면 이전 버전이 로드됨.
+
+### 해결 순서
+
+```bash
+# 1. plugin.json version bump (필수)
+"version": "0.3.1" → "0.4.0"
+
+# 2. commit + push (marketplace 소스 갱신)
+git add -A && git commit -m "chore: version bump" && git push
+
+# 3. marketplace 소스 pull
+cd ~/.claude/plugins/marketplaces/ai-common && git pull origin main
+
+# 4. 재설치 (캐시 강제 갱신)
+claude plugins uninstall hns@ai-common
+claude plugins install hns@ai-common
+
+# 5. 새 세션 시작
+```
+
+### 주의사항
+- `~/.claude/plugins/cache/` 수동 삭제만으로는 부족 — marketplace 소스도 pull 필요
+- `/reload-plugins`는 현재 세션 캐시만 리로드, marketplace 캐시와 무관
+- `commands/` 디렉토리 안의 모든 .md 파일은 plugin.json 등록 여부와 무관하게 자동 발견됨 — 자동완성에서 숨기려면 `commands/` 밖으로 이동하거나 `skills/{name}/SKILL.md`로 전환
+- `skills/{name}/SKILL.md`에 `user-invocable: false` frontmatter 설정하면 자동완성에 노출되지 않음
+
+---
+
 ## Quick Reference
 
 ```
