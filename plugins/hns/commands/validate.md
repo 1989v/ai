@@ -56,7 +56,14 @@ docs/architecture/에 명시된 패키지 구조:
 - README.md(루트)에서 참조하는 문서 경로가 유효한지
 - CLAUDE.md에서 참조하는 문서 경로가 유효한지
 
-### Check 5: 정책 vs 코드 일관성
+### Check 5: index.yml 자동 보완
+
+docs/index.yml이 존재하면:
+- 실제 docs/ 디렉토리를 스캔하여 index.yml에 누락된 문서를 감지
+- 누락된 문서를 index.yml에 자동 추가 (keywords는 파일 내용에서 추출)
+- 이미 등록된 문서 중 파일이 삭제된 항목은 ⚠ WARN으로 보고
+
+### Check 6: 정책 vs 코드 일관성
 
 docs/policies/ 하위 문서에 명시된 규칙:
 - 금지된 패턴이 코드에 위반 사례가 없는지 확인
