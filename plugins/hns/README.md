@@ -102,7 +102,7 @@ harness-audit (외부 비교) → harness-evolve (규칙 추가) → harness-die
 Layer 1: Core            — agent-behavior, session, compaction, spec-evolution
 Layer 2: SDD             — spec-writing, task-planning, implementation
 Layer 3: Review          — 5-dimension review + skillset procedures
-Layer 4: Docs            — doc-gen, doc-validate, doc-html
+Layer 4: Docs            — doc-gen, validate, doc-html
 Layer 5: Lifecycle       — GC, evolve, diet, audit
 Layer 6: Project-Adaptive — 프로젝트별 도메인 스킬 (init 시 생성)
 ```
