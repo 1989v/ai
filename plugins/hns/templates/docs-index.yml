@@ -1,0 +1,34 @@
+# Context Routing Map Template
+# Replace {{PLACEHOLDER}} values during /hns:init
+schema_version: 1
+
+entries:
+  - id: architecture
+    path: docs/architecture/overview.md
+    keywords: [architecture, layer, dependency, port, adapter, clean-architecture, module]
+
+  - id: conventions
+    path: agent-os/standards/global/conventions.md
+    keywords: [convention, naming, style, format, coding-standard]
+
+  - id: test-rules
+    path: agent-os/standards/global/conventions.md
+    section: "## Test"
+    keywords: [test, testing, mock, bdd, spec, assertion]
+
+  - id: mission
+    path: agent-os/product/mission.md
+    keywords: [mission, vision, goal, purpose, product]
+
+  - id: tech-stack
+    path: agent-os/product/tech-stack.md
+    keywords: [build, gradle, maven, npm, dependency, version, toolchain]
+
+  - id: harness-philosophy
+    path: docs/philosophy/three-pillars.md
+    keywords: [harness, gc, enforcement, evolution, diet, pillar]
+
+auto_reference:
+  threshold: 2
+  max_docs: 3
+  prefer_section: true
