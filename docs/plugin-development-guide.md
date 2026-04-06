@@ -191,6 +191,47 @@ marketplace 설치 없이 직접 로드. 변경 시 `/reload-plugins`로 핫 리
 
 ---
 
+## 8. 플러그인 간 스킬 격리 규칙
+
+플러그인이 자체 파이프라인(연속된 커맨드/스킬 체인)을 갖는 경우, 외부 플러그인 스킬과의 충돌을 방지해야 한다.
+
+### 원칙
+
+- **파이프라인 활성 중에는 해당 플러그인 스킬만 사용**
+- 기능이 겹치는 외부 스킬은 자동 invoke하지 않음
+- 외부 스킬이 필요한 경우 사용자에게 질의 후 승인 시만 활용
+
+### 스킬 작성 시 적용
+
+파이프라인을 갖는 플러그인의 agent-behavior 또는 core 스킬에 다음을 명시:
+
+```markdown
+## External Skill Isolation
+
+본 플러그인 파이프라인 실행 중:
+- 플러그인 내부 스킬만 사용
+- 겹치는 외부 스킬(superpowers 등)은 자동 invoke 금지
+- 외부 스킬 필요 시 → 사용자 질의 후 승인 시만 사용
+- 파이프라인 비활성(일반 작업) 시 → 외부 스킬 자유 사용
+```
+
+### 이유
+
+- 외부 스킬이 파이프라인 중간에 끼어들면 하네스 제어 흐름이 깨짐
+- 동일 기능의 이중 실행으로 컨텍스트 낭비 및 충돌 발생
+- 플러그인별 검증 루프·증거 기록 등의 일관성 훼손
+
+### 예시: HNS + Superpowers 충돌 방지
+
+| 겹치는 영역 | HNS (파이프라인 우선) | Superpowers (승인 시만) |
+|------------|---------------------|----------------------|
+| 브레인스토밍 | shape-spec | brainstorming |
+| 플랜 작성 | write-spec + create-tasks | writing-plans |
+| 구현 실행 | implement-tasks | executing-plans |
+| 검증 | verify | verification-before-completion |
+
+---
+
 ## Quick Reference
 
 ```
