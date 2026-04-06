@@ -57,9 +57,18 @@ Changed file keywords → agent-os/standards/ match → report related docs
 ```
 Location: `docs/specs/{feature}/context/key-decisions.md`
 
+## 7. Subagent Usage Guidelines
+Use subagents when tasks can run in parallel, require isolated context, or involve independent workstreams.
+Work directly (no subagent) when:
+- Single file read/edit
+- Sequential operations sharing state
+- Simple grep/glob lookup is sufficient
+- Context continuity across steps is needed
+
 ## NEVER
 - Start coding without checking key-decisions.md
 - Repeat same approach in Ralph Loop
 - Weaken/delete tests to pass
 - Proceed with L3 changes without approval
 - Continue retrying after 3 failures
+- Spawn subagents for tasks a single tool call can handle
