@@ -1,6 +1,3 @@
----
-description: "Create orchestration plan and execute tasks sequentially or in parallel"
----
 
 # /hns:orchestrate-tasks
 

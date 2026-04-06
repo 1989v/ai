@@ -1,6 +1,3 @@
----
-description: "Break down a spec into actionable task groups with dependencies"
----
 
 # /hns:create-tasks
 

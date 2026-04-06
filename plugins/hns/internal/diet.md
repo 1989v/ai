@@ -1,6 +1,3 @@
----
-description: "Review harness complexity, compact CLAUDE.md, and remove unnecessary rules — Bitter Lesson applied"
----
 
 # /hns:diet
 

@@ -1,6 +1,3 @@
----
-description: "Encode a failure pattern as a new harness rule to prevent recurrence"
----
 
 # /hns:evolve
 

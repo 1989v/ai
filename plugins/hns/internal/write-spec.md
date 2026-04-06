@@ -1,6 +1,3 @@
----
-description: "Create comprehensive specification from shaped requirements"
----
 
 # /hns:write-spec
 

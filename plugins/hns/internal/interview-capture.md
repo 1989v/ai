@@ -1,6 +1,3 @@
----
-description: "Pre-implementation gate interview to surface missing assumptions"
----
 
 # /hns:interview-capture
 
