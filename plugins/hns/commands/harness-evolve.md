@@ -1,5 +1,4 @@
 ---
-name: harness-evolve
 description: "[hns] Encode a failure pattern as a new harness rule to prevent recurrence"
 ---
 

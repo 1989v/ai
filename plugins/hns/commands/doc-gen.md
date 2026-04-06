@@ -1,5 +1,4 @@
 ---
-name: doc-gen
 description: "[hns] Generate CLAUDE.md and docs/ tree for the current project"
 ---
 

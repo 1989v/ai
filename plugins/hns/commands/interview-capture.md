@@ -1,5 +1,4 @@
 ---
-name: interview-capture
 description: "[hns] Pre-implementation gate interview to surface missing assumptions"
 ---
 

@@ -1,5 +1,4 @@
 ---
-name: shape-spec
 description: "[hns] Gather requirements and initialize spec folder for a new feature"
 ---
 

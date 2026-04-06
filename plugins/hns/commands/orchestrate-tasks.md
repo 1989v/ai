@@ -1,5 +1,4 @@
 ---
-name: orchestrate-tasks
 description: "[hns] Create orchestration plan and execute tasks sequentially or in parallel"
 ---
 

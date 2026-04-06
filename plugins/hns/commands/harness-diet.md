@@ -1,5 +1,4 @@
 ---
-name: harness-diet
 description: "[hns] Review harness complexity and remove unnecessary rules — Bitter Lesson applied"
 ---
 

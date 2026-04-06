@@ -1,5 +1,4 @@
 ---
-name: write-spec
 description: "[hns] Create comprehensive specification from shaped requirements"
 ---
 

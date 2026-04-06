@@ -1,5 +1,4 @@
 ---
-name: doc-validate
 description: "[hns] Validate CLAUDE.md and docs/ against actual codebase"
 ---
 
