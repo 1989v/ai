@@ -121,5 +121,5 @@ Harness philosophy: docs/philosophy/
 Context routing: docs/index.yml
 
 Next: Use /hns:shape-spec to start your first feature spec.
-      Use /hns:harness-audit to compare with external benchmarks.
+      Use /hns:audit to compare with external benchmarks.
 ```
