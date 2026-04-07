@@ -205,7 +205,7 @@ claude plugins install hns@ai-common
 # .claude/settings.json → "enabledPlugins": { "hns@ai-common": true }
 ```
 
-플러그인 설치 후 `/hns:init`으로 프로젝트 하네스를 초기화하거나, 이미 하네스가 있는 프로젝트에서 바로 `/hns:feat`으로 기능 개발을 시작한다.
+플러그인 설치 후 `/hns:init`으로 프로젝트 하네스를 초기화하거나, 이미 하네스가 있는 프로젝트에서 바로 `/hns:start`로 작업을 시작한다.
 
 ---
 
