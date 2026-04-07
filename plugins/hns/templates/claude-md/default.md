@@ -51,8 +51,8 @@ All rules are routed via `agent-os/standards/`.
 
 ## AI Workflow Rules
 
-신규 기능 개발 요청 시 `/hns:new-feature` 파이프라인을 우선 사용한다.
-스펙 작성 → 리뷰 → 태스크 분해를 거친 후 구현에 들어간다.
+작업 요청 시 `/hns:start`를 통합 진입점으로 사용한다.
+요청을 분석하여 코드베이스 질의(탐색/분석/설명) 또는 피처 파이프라인(shape→write→review→tasks→implement→validate)으로 자동 라우팅한다.
 버그 수정, 리팩토링 등 간단한 작업은 파이프라인 없이 직접 수행 가능.
 
 하네스 Lifecycle 커맨드:
