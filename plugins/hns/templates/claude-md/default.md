@@ -67,7 +67,7 @@ All rules are routed via `agent-os/standards/`.
 
 | Command | Purpose |
 |---------|---------|
-| `/hns:feat` | 신규 기능 파이프라인 (shape→write→review→tasks→implement→validate) |
+| `/hns:start` | 통합 진입점: 요청 분석 → 질의 응답 or 피처 파이프라인 자동 라우팅 |
 | `/hns:shape-spec` | 요구사항 수집 및 스펙 폴더 초기화 |
 | `/hns:write-spec` | 스펙 문서 작성 |
 | `/hns:spec-review` | 스펙 리뷰 (architecture/implementation/usecase) |
