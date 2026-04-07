@@ -20,7 +20,7 @@ AI 하네스 엔지니어링 완전체 플러그인.
 
 | Command | Description | When to use |
 |---------|-------------|-------------|
-| `/hns:feat` | shape→write→review→tasks 통합 | 새 기능 시작 시 (권장) |
+| `/hns:start` | 요청 분석 → 질의 응답 or 피처 파이프라인 자동 라우팅 | 모든 작업의 진입점 (권장) |
 | `/hns:shape-spec` | 요구사항 수집 + 스펙 폴더 초기화 | 파이프라인 없이 단계별로 할 때 |
 | `/hns:write-spec` | spec.md 작성 | shape 후 스펙 문서화 |
 | `/hns:spec-review` | 5차원 스펙 리뷰 | 스펙 품질 검증 |
