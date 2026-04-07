@@ -31,7 +31,7 @@ AI 하네스 엔지니어링 완전체 플러그인.
 
 **일반적인 흐름:**
 ```
-/hns:feat  →  /hns:implement-tasks  →  /hns:verify
+/hns:start  →  /hns:implement-tasks  →  /hns:verify
 ```
 
 또는 단계별:
