@@ -110,7 +110,7 @@ Step 5의 Self-Healing 결과를 회고 문서에 추가:
 
 ## Integration
 
-- **Called by:** `/hns:feat` (PHASE 7 이후 옵셔널), 사용자 직접 호출
+- **Called by:** `/hns:start` (PHASE 7 이후 옵셔널), 사용자 직접 호출
 - **Calls:**
   - `evolve` — 코딩실수/아키텍처위반/도구오용 패턴의 규칙 인코딩
   - `validate --docs` — 문서 동기화 확인
