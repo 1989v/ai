@@ -75,7 +75,7 @@ Delegate to `verifier` agent:
 
 ## PHASE 4: Post-Implementation Validation (Optional)
 
-> 기본 ON. `--no-validate` 옵션 또는 `/hns:feat --no-validate`로 스킵 가능.
+> 기본 ON. `--no-validate` 옵션 또는 `/hns:start --no-validate`로 스킵 가능.
 
 구현 완료 후 3단계 검증을 자동 수행:
 
