@@ -75,5 +75,5 @@ Action: Address implementation issues, then re-review
 Save individual reports to `context/engineer-review-{type}.md`.
 
 ## Mode Behavior
-- **Quality mode**: Run all 5 reviewers always
+- **Quality mode**: Run all 6 reviewers always
 - **Efficient mode**: Ask user which reviewers to run
