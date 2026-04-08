@@ -66,6 +66,7 @@ Output verdict table:
 | Implementation | REVISE | 2 |
 | Test Strategy | SHIP | 0 |
 | Usecase | SHIP | 0 |
+| Security | SHIP | 0 |
 
 Overall: REVISE
 Action: Address implementation issues, then re-review
