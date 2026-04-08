@@ -23,7 +23,7 @@ Review a spec from 6 perspectives to catch issues before implementation.
 
 ## PHASE 2: Run Reviews
 
-Execute 5 reviewers sequentially. Each applies the Seed Discovery Protocol from `@references/review-protocol.md`.
+Execute 6 reviewers sequentially. Each applies the Seed Discovery Protocol from `@references/review-protocol.md`.
 
 ### Review 1: Architecture
 Load `hns:review-architecture` skill.
