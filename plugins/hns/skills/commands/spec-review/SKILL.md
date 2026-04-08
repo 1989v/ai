@@ -45,6 +45,10 @@ Focus: AC→test derivation, test layer assignment, mock boundaries.
 Load `hns:review-usecase` skill.
 Focus: actor-goal pairs, flows, AC traceability, edge cases.
 
+### Review 6: Security
+Load `hns:review-security` skill.
+Focus: STRIDE threat model, OWASP vulnerabilities, sensitive data flow, auth boundaries, commerce-specific security.
+
 ## PHASE 3: Verdict Progression
 
 - If any reviewer returns **BLOCK** → halt remaining reviews → report
