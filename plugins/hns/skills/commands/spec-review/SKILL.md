@@ -11,7 +11,7 @@ Review a spec from 6 perspectives to catch issues before implementation.
 - Spec folder with spec.md
 
 ## Expected Outputs
-- `context/engineer-review-{type}.md` per reviewer (5 files)
+- `context/engineer-review-{type}.md` per reviewer (6 files)
 - Overall verdict
 
 ---
