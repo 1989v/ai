@@ -5,7 +5,7 @@ user-invocable: false
 # /hns:spec-review
 
 ## Purpose
-Review a spec from 5 perspectives to catch issues before implementation.
+Review a spec from 6 perspectives to catch issues before implementation.
 
 ## Required Inputs
 - Spec folder with spec.md
