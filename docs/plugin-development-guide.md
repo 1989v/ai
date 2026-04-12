@@ -346,3 +346,42 @@ cd ~/.claude/plugins/marketplaces/ai-common && git reset --hard origin/main
 3. .claude-plugin/marketplace.json에 등록
 4. commit + push + claude plugins install
 ```
+
+---
+
+## 10. AI 에이전트용 메모리 등록 권장
+
+플러그인을 사용하는 프로젝트에서 AI 에이전트(Claude Code 등)가 커맨드/스킬을 추가할 때 배포 절차를 빠뜨리는 문제가 반복된다. 이를 방지하기 위해 **프로젝트별 피드백 메모리 등록을 권장**한다.
+
+### 등록할 메모리 내용
+
+```markdown
+---
+name: plugin-command-checklist
+description: 플러그인에 새 커맨드 추가 시 반드시 따라야 하는 배포 체크리스트
+type: feedback
+---
+
+새 커맨드(commands/*.md) 추가 시 배포 절차를 빠뜨리지 말 것.
+
+**How to apply:** 커맨드 파일 작성 완료 후 반드시:
+1. commands/{name}.md (frontmatter에 name 없이 description만)
+2. plugin.json commands[] 추가
+3. plugin.json version bump (MINOR)
+4. marketplace.json 확인
+5. commit + push
+6. 사용자에게 캐시 갱신 안내 (uninstall + install + 새 세션)
+```
+
+### 왜 메모리인가
+
+- PostToolUse hook: 매 Write/Edit마다 토큰 소비
+- gc-protocol: 실행 시에만 검증
+- **피드백 메모리**: 세션 시작 시 로드되어 토큰 비용 없이 에이전트 행동에 반영
+
+### 등록 위치
+
+각 프로젝트의 Claude Code 메모리 디렉터리:
+```
+.claude/projects/{project}/memory/feedback_plugin_command_checklist.md
+```
