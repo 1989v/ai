@@ -13,6 +13,7 @@
     "./commands/audit.md",
     "./commands/wrapup.md",
     "./commands/gc.md",
-    "./commands/doc-gen.md"
+    "./commands/doc-gen.md",
+    "./commands/validate-fe-design.md"
   ]
 }
