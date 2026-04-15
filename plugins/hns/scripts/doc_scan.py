@@ -3,13 +3,12 @@
 doc_scan.py — git diff 기반 문서 영향 스캐너.
 
 ADR-0023 Doc Index Tracking 의 비-LLM fast path. 현재 변경된 소스 파일이
-어떤 문서에 영향을 미칠 수 있는지 lock 파일을 참조해 후보를 뽑는다.
+어떤 문서에 영향을 미칠 수 있는지 lock 을 참조해 후보를 뽑는다.
+
+Python 3 stdlib only.
 
 Usage:
   python3 doc_scan.py [--repo ROOT] [--base REF] [--json]
-
-- --base REF: 비교 기준 (기본: HEAD). staged 변경만 보려면 `--base HEAD`.
-- --json:     JSON 출력 (agent 연동용). 기본은 Markdown 리포트.
 """
 
 from __future__ import annotations
@@ -20,24 +19,22 @@ import subprocess
 import sys
 from pathlib import Path
 
-try:
-    import yaml
-except ImportError:
-    sys.stderr.write("pyyaml 이 필요합니다: pip install pyyaml\n")
-    sys.exit(2)
+
+SOURCE_EXTS = {".kt", ".java", ".py", ".ts", ".tsx", ".vue", ".go"}
 
 
 def changed_files(repo: Path, base: str) -> list[str]:
-    cmd = ["git", "-C", str(repo), "diff", "--name-only", base]
-    out = subprocess.check_output(cmd, text=True)
-    staged = subprocess.check_output(
-        ["git", "-C", str(repo), "diff", "--name-only", "--cached"], text=True,
-    )
-    untracked = subprocess.check_output(
-        ["git", "-C", str(repo), "ls-files", "--others", "--exclude-standard"], text=True,
-    )
-    files = set()
-    for block in (out, staged, untracked):
+    def run(args: list[str]) -> str:
+        try:
+            return subprocess.check_output(args, text=True)
+        except subprocess.CalledProcessError:
+            return ""
+
+    diff = run(["git", "-C", str(repo), "diff", "--name-only", base])
+    staged = run(["git", "-C", str(repo), "diff", "--name-only", "--cached"])
+    untracked = run(["git", "-C", str(repo), "ls-files", "--others", "--exclude-standard"])
+    files: set[str] = set()
+    for block in (diff, staged, untracked):
         for line in block.strip().splitlines():
             line = line.strip()
             if line:
@@ -45,20 +42,27 @@ def changed_files(repo: Path, base: str) -> list[str]:
     return sorted(files)
 
 
-def impacted_docs(changed: list[str], lock: dict) -> tuple[list[dict], list[str], list[str]]:
-    """
-    Returns: (impacted, new_sources, deleted_sources_guess)
-    """
+def detect_deletions(repo: Path, base: str) -> list[str]:
+    try:
+        out = subprocess.check_output(
+            ["git", "-C", str(repo), "diff", "--name-only", "--diff-filter=D", base],
+            text=True,
+        )
+    except subprocess.CalledProcessError:
+        return []
+    return [l.strip() for l in out.strip().splitlines() if l.strip()]
+
+
+def impacted_docs(changed: list[str], lock: dict) -> tuple[list[dict], list[str]]:
     links = lock.get("links", []) or []
-    known_sources = {l["source"] for l in links if l.get("resolved")}
     doc_by_source: dict[str, list[dict]] = {}
     for l in links:
         if not l.get("resolved"):
             continue
         doc_by_source.setdefault(l["source"], []).append(l)
 
-    impacted = []
-    new_sources = []
+    impacted: list[dict] = []
+    new_sources: list[str] = []
     for path in changed:
         if path in doc_by_source:
             for link in doc_by_source[path]:
@@ -68,21 +72,9 @@ def impacted_docs(changed: list[str], lock: dict) -> tuple[list[dict], list[str]
                     "link_type": link["link_type"],
                     "service": link.get("service", "root"),
                 })
-        elif path.endswith((".kt", ".java", ".py", ".ts", ".tsx", ".vue", ".go")):
+        elif any(path.endswith(ext) for ext in SOURCE_EXTS):
             new_sources.append(path)
-
-    # deleted source: lock 에 있었는데 이번 diff 에서 D 로 표기된 건 아래에서 따로 처리
-    # 단순화: 변경 목록에 있지만 파일이 존재하지 않는 경우를 deleted 로 추정
-    return impacted, new_sources, []
-
-
-def detect_deletions(repo: Path, base: str) -> list[str]:
-    cmd = ["git", "-C", str(repo), "diff", "--name-only", "--diff-filter=D", base]
-    try:
-        out = subprocess.check_output(cmd, text=True)
-    except subprocess.CalledProcessError:
-        return []
-    return [l.strip() for l in out.strip().splitlines() if l.strip()]
+    return impacted, new_sources
 
 
 def render_markdown(impacted: list[dict], new_sources: list[str], deleted: list[str]) -> str:
@@ -106,7 +98,7 @@ def render_markdown(impacted: list[dict], new_sources: list[str], deleted: list[
         for s in new_sources:
             lines.append(f"- `{s}`")
         lines.append("")
-        lines.append("> 필요 시 `docs/doc-index.yml` 의 `manual_links` 또는 `pattern_rules` 에 추가.")
+        lines.append("> 필요 시 `docs/doc-index.json` 의 `manual_links` 또는 `pattern_rules` 에 추가.")
         lines.append("")
 
     if deleted:
@@ -115,7 +107,7 @@ def render_markdown(impacted: list[dict], new_sources: list[str], deleted: list[
         for s in deleted:
             lines.append(f"- `{s}`")
         lines.append("")
-        lines.append("> 연결된 문서가 있으면 `archive` 또는 내용 갱신 검토.")
+        lines.append("> 연결된 문서가 있으면 아카이브 또는 내용 갱신 검토.")
 
     return "\n".join(lines)
 
@@ -128,16 +120,16 @@ def main() -> int:
     args = parser.parse_args()
 
     repo = Path(args.repo).resolve()
-    lock_path = repo / "docs" / "doc-index.lock.yml"
+    lock_path = repo / "docs" / "doc-index.lock.json"
 
     if not lock_path.exists():
         sys.stderr.write("lock 없음. doc_map.py --init 먼저 실행.\n")
         return 2
 
-    lock = yaml.safe_load(lock_path.read_text())
+    lock = json.loads(lock_path.read_text())
     changed = changed_files(repo, args.base)
     deleted = detect_deletions(repo, args.base)
-    impacted, new_sources, _ = impacted_docs(changed, lock)
+    impacted, new_sources = impacted_docs(changed, lock)
 
     if args.json:
         print(json.dumps({
