@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-CITATION_RE = re.compile(r"<!--\s*source:\s*(?P<path>[^\s>]+)\s*-->")
+CITATION_RE = re.compile(r"(?m)^<!--\s*source:\s*(?P<path>[^\s>]+)\s*-->")
 SERVICE_TIERS = {
     "product", "order", "search", "gateway", "common", "charting",
     "analytics", "experiment", "member", "wishlist", "admin", "auth",
