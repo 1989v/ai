@@ -1,0 +1,13 @@
+{
+  "name": "study",
+  "description": "Study pipeline: parse topics from temp.md, refine direction via brainstorming, execute structured deep-learning with codebase exploration and interview prep",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["study", "learning", "interview-prep", "deep-dive", "codebase-exploration"],
+  "commands": [
+    "./commands/init.md",
+    "./commands/bs.md",
+    "./commands/exec.md"
+  ]
+}
