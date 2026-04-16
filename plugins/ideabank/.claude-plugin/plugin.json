@@ -1,0 +1,13 @@
+{
+  "name": "ideabank",
+  "description": "Idea-to-implementation pipeline: raw ideas → structured PRDs → brainstorming refinement → service scaffolding. Manages the full lifecycle from napkin sketch to deployed code.",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["ideabank", "prd", "brainstorm", "idea-management", "scaffolding", "implementation"],
+  "commands": [
+    "./commands/init.md",
+    "./commands/bs.md",
+    "./commands/impl.md"
+  ]
+}
