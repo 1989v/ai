@@ -21,8 +21,26 @@ model: inherit
 - 호출 없는 public 함수 식별
 
 ### 3. Doc Drift 탐지
+
+`--docs` 모드이면 이 단계만 실행하고 6번으로 건너뜀.
+
+**3a. Lock 갱신**
+```bash
+python3 ai/plugins/hns/scripts/doc_map.py --repo .
+```
+→ `docs/doc-index.lock.json` 최신 상태로 갱신.
+
+**3b. 영향 스캔**
+```bash
+python3 ai/plugins/hns/scripts/doc_scan.py --repo . --base HEAD
+```
+→ impacted docs, new sources, deleted sources 리포트 출력.
+
+**3c. 기존 검증 (전체 모드에서만)**
 - CLAUDE.md에 나열된 모듈/경로가 실제로 존재하는지 확인
 - docs/ 내 경로 참조가 유효한지 확인
+
+orphan / dangling 탐지는 보고만. 자동 아카이브/이동/삭제 금지 (사용자 확인 필요).
 
 ### 4. Rule Violation 탐지
 - agent-os/standards/의 규칙을 읽고 코드에서 위반 사례 탐지
