@@ -45,3 +45,4 @@ claude --plugin-dir ./plugins/{name}     # 로컬 테스트
 | ai-debugger | 2 | API 디버깅 |
 | private-repo | 1 | Private repo 분리 |
 | content-analyzer | 1 | 콘텐츠 분석 |
+| study | 3 | 스터디 파이프라인 (init → bs → exec) |
