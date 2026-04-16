@@ -28,6 +28,11 @@
       "name": "study",
       "source": "./plugins/study",
       "description": "Study pipeline: parse topics from temp.md, refine direction via brainstorming, execute structured deep-learning with codebase exploration and interview prep"
+    },
+    {
+      "name": "ideabank",
+      "source": "./plugins/ideabank",
+      "description": "Idea-to-implementation pipeline: raw ideas → structured PRDs → brainstorming refinement → service scaffolding"
     }
   ]
 }
