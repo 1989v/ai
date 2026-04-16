@@ -18,9 +18,23 @@ description: "Run garbage collection — detect dead code, doc drift, rule viola
 ## Protocol
 Follow `@references/gc-protocol.md` for scan modes and report format.
 
+## Modes
+
+- `/hns:gc` — 전체 스캔 (아래 체크리스트 전부)
+- `/hns:gc --docs` — 문서 drift 전용 서브플로우 (ADR-0023)
+
+### `--docs` 서브플로우 순서
+
+1. `python3 ai/plugins/hns/scripts/doc_map.py` → lock 갱신
+2. `python3 ai/plugins/hns/scripts/doc_scan.py --base HEAD` → 영향 문서 리포트
+3. 리포트 출력 (impacted docs, new sources, dangling docs)
+4. 사람이 문서 수정 → `doc_map.py` 재실행 → lock 커밋
+
+자동 아카이브/삭제 금지. orphan 탐지는 보고만.
+
 ## Scan Checklist
 - [ ] Dead code: 미사용 import, 빈 파일, 호출 없는 public 함수
-- [ ] Doc drift: CLAUDE.md/docs 내용 vs 실제 코드 괴리
+- [ ] Doc drift: CLAUDE.md/docs 내용 vs 실제 코드 괴리 (`--docs` 시 doc_map + doc_scan 파이프라인 사용)
 - [ ] Rule violation: agent-os/standards/ 규칙 vs 코드 위반
 - [ ] Stale harness: 불필요한 규칙/스킬/훅 (→ diet 연계)
 
