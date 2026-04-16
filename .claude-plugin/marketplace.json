@@ -23,6 +23,11 @@
       "name": "hns",
       "source": "./plugins/hns",
       "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, 5-dimension review, lifecycle (GC/evolve/diet/audit), enforcement hooks, context routing, and doc generation"
+    },
+    {
+      "name": "study",
+      "source": "./plugins/study",
+      "description": "Study pipeline: parse topics from temp.md, refine direction via brainstorming, execute structured deep-learning with codebase exploration and interview prep"
     }
   ]
 }
