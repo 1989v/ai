@@ -1,7 +1,7 @@
 {
   "name": "study",
   "description": "Study pipeline: parse topics from temp.md, refine direction, preview subtopics, then deep-study each subtopic with interview-ready depth",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
   "keywords": ["study", "learning", "interview-prep", "deep-dive", "codebase-exploration"],

@@ -17,8 +17,8 @@ argument-hint: "[주제 번호]"
 
 ### 1. 계획서 선택
 
-- `study/docs/*/plan.md` 스캔 → frontmatter status 확인
-- 번호 주어지면 `study/docs/{N}-{slug}/plan.md` 바로 열기
+- `study/docs/*/00-plan.md` 스캔 → frontmatter status 확인
+- 번호 주어지면 `study/docs/{N}-{slug}/00-plan.md` 바로 열기
 
 ### 2. 사용자 프로필 확인
 
@@ -37,7 +37,7 @@ argument-hint: "[주제 번호]"
 **원칙**:
 - 한 번에 한 가지 질문만
 - 가능하면 선택지 제공 (A/B/C)
-- 답변 받을 때마다 즉시 `plan.md` 업데이트
+- 답변 받을 때마다 즉시 `00-plan.md` 업데이트
 - 사용자가 "됐어", "완료" → 종료
 
 **논의 흐름**:
@@ -95,5 +95,5 @@ draft → refined → ready → in-progress (exec/start) → completed
 
 ## 에러 처리
 
-- `study/docs/{N}-{slug}/plan.md` 없음: `/study:init {N}` 안내
+- `study/docs/{N}-{slug}/00-plan.md` 없음: `/study:init {N}` 안내
 - `study/docs/` 비어있음: `/study:init` 먼저 실행 안내
