@@ -1,5 +1,5 @@
 ---
-description: "preview.md 에 나열된 소주제 중 하나를 선택해 면접 꼬리질문 수준까지 본격 심화 학습한다. 본격 스터디, 심화 학습, 주제 파고들기 등의 자연어 요청에도 반응."
+description: "00-preview.md 에 나열된 소주제 중 하나를 선택해 면접 꼬리질문 수준까지 본격 심화 학습한다. 본격 스터디, 심화 학습, 주제 파고들기 등의 자연어 요청에도 반응."
 argument-hint: "[주제 번호] [소주제 slug]"
 ---
 
@@ -13,7 +13,7 @@ argument-hint: "[주제 번호] [소주제 slug]"
 
 | 비교 | exec (preview) | start (심화) |
 |---|---|---|
-| 산출물 | `preview.md` 1개 | `{NN}-{subtopic}.md` N개 |
+| 산출물 | `00-preview.md` 1개 | `{NN}-{subtopic}.md` N개 |
 | 범위 | 주제 전체 소주제 지도 | 단일 소주제 하나 |
 | 깊이 | 각 1-2문단 개요 | 내부 메커니즘 + 장애 + 면접 꼬리질문 |
 | 분량 | 짧음 (~1000줄 이내) | 파일당 400-800줄 |
@@ -45,11 +45,11 @@ level: deep
 
 # {소주제 이름} — Deep Study
 
-> 상위 주제: `plan.md` / 프리뷰: `preview.md`
+> 상위 주제: `00-plan.md` / 프리뷰: `00-preview.md`
 
 ## 1. 재확인 (프리뷰 요약)
 
-preview.md 의 해당 소주제 요약을 2-3문장으로 복기.
+00-preview.md 의 해당 소주제 요약을 2-3문장으로 복기.
 
 ## 2. 내부 메커니즘 (구현 레벨)
 
@@ -112,9 +112,9 @@ Q1: {기본 질문}
 
 ### 0. 준비
 
-1. `study/docs/{N}-{slug}/plan.md` 와 `preview.md` 읽기
-   - preview.md 가 없으면 `/study:exec {N}` 먼저 실행 안내
-2. preview.md 에서 소주제 목록 추출
+1. `study/docs/{N}-{slug}/00-plan.md` 와 `00-preview.md` 읽기
+   - 00-preview.md 가 없으면 `/study:exec {N}` 먼저 실행 안내
+2. 00-preview.md 에서 소주제 목록 추출
 3. 사용자가 지정한 subtopic slug 확인 (없으면 목록 표시)
 
 ### 1. 기존 심화 파일 확인
@@ -124,7 +124,7 @@ Q1: {기본 질문}
 
 ### 2. 심화 학습 수행
 
-- preview.md 의 해당 소주제 내용을 기반으로 깊이 확장
+- 00-preview.md 의 해당 소주제 내용을 기반으로 깊이 확장
 - 필요 시 context7 MCP 로 최신 공식 문서 참조
 - 필요 시 Grep/Glob 으로 msa 코드베이스 탐색
 - 필요 시 Explore 에이전트 위임 (광범위 탐색)
@@ -139,9 +139,9 @@ Q1: {기본 질문}
 
 템플릿 따라 1개 파일 작성.
 
-### 4. preview.md 업데이트
+### 4. 00-preview.md 업데이트
 
-preview.md 에 "심화 완료" 마커 추가:
+00-preview.md 에 "심화 완료" 마커 추가:
 
 ```markdown
 #### 1. VPC ✅ [심화: 01-vpc.md](01-vpc.md)
@@ -155,28 +155,28 @@ preview.md 에 "심화 완료" 마커 추가:
 
 ### 6. 일괄 처리 (`--all`)
 
-- preview.md 의 모든 소주제를 순차 심화
-- 각 파일 생성 후 preview.md 업데이트
+- 00-preview.md 의 모든 소주제를 순차 심화
+- 각 파일 생성 후 00-preview.md 업데이트
 - 완료 후 전체 진행 보고
 
 ### 7. 완료 처리
 
 모든 소주제가 심화되면:
-- `plan.md` 의 status 를 `completed` 로 변경
+- `00-plan.md` 의 status 를 `completed` 로 변경
 - `study/temp.md` 학습 현황 표 업데이트
 - 최종 리포트: 심화 파일 N개, 총 라인 수, 면접 준비도 자가 평가 기준
 
 ## 작성 원칙 (중요)
 
 - **Depth 측정 기준**: 이 파일 하나로 해당 소주제에 대해 3-4단계 꼬리 질문까지 방어 가능해야 함
-- **중복 허용**: preview.md 와 일부 겹쳐도 OK. 심화는 반복 노출로 기억 강화.
+- **중복 허용**: 00-preview.md 와 일부 겹쳐도 OK. 심화는 반복 노출로 기억 강화.
 - **실무 스토리**: 섹션 4-5 에서 msa 프로젝트 경험을 면접 답변으로 변환하는 문구 예시 포함
 - **코드 인용**: msa 파일:line 또는 오픈소스 링크. "코드가 이렇게 생겼다" 수준.
-- **비유 연결**: preview.md 의 핵심 비유를 각 심화 파일에서도 재활용
+- **비유 연결**: 00-preview.md 의 핵심 비유를 각 심화 파일에서도 재활용
 
 ## 에러 처리
 
-- `preview.md` 없음: `/study:exec {N}` 먼저 실행 안내
+- `00-preview.md` 없음: `/study:exec {N}` 먼저 실행 안내
 - 소주제 slug 가 preview 에 없음: 가용 slug 목록 출력
 - 이미 파일 존재: 덮어쓰기/append 선택
 

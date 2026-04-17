@@ -1,5 +1,5 @@
 ---
-description: "ready 상태의 학습 계획서를 기반으로 주제 전체의 소주제 지도와 프리뷰(preview.md)를 생성한다. 스터디 프리뷰, 주제 개요, 소주제 목차 등의 자연어 요청에도 반응."
+description: "ready 상태의 학습 계획서를 기반으로 주제 전체의 소주제 지도와 프리뷰(00-preview.md)를 생성한다. 스터디 프리뷰, 주제 개요, 소주제 목차 등의 자연어 요청에도 반응."
 argument-hint: "[주제 번호]"
 ---
 
@@ -21,9 +21,9 @@ argument-hint: "[주제 번호]"
 
 ## 산출물
 
-- **파일**: `study/docs/{N}-{slug}/preview.md`
+- **파일**: `study/docs/{N}-{slug}/00-preview.md`
 - **내용**:
-  1. 학습자 프로필 (plan.md 에서 계승)
+  1. 학습자 프로필 (00-plan.md 에서 계승)
   2. 멘탈 모델 / 핵심 비유 (있으면)
   3. 소주제 목록 (10-20개) — 각 1-2문단 개요
   4. 개념 관계도 (ASCII diagram)
@@ -35,16 +35,16 @@ argument-hint: "[주제 번호]"
 
 ### 0. 준비
 
-- `study/docs/{N}-{slug}/plan.md` 읽기
+- `study/docs/{N}-{slug}/00-plan.md` 읽기
 - frontmatter status 확인 (ready 또는 in-progress 여야 함)
-- 존재하면 기존 `preview.md` 백업 후 재생성 또는 --resume 모드
+- 존재하면 기존 `00-preview.md` 백업 후 재생성 또는 --resume 모드
 
-### 1. plan.md 분석
+### 1. 00-plan.md 분석
 
 - Phase 1~4 의 소주제 목록 추출
 - 학습자 수준/범위/깊이/면접 비중/출력 형태 파악
 
-### 2. preview.md 작성
+### 2. 00-preview.md 작성
 
 **템플릿**:
 
@@ -104,12 +104,12 @@ created: {YYYY-MM-DD}
 
 ### 3. plan 상태 갱신
 
-- `plan.md` frontmatter 의 status 를 `ready` → `in-progress` 로 변경 (아직 아니라면)
+- `00-plan.md` frontmatter 의 status 를 `ready` → `in-progress` 로 변경 (아직 아니라면)
 - `study/temp.md` 학습 현황 표에 "preview 완료" 반영
 
 ### 4. 결과 보고
 
-- 생성된 preview.md 경로
+- 생성된 00-preview.md 경로
 - 식별된 소주제 N개
 - 추천 심화 순서 상위 3개
 - 다음 단계 안내: `/study:start {N} {subtopic}`
@@ -123,10 +123,10 @@ created: {YYYY-MM-DD}
 
 ## 에러 처리
 
-- `plan.md` 없음 or status 가 draft/refined: `/study:bs {N}` 로 ready 까지 다듬으라 안내
-- 이미 `preview.md` 존재: 덮어쓰기 확인 (기존 파일은 `preview.md.bak` 으로 보존)
+- `00-plan.md` 없음 or status 가 draft/refined: `/study:bs {N}` 로 ready 까지 다듬으라 안내
+- 이미 `00-preview.md` 존재: 덮어쓰기 확인 (기존 파일은 `00-preview.md.bak` 으로 보존)
 
 ## 중단 및 재개
 
 - 어느 소주제에서 중단 가능
-- `--resume` 로 기존 preview.md 뒤에 이어쓰기
+- `--resume` 로 기존 00-preview.md 뒤에 이어쓰기
