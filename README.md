@@ -7,6 +7,9 @@
 | 플러그인 | Prefix | 설명 |
 |---------|--------|------|
 | **hns** | `/hns:` | AI 하네스 엔지니어링 — SDD 파이프라인, 5차원 리뷰, Lifecycle(GC/evolve/diet/audit), 문서 생성 |
+| **appkit** | `/appkit:` | 신규 데스크톱 앱 런치킷 — scaffold + GitHub SEO + release pipeline + 배너/스크린샷 + discoverability |
+| **study** | `/study:` | 학습 파이프라인 — temp.md 주제 파싱 → 방향성 브레인스토밍 → 구조화된 심화 학습 + 코드베이스 탐색 |
+| **ideabank** | `/ideabank:` | 아이디어-구현 파이프라인 — raw 아이디어 → PRD → 브레인스토밍 → 서비스 scaffold |
 | **ai-debugger** | `/ai-debugger:` | API 디버깅 에이전트 — IO 캡처, curl 생성, 로그 분석 |
 | **private-repo** | `/private-repo:` | git submodule로 디렉토리별 public/private 가시성 제어 |
 | **content-analyzer** | `/content-analyzer:` | URL 콘텐츠 분석 (YouTube, LinkedIn, web post, Git repo) |
@@ -23,6 +26,9 @@ claude marketplace add https://github.com/1989v/ai.git --name ai-common
 
 # 플러그인 설치
 claude plugins install hns@ai-common
+claude plugins install appkit@ai-common
+claude plugins install study@ai-common
+claude plugins install ideabank@ai-common
 claude plugins install ai-debugger@ai-common
 claude plugins install private-repo@ai-common
 claude plugins install content-analyzer@ai-common

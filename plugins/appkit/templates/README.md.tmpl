@@ -1,0 +1,76 @@
+# {{APP_NAME}}
+
+**Language:** [English](README.md) | [한국어](README.ko.md)
+
+> {{ONE_LINER}}.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![macOS {{MIN_MACOS}}+](https://img.shields.io/badge/macOS-{{MIN_MACOS}}+-blue.svg)](https://www.apple.com/macos/)
+{{STACK_BADGES}}
+
+## Features
+
+- **<Feature 1>** — <one-line description>
+- **<Feature 2>** — <one-line description>
+- **<Feature 3>** — <one-line description>
+
+## Menu bar icon states
+
+| Icon | State |
+|---|---|
+| ... | ... |
+
+## Requirements
+
+- macOS {{MIN_MACOS}} or later
+- <any CLI dep, e.g. `brew install tmux`>
+- <build tooling>
+
+## Quick start
+
+```bash
+git clone https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}.git
+cd {{APP_NAME}}
+./build.sh install
+open /Applications/{{APP_NAME}}.app
+```
+
+## Installation options
+
+### 1. Build from source (current default)
+
+```bash
+git clone https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}.git
+cd {{APP_NAME}}
+
+./build.sh            # default build + .app bundle
+./build.sh open       # build + launch
+./build.sh install    # build + copy to /Applications
+```
+
+### 2. Homebrew cask *(not yet published)*
+
+```bash
+brew install --cask {{GITHUB_OWNER}}/tap/{{APP_NAME}}
+```
+
+### 3. Pre-built `.dmg` *(not yet published)*
+
+Attached to [GitHub Releases](https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}/releases). Right-click → Open on first launch (ad-hoc signed).
+
+## Development
+
+```bash
+<dev command>
+```
+
+## Design & documentation
+
+- [Design spec](docs/specs/)
+- [Implementation plans](docs/plans/)
+- [ADRs](docs/adr/)
+- [GitHub discoverability guide](docs/guides/github-discoverability.md)
+
+## License
+
+[MIT](LICENSE) © {{YEAR}} {{AUTHOR}}

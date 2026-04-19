@@ -1,0 +1,40 @@
+# {{APP_NAME}} Distribution
+
+## 릴리스 절차
+
+1. 버전 확정 (semver) → `./Release.sh 0.1.0`
+2. `dist/{{APP_NAME}}-0.1.0.dmg` 생성됨
+3. Git tag + push → `git tag -a v0.1.0 -m "..."` && `git push origin v0.1.0`
+4. GitHub Release 생성 → `.dmg` 업로드
+   ```bash
+   gh release create v0.1.0 dist/{{APP_NAME}}-0.1.0.dmg \
+       --title "{{APP_NAME}} 0.1.0" \
+       --notes "..."
+   ```
+5. SHA256 복사 → `HomebrewTap/{{APP_NAME}}.rb` 의 `sha256` 업데이트
+6. `{{GITHUB_OWNER}}/homebrew-tap` 별도 레포에 `Casks/{{APP_NAME}}.rb` 푸시
+7. 사용자 검증: `brew install --cask {{GITHUB_OWNER}}/tap/{{APP_NAME}}`
+
+## 전제 조건
+
+- `brew install create-dmg`
+- `gh auth status` (GitHub CLI 로그인 확인)
+- Git working tree 깨끗 (uncommitted 없음)
+
+## Ad-hoc 서명의 한계
+
+Apple Developer 계정 없음 → notarize 불가. 사용자는 첫 실행 시 우클릭 → 열기 필요.
+Homebrew cask 가 `xattr -dr com.apple.quarantine` 로 자동 우회.
+
+## 재사용 커맨드
+
+```bash
+# 번들 크기
+du -sh dist/{{APP_NAME}}-*.dmg
+
+# 서명 확인
+codesign -dv --verbose=4 dist/{{APP_NAME}}-*.app 2>&1 | head
+
+# SHA256
+shasum -a 256 dist/{{APP_NAME}}-*.dmg
+```

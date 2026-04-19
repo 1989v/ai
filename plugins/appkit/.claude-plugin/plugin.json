@@ -1,0 +1,26 @@
+{
+  "name": "appkit",
+  "description": "Launch kit for new desktop apps — scaffold README/LICENSE/Distribution + GitHub SEO metadata + release pipeline + discoverability checklist. Validated on macOS menu bar apps (muxbar, aieye).",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": [
+    "scaffolding",
+    "macos",
+    "menu-bar",
+    "release",
+    "homebrew",
+    "github-seo",
+    "oss-launch",
+    "discoverability"
+  ],
+  "commands": [
+    "./commands/start.md",
+    "./commands/init.md",
+    "./commands/seo.md",
+    "./commands/release.md",
+    "./commands/pages.md",
+    "./commands/discover.md",
+    "./commands/check.md"
+  ]
+}

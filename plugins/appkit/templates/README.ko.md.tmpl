@@ -1,0 +1,50 @@
+# {{APP_NAME}}
+
+**Language:** [English](README.md) | [한국어](README.ko.md)
+
+> {{ONE_LINER_KO}}.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![macOS {{MIN_MACOS}}+](https://img.shields.io/badge/macOS-{{MIN_MACOS}}+-blue.svg)](https://www.apple.com/macos/)
+{{STACK_BADGES}}
+
+## 주요 기능
+
+- **<기능 1>** — <한 줄 설명>
+- **<기능 2>** — <한 줄 설명>
+
+## 요구 사항
+
+- macOS {{MIN_MACOS}} 이상
+- <의존성>
+
+## Quick start
+
+```bash
+git clone https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}.git
+cd {{APP_NAME}}
+./build.sh install
+open /Applications/{{APP_NAME}}.app
+```
+
+## 설치 옵션
+
+### 1. 소스 빌드 (현재 기본)
+
+```bash
+./build.sh install
+```
+
+### 2. Homebrew cask *(아직 배포 전)*
+
+```bash
+brew install --cask {{GITHUB_OWNER}}/tap/{{APP_NAME}}
+```
+
+### 3. `.dmg` 사전 빌드 *(아직 배포 전)*
+
+각 [GitHub Release](https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}/releases) 에 첨부. 첫 실행 시 우클릭 → 열기.
+
+## 라이선스
+
+[MIT](LICENSE) © {{YEAR}} {{AUTHOR}}

@@ -1,0 +1,215 @@
+# GitHub Repo 발견성(Discoverability) 가이드
+
+> {{APP_NAME}} 를 공개 배포하면서 적용한 체크리스트. 다른 개인 OSS 프로젝트에도 재사용 가능.
+
+목표: 레포 링크를 받은 사람이 1초 안에 무엇인지 파악하고, 키워드로 검색한 사람이 도달 가능하게.
+
+---
+
+## 전체 레이어
+
+```
+[Layer 1] 레포 메타데이터     ← GitHub 검색 / Topic 페이지 유입
+  ├ Topics          (카테고리 인덱싱)
+  ├ Description     (한 줄 소개)
+  └ Social preview  (링크 공유 카드)
+
+[Layer 2] README 품질         ← 방문 직후 "그대로 써볼 만한가" 판단
+  ├ Quick start / 설치       (복붙 한 덩어리)
+  ├ 스크린샷 / 데모          (시각 정보)
+  ├ 언어 스위처              (글로벌 타겟 시)
+  └ Badge                    (신뢰성)
+
+[Layer 3] 외부 인덱스         ← 능동적 유입 경로 확보
+  ├ Homebrew tap (cask)
+  ├ awesome-* 리스트 PR
+  ├ Product Hunt
+  ├ Reddit / HackerNews
+```
+
+---
+
+## Layer 1. 레포 메타데이터
+
+### 1-1. Topics — 레포 태깅
+
+용도: `topic:claude-code` 같은 필터 + [topic 페이지](https://github.com/topics) 에 레포 노출.
+
+**개수 제한**: 최대 20개. 관련 없는 태그 남발 → 스팸 판정.
+
+**{{APP_NAME}} 추천 topics (15개)**:
+```
+rust, tauri, tauri-app, react, typescript,
+macos, menu-bar, menu-bar-app,
+claude-code, codex, ai-cli, llm,
+developer-tools, homebrew-cask, session-manager
+```
+
+**카테고리**:
+| 카테고리 | 예시 |
+|---|---|
+| 기술 스택 | `rust`, `tauri`, `react`, `typescript` |
+| 플랫폼 | `macos` |
+| 도메인 | `menu-bar`, `menu-bar-app`, `claude-code`, `codex`, `ai-cli`, `llm`, `session-manager` |
+| 통합 대상 | `homebrew-cask` |
+| 넓은 카테고리 | `developer-tools` |
+
+**명령**:
+```bash
+gh repo edit {{GITHUB_OWNER}}/{{APP_NAME}} --add-topic rust,tauri,react,macos,menu-bar-app,claude-code,codex,ai-cli,llm,developer-tools,homebrew-cask,session-manager,tauri-app,typescript,menu-bar
+gh repo view {{GITHUB_OWNER}}/{{APP_NAME}} --json repositoryTopics -q '.repositoryTopics[].name'
+```
+
+### 1-2. Description — 한 줄 소개
+
+**공식**: `[핵심 정체성] — [주요 특징 1-3개], [주요 특징 1-3개], [특징 더]`
+
+**{{APP_NAME}} Description**:
+> Menu bar app for monitoring AI CLI sessions (Claude Code, Codex) — unified session list, live activity badges, smart resume, hover preview, bulk cleanup.
+
+**명령**:
+```bash
+gh repo edit {{GITHUB_OWNER}}/{{APP_NAME}} --description "Menu bar app for monitoring AI CLI sessions (Claude Code, Codex) — unified session list, live activity badges, smart resume, hover preview, bulk cleanup."
+```
+
+### 1-3. Social preview — 링크 공유 카드
+
+**제약**:
+- GitHub API 로 업로드 불가 — 웹 UI 전용
+- 크기: 1280×640 px 권장
+
+**업로드 경로**:
+```
+https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}/settings#social-preview
+```
+
+**이미지 옵션**:
+
+1. **socialify.git.ci** (추천) —
+   ```
+   https://socialify.git.ci/{{GITHUB_OWNER}}/{{APP_NAME}}/image?font=JetBrains+Mono&pattern=Floating+Cogs&theme=Dark&description=1
+   ```
+2. 직접 디자인 — 메뉴바에서 아이콘 + 패널 일부 캡처해 1280×640 canvas 에 배치
+3. README 상단 이미지로 대체 — 업로드 없어도 README 최상단 이미지가 링크 카드로 사용됨
+
+**검증**:
+```
+https://opengraph.githubassets.com/1/{{GITHUB_OWNER}}/{{APP_NAME}}
+```
+(캐시 30초~몇 분 소요)
+
+---
+
+## Layer 2. README 품질
+
+{{APP_NAME}} 의 `README.md` 는 이미 다음을 포함:
+
+- ✅ Quick start 3줄 복붙 블록
+- ✅ Feature availability / Supported CLIs 표
+- ✅ Bilingual 언어 스위처 (`README.ko.md`)
+- ✅ Badge (License / macOS / Tauri / React)
+- ⚠️ 스크린샷 (`docs/assets/` 준비 필요)
+- ⚠️ 데모 GIF (권장)
+
+### 스크린샷 준비
+
+- 메뉴바 아이콘 상태 3종 (idle / generating / finished) — 메뉴바 확대 캡처
+- 패널 열린 전체 뷰 — 세션 리스트 + 우측 preview
+- 정리 모드 + 필터 + 체크박스 선택된 상태
+- Move to trash confirm 다이얼로그
+
+저장: `docs/assets/screenshot-*.png`. README 에 embed:
+```markdown
+![{{APP_NAME}} menu panel](docs/assets/screenshot-panel.png)
+```
+
+### 데모 GIF
+
+- Kap / Gifox 로 30초 녹화
+- 흐름: 메뉴바 아이콘 클릭 → 세션 리스트 → hover 로 preview → 행 클릭 resume
+- 저장: `docs/assets/demo.gif`
+
+---
+
+## Layer 3. 외부 인덱스 / 능동적 유입
+
+### 3-1. Homebrew tap
+
+**비용 0** (Apple Developer 계정 불필요).
+
+**단계**:
+1. `./Distribution/Release.sh 0.1.0` → `dist/{{APP_NAME}}-0.1.0.dmg`
+2. GitHub Release 생성 + `.dmg` 업로드
+   ```bash
+   gh release create v0.1.0 dist/{{APP_NAME}}-0.1.0.dmg --title "{{APP_NAME}} 0.1.0" --notes-file CHANGELOG.md
+   ```
+3. SHA256 계산 → `Distribution/HomebrewTap/{{APP_NAME}}.rb` 의 `sha256` 업데이트
+4. `{{GITHUB_OWNER}}/homebrew-tap` public repo 의 `Casks/{{APP_NAME}}.rb` 로 푸시
+5. 사용자: `brew install --cask {{GITHUB_OWNER}}/tap/{{APP_NAME}}`
+
+cask `postflight` 에 `xattr -dr com.apple.quarantine` 포함 → Gatekeeper 우회.
+
+### 3-2. awesome-* 리스트 PR
+
+| 리스트 | 범위 |
+|---|---|
+| [awesome-macos](https://github.com/iCHAIT/awesome-macOS) | macOS 앱 |
+| [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | Claude Code 생태계 |
+| [awesome-tauri](https://github.com/tauri-apps/awesome-tauri) | Tauri 프로젝트 |
+| [awesome-dev-tools](https://github.com/ericandrewlewis/awesome-developer-experience) | 개발자 도구 |
+| awesome-menu-bar-apps (검색) | 메뉴바 앱 |
+
+PR: fork → 알파벳 순서로 한 줄 추가 → PR. 기준은 각 리스트 README 확인.
+
+### 3-3. Product Hunt
+
+- 대상: Claude Code / LLM 사용자 커뮤니티
+- 화면 캡처, 데모 GIF, 태그 라인 ("Never lose an AI conversation again")
+- Tuesday/Wednesday PST 오전 런치
+
+### 3-4. Reddit
+
+| 서브 | 대상 |
+|---|---|
+| r/MacApps | macOS 앱 |
+| r/ClaudeAI | Claude 사용자 |
+| r/LocalLLaMA | AI 개발자 |
+| r/rust | Tauri/Rust |
+| r/opensource | 일반 OSS |
+
+각 서브 self-promotion 규칙 확인.
+
+### 3-5. Hacker News — "Show HN"
+
+- 형식: `Show HN: {{APP_NAME}} – Menu bar app for tracking Claude Code / Codex sessions`
+- URL: 레포 직접 링크
+- 오전 9시 PST 근처
+- 첫 댓글을 본인이 달아서 맥락 설명
+
+---
+
+## 체크리스트 — 새 공개 레포 출시 시
+
+```
+□ Topics 10~15개 등록 (기술스택 + 도메인 + 카테고리)
+□ Description 한 줄 작성 (정체성 + 주요 기능 키워드 포함)
+□ README 최상단에 Quick start 복붙 블록
+□ README 에 Badge (라이선스/플랫폼/버전)
+□ (GUI 앱) 스크린샷 docs/assets/ 에 추가해 README embed
+□ (GUI 앱) 데모 GIF 녹화해 README embed
+□ (글로벌 타겟) README.ko.md 등 언어 스위처
+□ Social preview 이미지 업로드
+□ (macOS 앱) Homebrew tap 레포 + cask 정의 + Release .dmg
+□ LICENSE 파일 존재
+□ 적절한 awesome-* 리스트 PR
+□ (콘텐츠 준비되면) Reddit / HN / Product Hunt 런치
+```
+
+---
+
+## 참고
+
+- [GitHub Topics 공식 docs](https://docs.github.com/en/repositories/classifying-your-repository-with-topics)
+- [Homebrew Acceptable Casks](https://docs.brew.sh/Acceptable-Casks)
+- [shields.io](https://shields.io) — badge 생성
+- [socialify.git.ci](https://socialify.git.ci) — social preview 자동 생성

@@ -1,0 +1,55 @@
+#!/bin/bash
+# {{APP_NAME}} 릴리스 빌드 + .dmg 패키징
+# 전제: build 도구 설치됨 + create-dmg (brew install create-dmg)
+#
+# Usage:
+#   ./Release.sh              # 기본 버전 (0.1.0)
+#   ./Release.sh 0.2.0        # 특정 버전
+
+set -euo pipefail
+
+VERSION="${1:-0.1.0}"
+OUT_DIR="dist"
+APP_NAME="{{APP_NAME}}.app"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+cd "$REPO_ROOT"
+
+echo "[1/6] Dependencies check"
+for tool in create-dmg; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "  ✗ $tool 미설치 → brew install $tool"
+        exit 1
+    fi
+done
+
+echo "[2/6] Build — 프로젝트 스택에 맞춰 커스터마이즈"
+# 예시: Tauri → pnpm tauri build --target universal-apple-darwin
+# 예시: Swift → swift build -c release --arch arm64 --arch x86_64
+# 예시: electron → pnpm dist
+# ... 이하 각 프로젝트에 맞게 수정
+
+echo "[3/6] .app 번들 확보 → 로컬 빌드 경로에서 $OUT_DIR/ 로 복사"
+# APP_BUILT=path/to/built/$APP_NAME
+# cp -R "$APP_BUILT" "$OUT_DIR/$APP_NAME"
+
+echo "[4/6] LSUIElement + ad-hoc sign"
+# plutil -insert LSUIElement -bool true "$OUT_DIR/$APP_NAME/Contents/Info.plist" 2>/dev/null || \
+#     plutil -replace LSUIElement -bool true "$OUT_DIR/$APP_NAME/Contents/Info.plist"
+# codesign --deep --force --sign - "$OUT_DIR/$APP_NAME"
+
+echo "[5/6] create-dmg"
+DMG="$OUT_DIR/{{APP_NAME}}-$VERSION.dmg"
+rm -f "$DMG"
+create-dmg \
+    --volname "{{APP_NAME}} $VERSION" \
+    --app-drop-link 450 120 \
+    "$DMG" \
+    "$OUT_DIR/$APP_NAME"
+
+echo "[6/6] SHA256"
+shasum -a 256 "$DMG"
+
+echo
+echo "done → $DMG"
+echo "다음: git tag -a v$VERSION && gh release create v$VERSION $DMG"

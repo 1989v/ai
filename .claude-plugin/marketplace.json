@@ -33,6 +33,11 @@
       "name": "ideabank",
       "source": "./plugins/ideabank",
       "description": "Idea-to-implementation pipeline: raw ideas → structured PRDs → brainstorming refinement → service scaffolding"
+    },
+    {
+      "name": "appkit",
+      "source": "./plugins/appkit",
+      "description": "Launch kit for new desktop apps — scaffold README/LICENSE/Distribution + GitHub SEO metadata + release pipeline + GitHub Pages banner + discoverability checklist. Validated on macOS menu bar apps (muxbar, aieye)."
     }
   ]
 }

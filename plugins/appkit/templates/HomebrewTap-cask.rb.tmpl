@@ -1,0 +1,26 @@
+cask "{{APP_NAME}}" do
+  version "0.1.0"
+  sha256 "TBD_AFTER_BUILD"
+
+  url "https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}/releases/download/v#{version}/{{APP_NAME}}-#{version}.dmg"
+  name "{{APP_DISPLAY}}"
+  desc "{{ONE_LINER}}"
+  homepage "https://github.com/{{GITHUB_OWNER}}/{{APP_NAME}}"
+
+  depends_on macos: ">= :ventura"
+
+  app "{{APP_NAME}}.app"
+
+  postflight do
+    system_command "xattr",
+                   args: ["-dr", "com.apple.quarantine", "#{appdir}/{{APP_NAME}}.app"],
+                   sudo: false
+  end
+
+  zap trash: [
+    "~/Library/Application Support/{{BUNDLE_ID}}",
+    "~/Library/Preferences/{{BUNDLE_ID}}.plist",
+    "~/Library/Caches/{{BUNDLE_ID}}",
+    "~/Library/WebKit/{{BUNDLE_ID}}",
+  ]
+end
