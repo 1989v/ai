@@ -84,12 +84,37 @@ EXCLUDED_DIRS = {
     "bower_components", "Pods", ".bundle",
 }
 
+INDEX_CANDIDATES = [
+    "docs/index.yml",
+    "docs/index.yaml",
+    "docs/doc-index.lock.json",
+    "docs/doc-index.json",
+]
 
-def _iter_md(root: Path) -> Iterable[Path]:
+
+def _read_submodule_paths(root: Path) -> set[str]:
+    gm = root / ".gitmodules"
+    if not gm.exists():
+        return set()
+    out: set[str] = set()
+    for line in _read_text(gm).splitlines():
+        stripped = line.strip()
+        if stripped.startswith("path"):
+            _, _, v = stripped.partition("=")
+            v = v.strip()
+            if v:
+                out.add(v.split("/")[0])
+    return out
+
+
+def _iter_md(root: Path, extra_excluded: set[str] | None = None) -> Iterable[Path]:
+    excluded = set(EXCLUDED_DIRS)
+    if extra_excluded:
+        excluded.update(extra_excluded)
     for p in root.rglob("*.md"):
         if any(seg.startswith(".") for seg in p.parts):
             continue
-        if any(seg in EXCLUDED_DIRS for seg in p.parts):
+        if any(seg in excluded for seg in p.parts):
             continue
         yield p
 
@@ -145,28 +170,83 @@ def _parse_simple_yaml_list(text: str, key: str) -> list[str]:
     return out
 
 
+def _registered_docs_from_json(data: dict) -> list[str] | None:
+    """known 스키마에서만 doc path 추출. 알 수 없는 스키마면 None (policy-only).
+
+    지원 스키마:
+      - {documents: [path, ...]} / {docs: [...]}: flat registry
+      - {links: [{docPath: ..., resolved: true}, ...]}: doc_map.py 계열 lock file
+    """
+    for key in ("documents", "docs", "files"):
+        v = data.get(key)
+        if isinstance(v, list):
+            return [x for x in v if isinstance(x, str) and x.endswith(".md")]
+
+    links = data.get("links")
+    if isinstance(links, list):
+        out: list[str] = []
+        for link in links:
+            if not isinstance(link, dict):
+                continue
+            if link.get("resolved") is False:
+                continue
+            for k in ("docPath", "doc", "path", "file"):
+                v = link.get(k)
+                if isinstance(v, str) and v.endswith(".md"):
+                    out.append(v)
+                    break
+        if out or data.get("summary") is not None:
+            return out
+    return None
+
+
 def layer1_index_integrity(root: Path, layer: LayerResult) -> None:
-    index_path = root / "docs" / "index.yml"
-    if not index_path.exists():
-        layer.record(Finding(layer.id, SEV_FAIL, "L1-01", "docs/index.yml missing",
-                             "docs/index.yml",
+    found_path: Path | None = None
+    for cand in INDEX_CANDIDATES:
+        p = root / cand
+        if p.exists():
+            found_path = p
+            break
+
+    if found_path is None:
+        layer.record(Finding(layer.id, SEV_FAIL, "L1-01",
+                             "doc index missing (tried: " + ", ".join(INDEX_CANDIDATES) + ")",
+                             "docs/",
                              "run `/hns:init` or create a minimal index"))
         return
 
-    text = _read_text(index_path)
+    text = _read_text(found_path)
     if not text.strip():
-        layer.record(Finding(layer.id, SEV_FAIL, "L1-02", "docs/index.yml is empty",
-                             "docs/index.yml"))
+        layer.record(Finding(layer.id, SEV_FAIL, "L1-02",
+                             f"{found_path.name} is empty",
+                             str(found_path.relative_to(root))))
         return
 
-    registered = _parse_simple_yaml_list(text, "documents")
-    registered += _parse_simple_yaml_list(text, "docs")
+    is_lock_file = ".lock" in found_path.name
+    if found_path.suffix == ".json":
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            layer.record(Finding(layer.id, SEV_FAIL, "L1-03",
+                                 f"{found_path.name} is not valid JSON",
+                                 str(found_path.relative_to(root))))
+            return
+        extracted = _registered_docs_from_json(data)
+        if extracted is None:
+            # policy-only schema (no docs registry inside) — treat as PASS informational
+            layer.record(Finding(layer.id, SEV_PASS, "L1-00",
+                                 f"{found_path.name} is policy-only (no doc registry), skipping registry checks",
+                                 str(found_path.relative_to(root))))
+            return
+        registered = extracted
+    else:
+        registered = _parse_simple_yaml_list(text, "documents")
+        registered += _parse_simple_yaml_list(text, "docs")
 
     missing = []
     for item in registered:
         if not item.endswith(".md"):
             continue
-        target = root / item if not item.startswith("docs/") else root / item
         if not (root / item).exists():
             missing.append(item)
 
@@ -178,6 +258,14 @@ def layer1_index_integrity(root: Path, layer: LayerResult) -> None:
         if len(missing) > 10:
             layer.record(Finding(layer.id, SEV_WARN, "L1-10",
                                  f"... and {len(missing) - 10} more missing entries"))
+
+    # orphan 검사는 "flat registry" 규약에서만 유효. lock file 은 source→doc link
+    # 관계를 담는 포맷이라 모든 doc이 lock에 있을 이유가 없음 → orphan 검사 skip.
+    if is_lock_file:
+        layer.record(Finding(layer.id, SEV_PASS, "L1-00",
+                             f"{found_path.name} is a lock file — orphan check skipped",
+                             str(found_path.relative_to(root))))
+        return
 
     docs_root = root / "docs"
     if docs_root.exists():
@@ -221,9 +309,10 @@ def layer2_agent_guidance(root: Path, layer: LayerResult) -> None:
                              "neither AGENTS.md nor CLAUDE.md present"))
 
 
-def layer3_harness_alignment(root: Path, layer: LayerResult) -> None:
+def layer3_harness_alignment(root: Path, layer: LayerResult,
+                              extra_excluded: set[str] | None = None) -> None:
     broken = []
-    for md in _iter_md(root):
+    for md in _iter_md(root, extra_excluded):
         rel = md.relative_to(root)
         rel_str = str(rel)
         if rel_str.startswith(("docs/legacies/", "docs/verify/")):
@@ -272,12 +361,13 @@ def layer3_harness_alignment(root: Path, layer: LayerResult) -> None:
                                  "run `/hns:gc` to refresh"))
 
 
-def layer4_evidence_coverage(root: Path, layer: LayerResult) -> None:
+def layer4_evidence_coverage(root: Path, layer: LayerResult,
+                              extra_excluded: set[str] | None = None) -> None:
     spec_roots = [root / "docs" / "specs", root / "docs" / "standards"]
     candidates = []
     for sr in spec_roots:
         if sr.exists():
-            candidates.extend(_iter_md(sr))
+            candidates.extend(_iter_md(sr, extra_excluded))
     if not candidates:
         layer.record(Finding(layer.id, SEV_PASS, "L4-00",
                              "no spec/standard docs to evaluate"))
@@ -310,11 +400,12 @@ def layer4_evidence_coverage(root: Path, layer: LayerResult) -> None:
 
 
 def run_layers(root: Path) -> list[LayerResult]:
+    submodules = _read_submodule_paths(root)
     results = [LayerResult(id=i, name=n, weight=w) for i, n, w in LAYERS]
     layer1_index_integrity(root, results[0])
     layer2_agent_guidance(root, results[1])
-    layer3_harness_alignment(root, results[2])
-    layer4_evidence_coverage(root, results[3])
+    layer3_harness_alignment(root, results[2], submodules)
+    layer4_evidence_coverage(root, results[3], submodules)
     return results
 
 
