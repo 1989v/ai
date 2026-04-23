@@ -77,9 +77,19 @@ def _read_text(p: Path) -> str:
         return ""
 
 
+EXCLUDED_DIRS = {
+    "node_modules", "vendor", "build", "dist", "target", "out",
+    "__pycache__", ".venv", "venv", ".tox", ".mypy_cache", ".pytest_cache",
+    ".gradle", ".idea", ".DS_Store", "coverage", ".next", ".nuxt",
+    "bower_components", "Pods", ".bundle",
+}
+
+
 def _iter_md(root: Path) -> Iterable[Path]:
     for p in root.rglob("*.md"):
         if any(seg.startswith(".") for seg in p.parts):
+            continue
+        if any(seg in EXCLUDED_DIRS for seg in p.parts):
             continue
         yield p
 
