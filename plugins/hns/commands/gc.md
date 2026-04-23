@@ -22,6 +22,7 @@ Follow `@references/gc-protocol.md` for scan modes and report format.
 
 - `/hns:gc` — 전체 스캔 (아래 체크리스트 전부)
 - `/hns:gc --docs` — 문서 drift 전용 서브플로우 (ADR-0023)
+- `/hns:gc --doctor` — doctor 진단 연계. `doctor.py` 결과를 우선순위 입력으로 auto-fix
 
 ### `--docs` 서브플로우 순서
 
@@ -31,6 +32,18 @@ Follow `@references/gc-protocol.md` for scan modes and report format.
 4. 사람이 문서 수정 → `doc_map.py` 재실행 → lock 커밋
 
 자동 아카이브/삭제 금지. orphan 탐지는 보고만.
+
+### `--doctor` 서브플로우 순서
+
+1. `python3 ai/plugins/hns/scripts/doctor.py . --output-json docs/verify/DOCTOR_REPORT.json --output-md docs/verify/DOCTOR_REPORT.md`
+2. `DOCTOR_REPORT.json`을 읽어 layer별 findings 분류
+3. 우선순위 fix 순서: L3 broken-link → L1 index → L2 agent → L4 evidence
+4. 배치 크기 제한: **1회 실행당 최대 20개 findings**
+5. 남은 findings은 `docs/verify/DOCTOR_TODO.md`에 기록 → 다음 실행 시 HIGH 우선 처리
+6. 변경사항 있으면 PR 생성, 없으면 `STALE_DOC_AUDIT.md`만 업데이트
+
+**Idempotency**: 같은 입력이면 같은 결과. `DOCTOR_REPORT.*` 는 덮어쓴다.
+자동 fix 전 사용자 확인 요청(파괴적 변경 방지).
 
 ## Scan Checklist
 - [ ] Dead code: 미사용 import, 빈 파일, 호출 없는 public 함수

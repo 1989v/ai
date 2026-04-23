@@ -1,3 +1,6 @@
+<!-- source: plugins/hns/.claude-plugin/plugin.json -->
+<!-- source: plugins/hns/commands/init.md -->
+
 # harness-scaffold (hnsf) — Design Spec
 
 **Date**: 2026-03-29

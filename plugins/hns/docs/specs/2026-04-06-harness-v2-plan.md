@@ -58,7 +58,7 @@ Mitchell Hashimoto (2026-02): AI 에이전트가 같은 실수를 반복하는 �
 | 비유 | 안전모 쓰라고 말하기 | 안전모 없으면 출입문 안 열림 |
 
 ## References
-- [하네스 엔지니어링 분석](/docs/harness-engineering-analysis.md)
+- 하네스 엔지니어링 분석 (외부 레포 문서 — 링크 deprecated)
 - Mitchell Hashimoto's agents.md approach
 - OpenAI: 3 engineers, 5 months, zero code written
 - LangChain: 30위 → 5위 (model unchanged, harness improved)
