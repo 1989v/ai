@@ -26,6 +26,18 @@ Delegate to `spec-initializer` agent:
 
 ## PHASE 2: Load Documentation Context
 
+### 2.1 Domain Glossary (always)
+IF `agent-os/product/glossary.md` exists:
+- Load full content — this is the **ubiquitous language** all subsequent phases must use
+- Note all `Avoid:` synonyms — if the feature description uses any, flag for grilling in PHASE 3
+ELSE:
+- Note "no glossary.md — recommend running /hns:glossary after this spec"
+- Do NOT block; continue with degraded coherence
+
+IF `docs/context-map.md` exists (multi-BC project):
+- Identify which BC this feature belongs to → load that BC's glossary.md instead
+
+### 2.2 Index-based Loading
 IF `docs/index.yml` exists:
 - Extract keywords from feature description
 - Match against index entries
@@ -39,15 +51,19 @@ ELSE: Note "no docs/index.yml — using agent-os/standards/ fallback"
 
 Delegate to `spec-shaper` agent with:
 - Feature initialization from Phase 1
-- Documentation context from Phase 2
+- Documentation context from Phase 2 (incl. glossary.md if present)
 - `agent-os/product/` context (mission, tech-stack)
 - `agent-os/standards/` for compliance
 
 Agent will:
-1. Generate 4-8 clarifying questions
+1. Generate 4-8 clarifying questions — **use glossary.md vocabulary**; if user introduces a term that conflicts with `Avoid:` synonyms, ask first
 2. Process user answers + mandatory visual check
 3. Follow up if needed (max 1-3 questions)
 4. Save to `planning/requirements.md`
+
+If during Q&A a new domain term is coined or an existing term is sharpened:
+- Recommend `/hns:glossary --conflict {term}` to inline-update before continuing
+- Do NOT silently invent new vocabulary
 
 ## PHASE 4: Build Abstract Test Strategy
 

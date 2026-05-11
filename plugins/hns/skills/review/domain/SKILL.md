@@ -9,8 +9,14 @@ user-invocable: false
 ## Seed Discovery Protocol
 Apply `@references/review-protocol.md` stages 1-4.
 
+## Reference
+`@references/language-reference.md` — glossary 포맷·규칙의 단일 출처.
+
 ## Checklist
 - [ ] Bounded context boundaries clearly defined? No leakage across contexts?
+- [ ] **Glossary present?** `agent-os/product/glossary.md` exists, or (multi-BC) `docs/context-map.md` points to per-BC glossary
+- [ ] **Spec vocabulary matches glossary?** Every domain noun in spec.md is defined in glossary (or is a newly-introduced term flagged for `/hns:glossary`)
+- [ ] **No `Avoid:` synonyms used in spec?** Deprecated synonyms in glossary's `Avoid` lines are not used in spec.md
 - [ ] Ubiquitous language consistent between spec and existing codebase?
 - [ ] Aggregate invariants explicitly stated and enforceable?
 - [ ] Domain events properly scoped to owning aggregate?
@@ -18,6 +24,12 @@ Apply `@references/review-protocol.md` stages 1-4.
 - [ ] Value Objects vs Entities correctly classified?
 
 For each check item, load the corresponding skillset from `skillsets/` if available.
+
+### Glossary Conflict Verdict Rules
+- Missing glossary entirely → **REVISE** (recommend running `/hns:glossary` after spec ships)
+- Spec uses `Avoid:` synonym → **BLOCK** (must resolve before proceeding)
+- Spec coins new domain term without glossary entry → **REVISE** (run `/hns:glossary --conflict {term}`)
+- Spec uses term with different meaning than glossary → **BLOCK** (real ubiquitous-language violation)
 
 ## Verdict
 - **SHIP**: All checks passed

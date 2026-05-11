@@ -184,7 +184,7 @@ marketplace 설치 없이 직접 로드. 변경 시 `/reload-plugins`로 핫 리
 
 | Plugin | Prefix | Commands | Skills | Agents |
 |--------|--------|----------|--------|--------|
-| **hns** | `/hns:` | 19 | 12 (background) | 10 |
+| **hns** | `/hns:` | 13 | 13 (background, incl. `glossary`) | 10 |
 | **ai-debugger** | `/ai-debugger:` | 2 | 6 | 1 |
 | **private-repo** | `/private-repo:` | 1 | 1 | 0 |
 | **content-analyzer** | `/content-analyzer:` | 1 | 3 | 1 |

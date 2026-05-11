@@ -1,0 +1,139 @@
+# Language Reference
+
+> 도메인 유비쿼터스 사전(`glossary.md`)과 모듈 설계 어휘(`module-language`)의 정의·작성 규칙. `/hns:glossary`, `shape-spec`, `interview-capture`, `review/domain`, `review/architecture`가 공유 참조한다.
+
+---
+
+## 1. 왜 필요한가
+
+### 6 함정 매핑
+- 함정 #2 (모호한 언어 사용) → **유비쿼터스 사전(`glossary.md`)** 으로 처방
+- 함정 #4 (Shallow vs Deep 모듈) → **모듈 설계 어휘**로 처방
+
+두 함정은 *"동일한 개념을 동일한 단어로 부른다"* 라는 한 가지 원리를 도메인 축(#2)과 구조 축(#4)에 각각 적용한 것이다. 본 reference는 두 축을 한 파일에서 정의한다.
+
+---
+
+## 2. `glossary.md` — 도메인 유비쿼터스 사전
+
+### 2.1 위치 컨벤션
+
+```
+프로젝트 루트/
+├── agent-os/product/
+│   ├── mission.md
+│   ├── tech-stack.md
+│   └── glossary.md           ← 단일 컨텍스트 (기본)
+└── docs/
+    ├── context-map.md        ← 다중 BC일 때만, 각 BC의 glossary.md 위치를 가리킴
+    └── adr/
+        └── 0001-*.md
+```
+
+- **단일 컨텍스트**: `agent-os/product/glossary.md` 하나
+- **멀티 BC**: `docs/context-map.md`가 각 BC의 `glossary.md` 위치를 가리킴 (예: `src/ordering/glossary.md`)
+- 파일은 **lazy 생성** — 첫 용어가 확정될 때 만든다
+
+### 2.2 포맷
+
+```markdown
+# {Product} — Domain Glossary
+
+## Terms
+
+### {Term}
+**Definition.** 한 문장. 도메인 전문가가 이해 가능한 수준.
+**Avoid.** 이전에 쓰였지만 폐기된 동의어.
+**Code.** 이 용어가 코드에 어떤 식별자로 나타나는가 (선택, e.g. `class Order`, `package ordering`)
+
+### {Another Term}
+...
+
+## Relationships
+
+- **{Term A}** holds many **{Term B}**
+- **{Term B}** belongs to exactly one **{Term A}**
+
+## Flagged ambiguities
+
+- "{ambiguous word}" was used to mean both X and Y — resolved: X is **{TermA}**, Y is **{TermB}**.
+```
+
+### 2.3 작성·진화 규칙
+
+1. **Inline 업데이트**: 용어 충돌·정제 발견 시 즉시 갱신. 별도 배치 작업으로 미루지 않는다.
+2. **도메인 전문가 어휘만**: 구현 디테일(`Repository`, `DTO`, `Handler`) 금지. 비즈니스가 말하는 단어만 등재.
+3. **Avoid 섹션 필수**: 폐기된 동의어를 명시해야 향후 PR/리뷰에서 회귀를 차단할 수 있다.
+4. **Code 매핑은 선택**: 코드 식별자가 변할 수 있으므로 강제하지 않되, 등재하면 검색 가능성↑.
+5. **충돌 처리**: 사용자가 사전과 모순되는 용어를 쓰면 **즉시 질의**하여 사전 갱신 또는 사용자 수정 중 택일.
+
+### 2.4 ADR 트리거
+
+용어 결정 중 다음 셋이 **모두 참**이면 ADR을 함께 만든다 (`docs/adr/{nnnn}-{slug}.md`):
+
+1. **Hard to reverse** — 뒤집을 때 마이그레이션/리네이밍 비용이 큼
+2. **Surprising without context** — 미래의 독자가 *"왜 이렇게 부르지?"* 라고 물을 것
+3. **Real trade-off** — 다른 후보가 있었고 그 중 하나를 선택한 이유가 있음
+
+셋 중 하나라도 빠지면 ADR을 만들지 않는다 (사전 등재만으로 충분).
+
+---
+
+## 3. Module Language — 구조 설계 어휘
+
+### 3.1 핵심 어휘
+
+| 용어 | 정의 |
+|---|---|
+| **Module** | 인터페이스 + 구현을 가진 모든 단위 (함수/클래스/패키지/슬라이스) |
+| **Interface** | 호출자가 모듈을 쓰기 위해 알아야 할 모든 것: 타입·불변식·실패 모드·호출 순서·설정. 시그니처만이 아님 |
+| **Implementation** | 모듈 내부 코드 |
+| **Depth (깊이)** | 인터페이스 단위 면적당 행동량 = leverage. 작은 인터페이스로 큰 행동을 노출하면 **Deep** |
+| **Shallow** | 인터페이스가 구현만큼 복잡한 모듈 — 안티패턴 |
+| **Seam** | 인터페이스가 존재하는 위치. 인플레이스 수정 없이 행동을 바꿀 수 있는 지점 |
+| **Adapter** | seam에서 인터페이스를 구현한 구체 |
+| **Leverage** | 호출자가 깊이로부터 얻는 가치 (한 줄 호출로 풍부한 행동) |
+| **Locality** | 유지보수자가 깊이로부터 얻는 가치 (변경/버그/지식이 한 곳에 집중) |
+
+### 3.2 Deletion Test (Shallow 판별)
+
+> 어떤 모듈을 머릿속에서 지운다고 가정해본다. 그 모듈이 가지고 있던 복잡도가:
+> - **한 곳에 다시 모이는가** → Deep 후보. 살릴 가치.
+> - **N개 호출자에 흩어지는가** → Deep. 명확히 값을 함.
+> - **그냥 사라지는가** → Shallow (pass-through). 제거 대상.
+
+### 3.3 Seam 규칙
+
+- **1 adapter = 가설 seam**. 진짜 분리할 가치가 있는지 미정.
+- **2+ adapters = 실재 seam**. 인터페이스를 진짜 분리해야 할 신호.
+- 1 adapter만 있는 추상화는 *"테스트만을 위한 mock seam"* 일 가능성이 높음 → 의심.
+
+### 3.4 네이밍 규칙
+
+- 모듈 이름은 **도메인 어휘(`glossary.md`)** 에서 가져온다.
+- `OrderService` / `FooBarHandler` 같은 일반 접미사 사용 금지. `glossary.md`에 `Order intake`가 정의돼 있으면 `OrderIntake` 모듈.
+- 새 모듈을 도입하면서 어휘를 만들었다면 **그 자리에서 `glossary.md`에 등재**한다.
+
+---
+
+## 4. 통합 지점 (cross-reference)
+
+이 reference를 인용하는 곳:
+
+- `commands/glossary.md` — 사전 구축·갱신 흐름
+- `skills/commands/glossary/SKILL.md` — 절차 정의
+- `skills/commands/shape-spec/SKILL.md` PHASE 2 — glossary 로딩
+- `skills/commands/interview-capture/SKILL.md` PHASE 4 — Terminology drift 버킷
+- `skills/review/domain/SKILL.md` — 사전 충돌 체크리스트
+- `skills/review/architecture/SKILL.md` — Depth/Seam 체크리스트
+- `commands/start.md` PHASE 0 — glossary.md 자동 로딩
+
+---
+
+## 5. NEVER
+
+- 도메인 사전에 구현 디테일(Repository/DTO/Handler 등) 등재
+- 사용자가 쓴 용어가 사전과 충돌하는데 침묵하고 진행
+- Deletion test 없이 "리팩토링" 명목으로 shallow 모듈 양산
+- adapter 1개 상태로 seam을 정당화
+- `glossary.md` 변경을 별도 PR로 미루기 (inline 갱신 원칙)

@@ -97,6 +97,8 @@ PHASE 7: Post-Implementation Validation (기본 ON)
 1. Read docs/index.yml (if exists) for auto-reference
 2. Read agent-os/product/mission.md
 3. Read agent-os/product/tech-stack.md
+4. Read agent-os/product/glossary.md (if exists) — domain ubiquitous language; if missing, note recommendation to run `/hns:glossary` and continue with degraded coherence
+5. Read docs/context-map.md (if exists, multi-BC project) — identify which BC this request belongs to and load that BC's glossary.md
 
 ### PHASE 1: Shape Spec
 

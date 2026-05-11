@@ -42,6 +42,7 @@ From these buckets:
 - Downstream persistence: What gets saved? Where?
 - Failure semantics: What happens on failure? Retry? Idempotency?
 - Out-of-scope boundary: What explicitly won't be handled?
+- **Terminology drift**: Does the spec use any term that conflicts with `agent-os/product/glossary.md`? Any new term coined without entry? — if found, recommend `/hns:glossary --conflict {term}` before proceeding
 
 **New mode additions:**
 - Observability: How will we debug this?
@@ -50,6 +51,12 @@ From these buckets:
 **Resume mode additions:**
 - Closure unknowns: What's still open from previous work?
 - Drift resolution: Who owns resolving detected drift?
+
+### Terminology Drift Detection Procedure
+1. Load `agent-os/product/glossary.md` (if exists)
+2. Scan spec.md / requirements.md for: domain nouns, `Avoid:` synonyms, terms not in glossary
+3. If drift found → record as **pre-impl** question (BLOCKED until resolved)
+4. If no glossary exists yet → record as **pre-impl** question recommending bootstrap via `/hns:glossary`
 
 ## PHASE 5: Update open-questions.yml
 
