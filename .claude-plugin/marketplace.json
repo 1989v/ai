@@ -38,6 +38,11 @@
       "name": "appkit",
       "source": "./plugins/appkit",
       "description": "Launch kit for new desktop apps — scaffold README/LICENSE/Distribution + GitHub SEO metadata + release pipeline + GitHub Pages banner + discoverability checklist. Validated on macOS menu bar apps (muxbar, aieye)."
+    },
+    {
+      "name": "portfolio",
+      "source": "./plugins/portfolio",
+      "description": "Build and incrementally update a developer portfolio from git commit history. Default: current repo + ~/.claude/portfolio/{user}.md. Modes: single repo, multi-repo, GitHub-wide scan"
     }
   ]
 }
