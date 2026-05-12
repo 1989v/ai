@@ -1,120 +1,193 @@
 ---
 name: glossary
-description: Use when building or evolving the project's domain glossary — defines 5 modes (Bootstrap/Grilling/Conflict/Scan/Review), inline update discipline, and ADR offer rules
+description: Use when building or evolving the project's domain glossary — 8-phase deep analysis (file scan → class body → JPA → enum/sealed → events/Kafka → tests → docs/ADR → cross-check), with explicit Include/Exclude rules and 12-category output
 user-invocable: false
 ---
 
-# /hns:glossary — Skill Procedure
+# /hns:glossary — Skill Procedure (v0.9.0+)
 
-## Reference
-`@references/language-reference.md` — 포맷·규칙의 단일 출처. 충돌 시 reference가 우선.
+## References (단일 출처)
+- `@references/glossary-extraction-rules.md` — Include/Exclude, 7 Type 분류, 12 카테고리, Quality Gates
+- `@references/language-reference.md` — 사전 포맷 + Module Language
+
+충돌 시 `glossary-extraction-rules.md`가 우선.
+
+## Modes
+
+| Mode | Trigger | 절차 |
+|---|---|---|
+| **Deep** (기본 from v0.9.0) | `/hns:glossary` 또는 `/hns:glossary --deep` | PHASE 1~8 모두 수행 |
+| **Shallow** (legacy v0.8.x) | `/hns:glossary --shallow` | 파일명 스캔만 (속도 우선) |
+| **Conflict** | `/hns:glossary --conflict {term}` | 단일 용어 충돌 해소 |
+| **Review** | `/hns:glossary --review` | 기존 사전 ↔ 코드 정합성 점검 |
+| **Bootstrap** | glossary 없을 때 | Deep 모드 + 사용자 grilling으로 첫 5-10 용어 확정 |
+
+---
 
 ## Iron Laws
 
-1. **Inline update**: 용어가 확정되는 *그 순간* `glossary.md`를 갱신. 배치 금지.
-2. **Domain-expert vocabulary only**: 구현 디테일(Repository/DTO/Handler/Service 등) 등재 금지.
-3. **Avoid section mandatory**: 폐기된 동의어를 반드시 기록 — 회귀 차단.
-4. **Conflict surfaces silence**: 사용자가 사전과 모순되는 용어를 쓰면 즉시 질의. 침묵 진행 금지.
-5. **One question at a time** (Grilling Mode): 결정 트리를 한 가지 분기씩 내려간다.
+1. **Inline update**: 용어 확정 시 즉시 파일 갱신. 배치 금지.
+2. **Type-first classification**: 모든 용어는 7 Type(Aggregate/Entity/VO/Domain Service/Domain Event/Policy/Port) 중 정확히 하나로 분류. 미분류 시 등재하지 않고 Flagged.
+3. **Exclude rule strict**: `*JpaEntity` / `*Adapter` / `*Config` / `*Dto` / `*Controller` 등은 자동 제외. 도메인 의미가 명확하면 Type 재분류 후 등재.
+4. **8-source coverage**: Deep 모드는 8 소스(파일명/본문/JPA/enum-sealed/Exception/Kafka/Test/Docs)를 모두 본다. 누락 시 보고서에 명시.
+5. **Quality Gate enforce**: 생성 후 Quality Gate 검증 자동 수행. 실패는 보고서에 표시.
+6. **One question at a time** (grilling): 결정 트리를 한 가지 분기씩.
 
 ---
 
-## PHASE A: Bootstrap Mode
+## PHASE 1: Scope Resolution
 
-`glossary.md`가 없을 때.
+1. 단일 BC 인지 멀티 BC 인지 결정:
+   - `agent-os/product/glossary.md` 존재 → 단일 BC 경로
+   - `docs/context-map.md` 존재 → 멀티 BC, 표를 따라 각 BC 처리
+2. 대상 BC 디렉토리 확정 (사용자 인자 또는 전체)
+3. 출력 경로 결정 (`{bc}/glossary.md` 또는 `agent-os/product/glossary.md`)
 
-1. **Scan candidates**:
-   - `agent-os/product/mission.md`에서 명사 추출
-   - 코드베이스 패키지/디렉토리 이름 중 도메인 후보 (Spring 패키지의 `domain/` 하위, 클래스 이름 빈도)
-   - 기존 `docs/specs/*/spec.md`에서 자주 등장하는 명사
-2. **Cluster & rank**:
-   - 동일 개념의 표기 변종 그룹화 (예: `order` / `Order` / `주문`)
-   - 빈도순 정렬, 상위 5-10개 선정
-3. **Grill user (1 term at a time)**:
-   - 후보 제시 → 사용자 정의 요청 → Definition / Avoid / Code 매핑 채움
-   - 추천 답안 먼저 제시 후 수정 받기
-4. **Initialize `agent-os/product/glossary.md`**:
-   - reference의 포맷 그대로 작성
-5. **Detect multi-BC need**:
-   - 후보가 2개 이상의 명확히 다른 도메인으로 갈리면 → 사용자에게 *"context를 분리할까요?"* 질의
-   - 승인 시 `docs/context-map.md` 작성 + BC별 glossary 위치 지정
+## PHASE 2: Source Inventory
 
-## PHASE B: Grilling Mode
+각 BC에 대해 다음 8 소스의 존재 여부 및 경로를 인벤토리화:
 
-`glossary.md`가 있고 새 용어/모호 용어를 받았을 때.
+| # | Path pattern | 필수/선택 |
+|---|---|---|
+| 1 | `{bc}/domain/src/main/kotlin/**/*.kt` | 필수 |
+| 2 | (위 .kt 각각의 첫 100줄) | 필수 |
+| 3 | `{bc}/{domain,app}/src/main/kotlin/**/*JpaEntity.kt` | 선택 (JPA 사용 시) |
+| 4 | enum/sealed 패턴 grep | 필수 (있을 때) |
+| 5 | `{bc}/{domain,app}/src/main/kotlin/**/*Exception.kt` | 선택 |
+| 6 | `{bc}/{app,consumer,batch}/src/main/kotlin/**/{Kafka*,*Consumer,*Producer}.kt` + topic 상수 | 선택 (이벤트 사용 시) |
+| 7 | `{bc}/{domain,app}/src/test/kotlin/**/*.kt` (BehaviorSpec) | 선택 |
+| 8 | `{bc}/CLAUDE.md`, `{bc}/docs/**`, `agent-os/product/mission.md`, `docs/adr/*`, `docs/specs/*` | 선택 |
 
-1. **Load context**: 기존 glossary + 충돌 후보 검색
-2. **One question at a time**:
-   - "이 용어는 기존 X와 어떻게 다른가요? 같은 거라면 Avoid에 등재할까요?"
-   - "이 단어를 쓸 때 사용자/도메인 전문가도 같은 의미로 쓰나요?"
-   - 각 질문에 추천 답안 동반
-3. **Inline update**: 한 용어 확정 시 즉시 파일 갱신
-4. **Loop**: 미확정 용어가 남아 있으면 다음 용어로
+누락된 소스는 보고서에 `(no source)` 마크.
 
-## PHASE C: Conflict Mode
+## PHASE 3: Raw Candidate Extraction
 
-`--conflict {term}` 호출 또는 다른 스킬이 충돌을 감지해 트리거.
+각 소스에서 후보 명사를 추출 (분류 전):
 
-1. **Locate conflict source**:
-   - glossary의 해당 용어 정의
-   - 충돌이 발견된 위치 (spec.md / 코드 / 사용자 발언) 인용
-2. **Present options**:
-   - (a) glossary 정의 유지, 충돌 측 수정
-   - (b) glossary 정의 갱신, 충돌 측 유지
-   - (c) 새 용어로 분리 (둘 다 다른 개념이었음)
-3. **Apply choice inline**
-4. **Cross-update**: 옵션 (b)/(c) 선택 시 영향받는 spec/코드 위치를 사용자에게 알림
+- **Source 1 (파일명)**: 모든 `.kt` basename (제외 패턴 적용 후)
+- **Source 2 (본문)**: 각 파일 상단 100줄에서:
+  - `data class X(...)` → property 명사 추출 (예: `Order(val customerId, val items)` → `customerId`, `items`)
+  - `sealed class X { class Y : X() }` → subtype 전부
+  - `companion object { const val MAX_X = ... }` → 정책 상수
+  - KDoc `/** ... */` → 자연어 정의 후보
+- **Source 3 (JPA)**: `@Entity`, `@Column`, `@JoinColumn`, `@UniqueConstraint` → 관계·invariant
+- **Source 4 (enum/sealed)**: `enum class X { A, B }` → 정책 분기 표현, sealed subtypes → 알고리즘 변형
+- **Source 5 (Exception)**: 예외 클래스명 + 생성자 인자에서 invariant 단서
+- **Source 6 (Kafka)**: `@KafkaListener(topics=...)`, `KafkaTemplate.send("topic.name", ...)` → 토픽 도메인 명사
+- **Source 7 (test BehaviorSpec)**: `Given("...") When("...") Then("...")` → 비즈니스 시나리오
+- **Source 8 (docs)**: 비즈니스 명사·acronym·정책 결정
 
-## PHASE D: Scan Mode
+원본 인용을 잃지 않기 위해 각 후보는 출처 위치(file:line)와 함께 보관.
 
-`--scan` 호출. Bootstrap의 1-2단계만 수행 + 결과를 사용자 검토 큐에 적재.
+## PHASE 4: Classification (7 Type)
 
-1. 코드/문서 스캔 → 후보 추출
-2. 기존 glossary와 매칭 → 등재 / 충돌 / 신규로 분류
-3. `agent-os/product/glossary-candidates.md` 작성:
-   ```
-   ## To Decide
-   - {term} (occurrences: file:line, file:line) → similar to existing {existing}?
-   ## Likely Domain Terms
-   - {term} (occurrences) → propose Definition: ...
-   ## Likely Implementation (skip)
-   - {term}
-   ```
-4. 사용자에게 *"검토 후 /hns:glossary로 재진입하세요"* 안내
+`glossary-extraction-rules.md §1 §3` 적용:
 
-## PHASE E: Review Mode
+각 후보에 대해:
+1. Exclude 패턴 매칭 (`*JpaEntity` 등) → **제외** (단, 도메인 의미 명확 시 Type 재분류 후 진행)
+2. 후보를 7 Type 중 하나에 매핑:
+   - 트랜잭션 경계 + invariant 보유 → Aggregate
+   - 식별자 있고 다른 Aggregate 종속 → Entity
+   - 식별 없고 값 동치 → Value Object
+   - stateless 도메인 로직 (여러 Aggregate 관여) → Domain Service
+   - 사실 통보 → Domain Event
+   - 의사결정 규칙 → Policy
+   - 외부 추상화 인터페이스 → Port
+3. 분류 불가 → Flagged Ambiguities (등재 X)
 
-`--review` 호출. 3자 정합성 점검.
+## PHASE 5: Metadata Enrichment
 
-1. **Glossary vs Code**:
-   - 각 용어의 Code 매핑이 실제 코드에 존재하는가? (grep)
-   - 매핑 누락 / 식별자 리네이밍 감지
-2. **Glossary vs Specs**:
-   - `docs/specs/*/spec.md`에서 Avoid 단어 사용 발견 → 경고
-   - spec에 등장하는 도메인 명사 중 glossary 미등재 → 큐 적재
-3. **Output**: `agent-os/product/glossary-review.md`
-   - Critical / Warning / Info 분류
-   - 각 항목에 file:line 증거
+각 분류된 Term에 8필드 metadata 채움:
 
----
+| 필드 | 출처 |
+|---|---|
+| Type | PHASE 4 결과 |
+| Definition | KDoc → mission/CLAUDE.md → test BehaviorSpec given/when → 추정 (`(draft)`) |
+| Lifecycle | sealed status enum, exception 메시지, 테스트 시나리오 |
+| Invariants | Exception 클래스명·메시지, JPA constraints, sealed 분기 |
+| Related events | Kafka topic mapping, `@EventListener`, `Outbox` 등 |
+| Avoid | 코드 내 동의어 (예: `User` vs `Member`), spec의 deprecated 단어 |
+| Code | FQN. 다수면 콤마로 |
+| Found in | 모듈 디렉토리 + docs path |
 
-## PHASE Z: ADR Offer (모든 mode 공통, 종료 직전)
+추출 못한 필드는 명시적으로 `TBD` (생략 X).
 
-이번 세션에서 확정한 용어 중 다음 셋 **모두 참**인 것만:
+## PHASE 6: Category Assembly (12 카테고리)
 
-1. **Hard to reverse** — 마이그레이션 비용
-2. **Surprising without context** — 미래 독자가 의문
-3. **Real trade-off** — 다른 후보가 있었음
+`glossary-extraction-rules.md §6` 순서대로 작성:
 
-→ 사용자에게 *"ADR로 기록할까요?"* 제안. 셋 중 하나라도 빠지면 묻지 않는다 (glossary 등재만으로 충분).
+1. **Bounded Context Overview** — mission/CLAUDE.md 1문단 통합
+2. **Aggregates & Entities** — Aggregate, Entity Term
+3. **Value Objects** — VO Term
+4. **Domain Services** — Domain Service Term
+5. **Domain Events** — Domain Event Term + Kafka 토픽 매핑
+6. **Policies & Invariants** — Policy Term + sealed/enum/Exception 표
+7. **Ports** — Port (Inbound = Use Case Port, Outbound = Repository/External)
+8. **Use Cases** — Use Case 클래스명에서 Verb+Noun 분리 사전
+9. **API Contracts** (optional) — 외부 노출 API의 명사 (`*Request`, `*Response` 중 의미 있는 것)
+10. **Acronyms & Abbreviations** — DART, FX, OHLCV, TOTP 등
+11. **Cross-Context Integration** — context-map.md 참조 + 본 BC가 emit/consume 하는 이벤트
+12. **Flagged Ambiguities** — 분류 불가, 추가 grilling 필요 사항
+
+빈 섹션은 `— (이 BC에 해당 없음)` 표시.
+
+## PHASE 7: Quality Gates (자동 검증)
+
+생성 후 다음을 자동 점검 (`glossary-extraction-rules.md §7`):
+
+- [ ] BC당 Aggregate ≥ 1 (없으면 보고서 경고)
+- [ ] 모든 Domain Event는 emit trigger 명시
+- [ ] 모든 Aggregate는 Invariants ≥ 1 (없으면 TBD 표기 후 Flagged)
+- [ ] 모든 Term은 Type 필드 있음
+- [ ] Avoid는 비어있어도 `—` 명시
+- [ ] Code FQN이 실제 파일에 존재 (grep verify)
+- [ ] Cross-Context Shared Term은 상대 BC에도 등재되었는지 매칭
+
+검증 결과를 작성하여 사용자에게 보고.
+
+## PHASE 8: Grilling & ADR Offer
+
+자동 추출로 채워지지 않은 항목 (특히 Invariants, Avoid 후보) 에 대해 사용자에게 grilling.
+- One question at a time
+- 추천 답안 동반
+- 답변 즉시 inline 갱신
+
+ADR 트리거 (3 조건 모두 참 시 제안):
+1. Hard to reverse
+2. Surprising without context
+3. Real trade-off
+
+## Output Report (모든 모드 공통, 종료 직전)
+
+```
+Glossary updated: {path}
+
+Mode:        Deep | Shallow | Conflict | Review | Bootstrap
+Type counts: Aggregate {n}, Entity {n}, VO {n}, Service {n}, Event {n}, Policy {n}, Port {n}
+Use Cases:   {n}
+Acronyms:    {n}
+Cross-context flags: {n}
+
+Quality Gates:
+  ✓ Aggregate ≥ 1
+  ✓ All Events have emit trigger
+  ⚠ {Aggregate X} missing Invariants (Flagged)
+  ✓ FQN grep verified
+  ⚠ Cross-context "Order" not matched in commerce BC
+
+Next:
+  - Resolve {n} Flagged Ambiguities (run again or grill)
+  - Consider ADR for: {term-list if any}
+```
 
 ---
 
 ## NEVER
 
-- 배치 갱신 (PR 끝에 모아서 한 번에 — 금지)
-- 사용자 답 없이 추정으로 등재
-- 구현 디테일을 도메인 용어로 등재
-- Avoid 섹션 비워두기
-- 한 번에 여러 질문 (One question at a time 위반)
-- 사전 충돌 감지하고 침묵 진행
+- 8 소스 중 일부만 보고 Deep 모드라 보고
+- Type 분류 없이 등재
+- Exclude 패턴(`*JpaEntity`)을 도메인 용어로 등재
+- Quality Gate 결과 누락
+- Definition 없이 빈 항목 등재 (최소 추정 정의 + `(draft)` 마크 필수)
+- 한 번에 여러 질문 grilling
+- 검증 없이 (verified) 표시

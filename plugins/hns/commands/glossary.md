@@ -1,96 +1,60 @@
 ---
-description: "Build and evolve the project's domain glossary (ubiquitous language). Grills the user on ambiguous terms, inline-updates agent-os/product/glossary.md, and offers ADRs for hard-to-reverse naming decisions. Trigger: 유비쿼터스 언어, 용어 사전, 도메인 사전, glossary, ubiquitous language, 용어 정리, 용어 충돌"
+description: "Build and evolve domain glossary with 8-phase deep analysis. Auto-classifies terms into 7 types (Aggregate/Entity/VO/Service/Event/Policy/Port), uses 8 sources (code body + JPA + enum/sealed + Kafka + tests + docs), and enforces Quality Gates. Trigger: 유비쿼터스 언어, 용어 사전, 도메인 사전, glossary, 용어 정리, 용어 충돌"
 ---
 
-# /hns:glossary
+# /hns:glossary (v0.9.0+)
 
-도메인 유비쿼터스 사전(`agent-os/product/glossary.md`)을 점진적으로 구축·갱신한다.
-`shape-spec`, `interview-capture`, `review/domain`, `review/architecture`가 이 사전을 기준으로 일관성을 강제하므로, **모든 피처 작업의 기반 자산**이다.
+도메인 유비쿼터스 사전(`agent-os/product/glossary.md` 또는 BC별 `{bc}/glossary.md`)을 **8-phase 깊이 분석**으로 구축·갱신한다.
+
+v0.8.x의 단순 파일명 스캔과 달리, v0.9.0+ 는 **8개 소스**(파일명 + 클래스 본문 + JPA + enum/sealed + Exception + Kafka topic + 테스트 BehaviorSpec + docs/ADR)를 종합 분석하고, 모든 용어를 **7개 Type**(Aggregate/Entity/VO/Domain Service/Domain Event/Policy/Port)로 분류한 뒤, **12개 카테고리**의 표준 구조로 출력한다.
 
 ## Usage
 
 ```
-/hns:glossary                       # 인터랙티브 grilling 세션 (기본)
-/hns:glossary --conflict {term}     # 특정 용어 충돌만 빠르게 해소
-/hns:glossary --scan                # 코드베이스에서 도메인 용어 후보 자동 추출
-/hns:glossary --review              # 기존 glossary와 코드/문서 정합성 점검
+/hns:glossary                       # Deep 모드 (기본, v0.9.0+)
+/hns:glossary --deep                # 명시적 Deep 모드
+/hns:glossary --shallow             # Legacy 파일명 스캔만 (v0.8.x 동작, 속도 우선)
+/hns:glossary --conflict {term}     # 특정 용어 충돌 해소
+/hns:glossary --review              # 기존 사전 ↔ 코드 정합성 점검
+/hns:glossary --bc {name}           # 특정 BC만 (멀티 BC 프로젝트)
 ```
+
+## References (단일 출처)
+- `@references/glossary-extraction-rules.md` — Include/Exclude, 7 Type 분류, 12 카테고리, Quality Gates
+- `@references/language-reference.md` — 포맷 + Module Language
 
 ## Required Inputs
-- (선택) 신규 용어 후보 또는 충돌 의심 용어
+- (선택) BC 이름, 신규 용어 후보, 충돌 의심 용어
 
 ## Expected Outputs
-- `agent-os/product/glossary.md` (없으면 lazy 생성)
+- `agent-os/product/glossary.md` (단일 BC) 또는 `{bc}/glossary.md` (멀티 BC)
+- `docs/context-map.md` (멀티 BC인데 없을 때 신규 생성)
 - 필요 시 `docs/adr/{nnnn}-{term-decision}.md`
-- 멀티 BC 프로젝트는 `docs/context-map.md`
-
-## Reference
-이 커맨드는 `@references/language-reference.md`의 포맷·규칙을 따른다.
+- 보고서: Type별 개수 + Quality Gate 결과 + Cross-context 매칭 + Next steps
 
 ---
 
-## PHASE 0: Mode Detection
+## Procedure
+실제 절차는 `skills/commands/glossary/SKILL.md`로 위임. 요약:
 
-다음 순서로 모드 결정:
+1. **PHASE 1 — Scope Resolution**: 단일/멀티 BC 결정, 출력 경로 확정
+2. **PHASE 2 — Source Inventory**: 8 소스 존재 여부 확인
+3. **PHASE 3 — Raw Candidate Extraction**: 8 소스 모두 스캔
+4. **PHASE 4 — Classification**: 7 Type으로 분류, Exclude 적용
+5. **PHASE 5 — Metadata Enrichment**: 8 필드 metadata (Type/Definition/Lifecycle/Invariants/Related Events/Avoid/Code/Found in)
+6. **PHASE 6 — Category Assembly**: 12 카테고리 표준 구조로 작성
+7. **PHASE 7 — Quality Gates**: 자동 검증 (Aggregate ≥ 1, Event emit trigger, Invariants, FQN grep 등)
+8. **PHASE 8 — Grilling & ADR Offer**: TBD 해소 + ADR 제안
 
-1. `--conflict {term}` 플래그가 있으면 → **Conflict Mode**
-2. `--scan` 플래그가 있으면 → **Scan Mode**
-3. `--review` 플래그가 있으면 → **Review Mode**
-4. `agent-os/product/glossary.md`가 없으면 → **Bootstrap Mode**
-5. 그 외 → **Grilling Mode**
+## v0.8.x → v0.9.0 마이그레이션
 
-각 모드는 `skills/commands/glossary/SKILL.md`의 해당 PHASE를 따른다.
-
----
-
-## PHASE 1: Load Existing Context
-
-1. `agent-os/product/glossary.md` (있으면)
-2. `agent-os/product/mission.md` — 도메인 맥락
-3. `docs/context-map.md` (있으면, 멀티 BC 판별)
-4. `docs/adr/` — 기존 어휘 관련 결정
-
----
-
-## PHASE 2: Execute Mode
-
-`skills/commands/glossary/SKILL.md`로 위임.
-
-- **Bootstrap**: 코드/문서 스캔 → 후보 추출 → 사용자와 첫 5-10개 용어 grilling → glossary.md 생성
-- **Grilling**: 사용자가 가져온 용어 또는 마지막 작업에서 미확정인 용어 → 1개씩 grilling → inline 갱신
-- **Conflict**: 충돌 용어에 대한 사용자 질의 → glossary 갱신 또는 사용 측 수정
-- **Scan**: 코드베이스 도메인 용어 후보 자동 추출 → 사용자 검토 큐
-- **Review**: glossary ↔ 코드 식별자 ↔ spec 문서 3자 정합성 점검
-
----
-
-## PHASE 3: ADR Decision
-
-용어 결정이 다음 셋 **모두 참**이면 ADR 자동 제안:
-1. Hard to reverse
-2. Surprising without context
-3. Real trade-off
-
-사용자 승인 시 `docs/adr/{nnnn}-{slug}.md` 생성.
-
----
-
-## PHASE 4: Completion Report
-
+기존 v0.8.x 사전은 자유 형식 `## Terms` 섹션 단일 구조였다. v0.9.0 재생성:
 ```
-Glossary updated: agent-os/product/glossary.md
-
-Added:    {n} terms ({list})
-Updated:  {n} terms ({list})
-Avoid:    {n} deprecated synonyms recorded
-ADRs:     {n} created ({list})
-Next:     {recommendation — e.g. "run /hns:start to use these in your next spec"}
+/hns:glossary --deep --bc {name}
 ```
+기존 파일을 덮어쓰기 전 `{bc}/glossary.v0.8.bak.md`로 백업.
 
 ## Aliases
-
-- "용어 사전 만들어줘"
-- "유비쿼터스 언어 정리"
-- "이 용어 사전에 등록해줘"
-- "용어가 헷갈리는데 정리해줘"
+- "용어 사전 만들어줘", "유비쿼터스 언어 정리"
+- "사전 고도화", "사전 보강"
 - "build glossary", "domain language"
