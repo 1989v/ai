@@ -2,13 +2,14 @@
 """
 doctor.py — 프로젝트 문서/하네스 헬스체크.
 
-4-layer weighted diagnostic. 각 레이어는 여러 체크를 수행하고
+5-layer weighted diagnostic. 각 레이어는 여러 체크를 수행하고
 PASS / WARN / FAIL 판정을 낸다. 종합 스코어(0-100) 계산.
 
-  L1 Index Integrity   (weight 30) — docs/index.yml + 등록된 파일 존재 + orphan
-  L2 Agent Guidance    (weight 25) — CLAUDE.md + 필수 섹션
-  L3 Harness Alignment (weight 25) — 네이밍/링크 규약 + 스테일 산출물
-  L4 Evidence Coverage (weight 20) — spec/standard의 source 인용 유무
+  L1 Index Integrity   (weight 27) — docs/index.yml + 등록된 파일 존재 + orphan
+  L2 Agent Guidance    (weight 23) — CLAUDE.md + 필수 섹션
+  L3 Harness Alignment (weight 23) — 네이밍/링크 규약 + 스테일 산출물
+  L4 Evidence Coverage (weight 17) — spec/standard의 source 인용 유무
+  L5 MCP Surface       (weight 10) — .claude/settings.json 의 MCP 서버 + plugin 활성 비용
 
 Exit codes:
   0  PASS
@@ -36,11 +37,17 @@ SEV_FAIL = "FAIL"
 SEV_ORDER = {SEV_PASS: 0, SEV_WARN: 1, SEV_FAIL: 2}
 
 LAYERS = [
-    ("L1", "Index Integrity", 30),
-    ("L2", "Agent Guidance", 25),
-    ("L3", "Harness Alignment", 25),
-    ("L4", "Evidence Coverage", 20),
+    ("L1", "Index Integrity", 27),
+    ("L2", "Agent Guidance", 23),
+    ("L3", "Harness Alignment", 23),
+    ("L4", "Evidence Coverage", 17),
+    ("L5", "MCP Surface", 10),
 ]
+
+# 보수적 추정: MCP 서버 1개당 평균 도구 스키마 토큰 (Anthropic 권장 도구 정의 길이 기준).
+MCP_TOKEN_BASELINE_PER_SERVER = 2000
+MCP_SURFACE_WARN_THRESHOLD = 6000   # 단계적 WARN
+MCP_SURFACE_HIGH_THRESHOLD = 12000  # 강한 WARN
 
 SOURCE_CITATION_RE = re.compile(r"<!--\s*source:\s*([^\s>]+)\s*-->")
 MD_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
@@ -399,6 +406,93 @@ def layer4_evidence_coverage(root: Path, layer: LayerResult,
                                  f"... and {len(uncited) - 10} more uncited docs"))
 
 
+def _find_claude_settings(root: Path) -> list[Path]:
+    """프로젝트 로컬 .claude/settings*.json 후보 반환 (글로벌 사용자 설정은 제외)."""
+    candidates: list[Path] = []
+    base = root / ".claude"
+    if not base.exists():
+        return candidates
+    for name in ("settings.json", "settings.local.json"):
+        p = base / name
+        if p.exists():
+            candidates.append(p)
+    return candidates
+
+
+def _load_json_safe(p: Path) -> dict | None:
+    try:
+        text = _read_text(p)
+        if not text.strip():
+            return None
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return None
+
+
+def _collect_mcp_surface(settings_files: list[Path]) -> tuple[dict[str, str], dict[str, bool]]:
+    """settings 파일들에서 mcpServers 와 enabledPlugins 를 집계.
+
+    Returns:
+        (mcp_servers, enabled_plugins).
+        mcp_servers: {server_name → first settings file where seen}
+        enabled_plugins: {plugin_id → enabled bool}
+    """
+    mcp: dict[str, str] = {}
+    plugins: dict[str, bool] = {}
+    for sf in settings_files:
+        data = _load_json_safe(sf)
+        if not data:
+            continue
+        servers = data.get("mcpServers") or {}
+        if isinstance(servers, dict):
+            for name in servers:
+                mcp.setdefault(name, sf.name)
+        ep = data.get("enabledPlugins") or {}
+        if isinstance(ep, dict):
+            for name, enabled in ep.items():
+                plugins[name] = bool(enabled)
+    return mcp, plugins
+
+
+def layer5_mcp_surface(root: Path, layer: LayerResult) -> None:
+    settings_files = _find_claude_settings(root)
+    if not settings_files:
+        layer.record(Finding(layer.id, SEV_PASS, "L5-00",
+                             "no project-level .claude/settings*.json — MCP surface unobservable",
+                             ".claude/"))
+        return
+
+    mcp_servers, enabled_plugins = _collect_mcp_surface(settings_files)
+    server_count = len(mcp_servers)
+    enabled_plugin_count = sum(1 for v in enabled_plugins.values() if v)
+
+    if server_count == 0 and enabled_plugin_count == 0:
+        layer.record(Finding(layer.id, SEV_PASS, "L5-00",
+                             "no MCP servers or enabled plugins detected at project level",
+                             str(settings_files[0].relative_to(root))))
+        return
+
+    if server_count:
+        names = ", ".join(sorted(mcp_servers))
+        layer.record(Finding(layer.id, SEV_PASS, "L5-01",
+                             f"MCP servers: {server_count} ({names})",
+                             str(settings_files[0].relative_to(root))))
+    if enabled_plugin_count:
+        active = sorted(n for n, v in enabled_plugins.items() if v)
+        layer.record(Finding(layer.id, SEV_PASS, "L5-02",
+                             f"enabled plugins: {enabled_plugin_count} ({', '.join(active)})"))
+
+    est_tokens = server_count * MCP_TOKEN_BASELINE_PER_SERVER
+    if est_tokens >= MCP_SURFACE_HIGH_THRESHOLD:
+        layer.record(Finding(layer.id, SEV_WARN, "L5-10",
+                             f"high MCP surface — {server_count} servers × ~{MCP_TOKEN_BASELINE_PER_SERVER} ≈ {est_tokens} tok/session",
+                             hint="audit MCP servers in .claude/settings.json; disable unused ones"))
+    elif est_tokens >= MCP_SURFACE_WARN_THRESHOLD:
+        layer.record(Finding(layer.id, SEV_WARN, "L5-11",
+                             f"moderate MCP surface — {server_count} servers ≈ {est_tokens} tok/session",
+                             hint="consider trimming infrequently used MCP servers"))
+
+
 def run_layers(root: Path) -> list[LayerResult]:
     submodules = _read_submodule_paths(root)
     results = [LayerResult(id=i, name=n, weight=w) for i, n, w in LAYERS]
@@ -406,6 +500,7 @@ def run_layers(root: Path) -> list[LayerResult]:
     layer2_agent_guidance(root, results[1])
     layer3_harness_alignment(root, results[2], submodules)
     layer4_evidence_coverage(root, results[3], submodules)
+    layer5_mcp_surface(root, results[4])
     return results
 
 

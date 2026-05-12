@@ -1,21 +1,22 @@
 ---
-description: "Run layered docs/harness health check — 4-layer diagnostic with PASS/WARN/FAIL + score. 문서 헬스체크, 독터, doctor, 진단"
+description: "Run layered docs/harness health check — 5-layer diagnostic with PASS/WARN/FAIL + score. 문서 헬스체크, 독터, doctor, 진단"
 ---
 
 # /hns:doctor
 
 ## Purpose
-프로젝트 문서/하네스 구조를 4개 레이어로 진단한다.
+프로젝트 문서/하네스 구조를 5개 레이어로 진단한다.
 각 레이어는 독립적으로 PASS / WARN / FAIL 판정을 내고,
 가중 평균으로 0-100 score가 계산된다.
 
 ## Layers
 | ID | 이름 | 검사 내용 | Weight |
 |---|---|---|---|
-| L1 | Index Integrity | `docs/index.yml` 존재, 등록 파일 실재, orphan 문서 유무 | 30 |
-| L2 | Agent Guidance | `CLAUDE.md` 존재 + build/test/run 섹션 | 25 |
-| L3 | Harness Alignment | broken internal link, stale `harness-gc-report.md` | 25 |
-| L4 | Evidence Coverage | `docs/specs/`, `docs/standards/` 문서의 `<!-- source: ... -->` 인용 비율 | 20 |
+| L1 | Index Integrity | `docs/index.yml` 존재, 등록 파일 실재, orphan 문서 유무 | 27 |
+| L2 | Agent Guidance | `CLAUDE.md` 존재 + build/test/run 섹션 | 23 |
+| L3 | Harness Alignment | broken internal link, stale `harness-gc-report.md` | 23 |
+| L4 | Evidence Coverage | `docs/specs/`, `docs/standards/` 문서의 `<!-- source: ... -->` 인용 비율 | 17 |
+| L5 | MCP Surface | `.claude/settings*.json` 의 `mcpServers` 수 · `enabledPlugins` 활성도 · 세션당 추정 토큰 비용 | 10 |
 
 ## Required Inputs
 - 프로젝트 루트 접근 권한
@@ -64,6 +65,7 @@ python3 ai/plugins/hns/scripts/doctor.py . --warn-only
 - **L3 FAIL (broken link)**: 실제 경로 확인 후 링크 교정. 템플릿 placeholder(`{...}`)는 자동 제외됨.
 - **L3 WARN (stale harness-gc-report)**: `/hns:gc` 실행.
 - **L4 FAIL**: spec/standard 문서 상단에 `<!-- source: path/to/code.ext -->` 추가.
+- **L5 WARN (moderate/high MCP surface)**: `.claude/settings.json` 의 `mcpServers` 목록을 점검. 최근 세션에서 호출되지 않은 서버는 제거하거나 `enabledPlugins` 를 `false` 로. 추정 토큰 비용: 서버당 ≈ 2000 토큰/세션 (보수치).
 
 ## Related
 - `/hns:gc` — 전체 청소 (doctor 이후 자동 수정용)
