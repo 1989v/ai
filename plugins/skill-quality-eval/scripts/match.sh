@@ -154,24 +154,14 @@ def walk_compare($e; $a; $pol; path):
 ($policy["$root"] // $policy // {}) as $root_policy
 | walk_compare($expected; $actual; $root_policy; "$")
 | { result: (if length == 0 then "pass" else "fail" end), diffs: . }
-'
+')"
 
-# Exit code reflects pass/fail
-last_result="$(jq -n \
-   --argfile expected "$EXPECTED" \
-   --argfile actual   "$ACTUAL" \
-   --argjson policy   "$POLICY_JSON" \
-   '$expected == $actual')"  # crude fast-path; primary signal is the JSON above
+# Print result JSON to stdout
+echo "$RESULT_JSON"
 
-# Recompute pass/fail properly by re-running compaction (cheap, same logic)
-# Actually exit code derives from jq result above written to fd 3; simpler: re-check via grep
-if grep -q '"result": "pass"' <(jq -n \
-   --argfile expected "$EXPECTED" \
-   --argfile actual   "$ACTUAL" \
-   --argjson policy   "$POLICY_JSON" '{result:(if ($expected == $actual) then "pass" else "fail" end)}'); then
+# Exit code from .result
+if echo "$RESULT_JSON" | jq -e '.result == "pass"' >/dev/null; then
   exit 0
 else
-  # The detailed diff (with normalization + policy) was already printed.
-  # Exit 1 only if there's no easy proof of equality.
   exit 1
 fi
