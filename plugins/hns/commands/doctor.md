@@ -71,6 +71,7 @@ python3 ai/plugins/hns/scripts/doctor.py . --warn-only
 - `/hns:gc` — 전체 청소 (doctor 이후 자동 수정용)
 - `/hns:setup-hooks` — pre-commit 훅 + CI 워크플로 설치
 - `/hns:validate` — docs↔code drift 검증
+- `/claude-md:analyze` — CLAUDE.md / 메모리 / settings 합성 컨텍스트의 룰 활성/덮어쓰기 분석 (책임 분리: doctor 는 docs 정합성, claude-md-analyzer 는 prompt 컨텍스트)
 
 ## NEVER
 - 사용자 확인 없이 auto-fix 수행 금지 (doctor는 진단만)
