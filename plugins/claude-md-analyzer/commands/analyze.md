@@ -112,9 +112,20 @@ argument-hint: "[--source=auto|introspect|fs] [--strict|--warn|--loose] [--all|-
     - `--warn`: 해당 룰에 `unverifiable=true` 마킹, 결과 포함
     - `--strict`: 해당 룰 제거, `summary.rejected` 카운트 증가
 
-### 5. 캐시 저장
+### 5. Dead / Stale 휴리스틱
 
-검증 끝난 최종 JSON 을 `~/.claude/projects/{slug}/cma-cache/{hash}.json` 에 저장.
+`scripts/detect-dead-stale.sh <rules.json> "$PWD"` 호출 → 각 룰에 다음 필드 주입:
+
+- `stale_reason`: `path-missing` / `line-out-of-range` / null
+- `dead_reason`: `path-bound-irrelevant` / `permanently-overridden` / null
+
+추가로 introspect 가 식별한 `unreferenced` 후보(룰 텍스트의 키워드가 현재 cwd 코드베이스에 0회 등장)는 introspect 단계에서 직접 `dead_reason="unreferenced"` 로 마킹한다. 키워드 추출은 LLM 의미 매칭에 위임.
+
+summary 의 `stale` / `dead` 카운트가 자동 업데이트된다.
+
+### 6. 캐시 저장
+
+검증 + Dead/Stale 태깅 끝난 최종 JSON 을 `~/.claude/projects/{slug}/cma-cache/{hash}.json` 에 저장.
 
 ### 6. 출력 렌더링
 
