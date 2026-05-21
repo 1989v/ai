@@ -26,9 +26,9 @@ argument-hint: "[--source=auto|introspect|fs] [--strict|--warn|--loose] [--all|-
 | `--warn` (default) | unverifiable 항목 ⚠ 마킹 후 결과 포함 |
 | `--loose` | 자유형 인용, fs 검증 생략 |
 | `--all` | Active 룰 전체 표시 (default: Conflict-only) |
-| `--by-topic` | 주제별 대시보드 (M2) |
-| `--tree` | 레이어 트리 (M2) |
-| `--unverifiable` | evidence 검증 실패 항목만 (M2) |
+| `--by-topic` | 주제별 대시보드 |
+| `--tree` | 레이어 트리 |
+| `--unverifiable` | evidence 검증 실패 항목만 |
 | `--no-cache` / `--force` | 캐시 무시 |
 
 ## 실행 흐름
