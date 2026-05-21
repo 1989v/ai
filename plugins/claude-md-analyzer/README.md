@@ -55,11 +55,18 @@ Claude Code composes context from multiple layers — global (`~/.claude/`), pro
 
 ## Roadmap
 
-- **M1** (current): `analyze` main + fs verifier + cache + warn mode + `--all`
-- **M2**: `--by-topic` / `--tree` / `--unverifiable` + strict/loose + Dead/Stale heuristics
-- **M3**: Hook adapter (snapshot store)
-- **M4**: `/claude-md:diff` cross-repo
-- **M5**: Integration polish (marketplace registration, hns:doctor redirect, module exports for `#16 toggler`)
+All milestones M1–M5 landed in `v1.0.0`:
+
+- **M1** ✅ `analyze` main + fs verifier + cache + warn mode + `--all`
+- **M2** ✅ `--by-topic` / `--tree` / `--unverifiable` + strict/loose + Dead/Stale heuristics
+- **M3** ✅ Hook adapter — `hooks/cma-snapshot.sh` + `hooks/install-hooks.sh`
+- **M4** ✅ `/claude-md:diff` cross-repo comparison
+- **M5** ✅ marketplace registration, `hns:doctor` redirect, exported module interfaces for `#16 toggler` (see `references/exported-modules.md`)
+
+Future (v2.x):
+- Simulation mode (virtual prompt dry-run with cost gating)
+- Additional Dead heuristics from hook log time-series
+- Embedding-based clustering if introspect proves insufficient
 
 ## License
 
