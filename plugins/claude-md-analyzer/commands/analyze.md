@@ -127,7 +127,7 @@ summary 의 `stale` / `dead` 카운트가 자동 업데이트된다.
 
 검증 + Dead/Stale 태깅 끝난 최종 JSON 을 `~/.claude/projects/{slug}/cma-cache/{hash}.json` 에 저장.
 
-### 6. 출력 렌더링
+### 7. 출력 렌더링
 
 `references/output-format.md` 명세에 따라 디폴트는 **하이브리드 (요약 헤더 + Conflict-only)**:
 
