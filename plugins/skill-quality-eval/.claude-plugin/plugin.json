@@ -1,0 +1,14 @@
+{
+  "name": "skill-quality-eval",
+  "description": "Dynamic skill quality evaluator — fork target skills, enforce JSON output via --json-schema, run against ground-truth snapshots, surface regressions vs baseline (strict matching for v0.1)",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["skill-eval", "regression", "quality-gate", "fork", "snapshot", "ground-truth", "claude-code"],
+  "commands": [
+    "./commands/baseline.md",
+    "./commands/run.md",
+    "./commands/compare.md",
+    "./commands/promote.md"
+  ]
+}
