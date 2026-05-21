@@ -87,7 +87,8 @@ def canon(p):
          elif ($v | type) == "array" then
            ((p["match-by"] // null) as $mkey
             | (if $mkey != null then ($v | sort_by(.[$mkey] // "")) else $v end)) as $arr
-           | ($arr | map(canon(($fields["[*]"] // $fields // {}))))
+           | (($fields["[*]"] // { "fields": $fields }) as $elem_pol
+              | $arr | map(canon($elem_pol)))
          else $v
          end)
     end;
