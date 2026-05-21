@@ -2,21 +2,20 @@
 #
 # match.sh — compare expected.json vs actual.json under matching-policy.json
 #
+# Strategy (v0.1): canonicalize both sides per policy, then deep-equal.
+#   - Normalize strings (case/trim/collapse-whitespace)
+#   - Sort arrays declared with `match-by` by that key
+#   - Replace `structural` field values with their type tag (so only type/presence is compared)
+#   - Replace `semantic` field values with type tag (degraded to strict-on-type in v0.1)
+#   - Plain (no policy) → strict via deep-equal of canonical form
+#
 # Usage:
 #   match.sh --expected expected.json --actual actual.json --policy matching-policy.json
 #
 # Output (stdout):
-#   JSON object: { "result": "pass|fail", "diffs": [{"path": "...", "expected": ..., "actual": ...}] }
+#   JSON object: { "result": "pass|fail", "diffs": [{ "path": "...", "expected": ..., "actual": ... }] }
 #
 # Exit codes: 0 = pass, 1 = fail, 64 = bad args, 65 = malformed input
-#
-# v0.1 scope:
-#   - strict (deep-equal with normalization)
-#   - structural (key set + type check)
-#   - semantic → degraded to strict with warning
-#   - normalize: case=lower, trim, collapse-whitespace, null-equals-missing
-#   - array match-by (order-independent pairing by key)
-#   - default policy = strict throughout
 
 set -euo pipefail
 
@@ -26,8 +25,7 @@ while [[ $# -gt 0 ]]; do
     --expected) EXPECTED="$2"; shift 2 ;;
     --actual)   ACTUAL="$2"; shift 2 ;;
     --policy)   POLICY="$2"; shift 2 ;;
-    -h|--help)
-      sed -n '3,18p' "$0"; exit 0 ;;
+    -h|--help)  sed -n '3,20p' "$0"; exit 0 ;;
     *) echo "unknown arg: $1" >&2; exit 64 ;;
   esac
 done
@@ -36,132 +34,97 @@ done
 [[ -f "$ACTUAL" ]]   || { echo "actual not found: $ACTUAL" >&2; exit 65; }
 command -v jq >/dev/null || { echo "jq not found" >&2; exit 69; }
 
-# Policy file is optional; if missing, all-strict default
 POLICY_JSON='{}'
 if [[ -n "$POLICY" && -f "$POLICY" ]]; then
-  POLICY_JSON="$(cat "$POLICY")"
+  POLICY_JSON="$(jq -c . "$POLICY")"
 fi
-
-# v0.1 uses an all-in-jq comparator. Normalization rules at the root, then
-# per-field strict/structural dispatch, then optional match-by for arrays.
 EXPECTED_JSON="$(jq -c . "$EXPECTED")"
 ACTUAL_JSON="$(jq -c . "$ACTUAL")"
-RESULT_JSON="$(jq -n \
+
+# Single jq pipeline canonicalizes both sides + computes diff
+RESULT_JSON="$(jq -n -c \
    --argjson expected "$EXPECTED_JSON" \
    --argjson actual   "$ACTUAL_JSON" \
-   --argjson policy   "$POLICY_JSON" '
+   --argjson pol      "$POLICY_JSON" '
 
-# ─── normalization ───
-def normalize(rules):
+# ─── normalization on strings (or recursively on containers) ───
+def norm(rules):
   if type == "string" then
     . as $s
     | (if (rules.case // "") == "lower" then ascii_downcase else . end)
     | (if (rules.trim // false) then sub("^\\s+";"") | sub("\\s+$";"") else . end)
-    | (if (rules["collapse-whitespace"] // false) then gsub("\\s+";" ") else . end)
-  elif type == "object" then
-    with_entries(.value |= normalize(rules))
-  elif type == "array" then
-    map(normalize(rules))
+    | (if (rules["collapse-whitespace"] // false) then gsub("\\s+"; " ") else . end)
+  elif type == "object" then with_entries(.value |= norm(rules))
+  elif type == "array"  then map(norm(rules))
   else .
   end;
 
-def null_equals_missing(rules; obj):
-  if (rules["null-equals-missing"] // false) and (obj | type) == "object"
-  then obj | with_entries(select(.value != null))
-  else obj
+def strip_null(rules):
+  if (rules["null-equals-missing"] // false) and (type == "object")
+  then with_entries(select(.value != null))
+  else .
   end;
 
-# ─── core compare ───
-# Returns array of diffs at given json path
-def cmp($e; $a; mode; rules; path):
-  ($e | normalize(rules)) as $en
-  | ($a | normalize(rules)) as $an
-  | if mode == "structural"
-    then
-      if ($en | type) != ($an | type)
-      then [{path: path, kind: "type-mismatch", expected: ($en|type), actual: ($an|type)}]
-      else []
+# ─── canonicalize a value under a (sub-)policy ───
+# Modes for leaf:
+#   strict / null / undefined  → keep value (after norm)
+#   structural / semantic      → replace with "<TYPE:value-type>" marker
+def canon(p):
+  ((p.normalize // {}) as $rules
+   | strip_null($rules)
+   | norm($rules)) as $v
+  | if (p | type) == "string" then
+      # leaf mode at this node
+      if p == "structural" or p == "semantic"
+      then "<TYPE:" + ($v | type) + ">"
+      else $v  # strict
       end
-    else  # strict (default + semantic-degraded)
-      if $en == $an
-      then []
-      else [{path: path, kind: "value-diff", expected: $en, actual: $an}]
-      end
-    end;
-
-# ─── recursive walk with policy ───
-def walk_compare($e; $a; $pol; path):
-  ($pol.fields // {}) as $fields
-  | ($pol.normalize // {}) as $rules
-  | if ($e | type) == "object" and ($a | type) == "object"
-    then
-      (null_equals_missing($rules; $e)) as $ec
-      | (null_equals_missing($rules; $a)) as $ac
-      # union of keys
-      | (($ec | keys) + ($ac | keys) | unique) as $all_keys
-      | reduce $all_keys[] as $k (
-          [];
-          . + (
-            ($fields[$k]) as $sub_pol
-            | if $sub_pol == null then
-                # No policy → strict
-                cmp($ec[$k] // null; $ac[$k] // null; "strict"; $rules; path + "." + $k)
-              elif ($sub_pol | type) == "string" then
-                # Leaf mode: strict/structural/(semantic→strict)
-                ( if $sub_pol == "semantic" then "strict" else $sub_pol end ) as $mode
-                | cmp($ec[$k] // null; $ac[$k] // null; $mode; $rules; path + "." + $k)
-              else
-                # Nested policy object
-                walk_compare($ec[$k] // null; $ac[$k] // null; $sub_pol; path + "." + $k)
-              end
-          )
-        )
-    elif ($e | type) == "array" and ($a | type) == "array"
-    then
-      ($pol["match-by"] // null) as $mkey
-      | if $mkey == null
-        then
-          # ordered compare
-          if ($e | length) != ($a | length)
-          then [{path: path, kind: "array-length", expected: ($e|length), actual: ($a|length)}]
-          else
-            reduce range(0; $e|length) as $i (
-              [];
-              . + walk_compare($e[$i]; $a[$i]; (($pol.fields // {})["[*]"] // ($pol.fields // {}) // {}); path + "[" + ($i|tostring) + "]")
-            )
-          end
-        else
-          # match-by key: pair items, find orphans
-          (($e | map({ (.[$mkey] // ""): . }) | add // {})) as $emap
-          | (($a | map({ (.[$mkey] // ""): . }) | add // {})) as $amap
-          | (($emap | keys) + ($amap | keys) | unique) as $all_keys
-          | reduce $all_keys[] as $k (
-              [];
-              . + (
-                if ($emap[$k] == null) then
-                  [{path: path + "[" + $mkey + "=" + $k + "]", kind: "orphan-actual", actual: $amap[$k]}]
-                elif ($amap[$k] == null) then
-                  [{path: path + "[" + $mkey + "=" + $k + "]", kind: "orphan-expected", expected: $emap[$k]}]
-                else
-                  walk_compare($emap[$k]; $amap[$k]; ($pol | del(.["match-by"])); path + "[" + $mkey + "=" + $k + "]")
-                end
-              )
-            )
-        end
     else
-      cmp($e; $a; "strict"; ($pol.normalize // {}); path)
+      ((p.fields // {}) as $fields
+       | if ($v | type) == "object" then
+           ($v | keys) as $ks
+           | reduce $ks[] as $k ({}; . + { ($k): ($v[$k] | canon($fields[$k] // {})) })
+         elif ($v | type) == "array" then
+           ((p["match-by"] // null) as $mkey
+            | (if $mkey != null then ($v | sort_by(.[$mkey] // "")) else $v end)) as $arr
+           | ($arr | map(canon(($fields["[*]"] // $fields // {}))))
+         else $v
+         end)
     end;
 
-# Entrypoint
-($policy["$root"] // $policy // {}) as $root_policy
-| walk_compare($expected; $actual; $root_policy; "$")
-| { result: (if length == 0 then "pass" else "fail" end), diffs: . }
+# ─── walk to enumerate diffs given canonical forms ───
+def diffs(loc; e; a):
+  if (e | type) == "object" and (a | type) == "object" then
+    (((e | keys) + (a | keys)) | unique) as $ks
+    | reduce $ks[] as $k (
+        [];
+        . + diffs(loc + "." + $k; e[$k] // null; a[$k] // null)
+      )
+  elif (e | type) == "array" and (a | type) == "array" then
+    if (e | length) != (a | length) then
+      [{ "path": loc, "kind": "array-length",
+         "expected_len": (e | length), "actual_len": (a | length) }]
+    else
+      reduce range(0; e | length) as $i (
+        [];
+        . + diffs(loc + "[" + ($i | tostring) + "]"; e[$i]; a[$i])
+      )
+    end
+  else
+    if e == a then []
+    else [{ "path": loc, "kind": "value-diff", "expected": e, "actual": a }]
+    end
+  end;
+
+($pol["$root"] // $pol // {}) as $root_pol
+| ($expected | canon($root_pol)) as $ec
+| ($actual   | canon($root_pol)) as $ac
+| diffs("$"; $ec; $ac)
+| { "result": (if length == 0 then "pass" else "fail" end), "diffs": . }
 ')"
 
-# Print result JSON to stdout
-echo "$RESULT_JSON"
+echo "$RESULT_JSON" | jq .
 
-# Exit code from .result
 if echo "$RESULT_JSON" | jq -e '.result == "pass"' >/dev/null; then
   exit 0
 else
