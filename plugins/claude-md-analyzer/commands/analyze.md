@@ -21,7 +21,7 @@ argument-hint: "[--source=auto|introspect|fs] [--strict|--warn|--loose] [--all|-
 | `--source=auto` (default) | introspect + fs evidence 검증 (M1: 동일) |
 | `--source=introspect` | introspect 단독, fs 검증 생략 |
 | `--source=fs` | fs 정적 클러스터링 fallback |
-| `--source=hook` | hook 로그 기반 (M3 — 미구현 시 fs 로 폴백) |
+| `--source=hook` | hook 스냅샷 기반 — `~/.claude/projects/{slug}/cma-snapshots/` 의 최신 스냅샷 사용 (없으면 fs 폴백 + 안내) |
 | `--strict` | evidence 검증 실패 항목 결과에서 제외 |
 | `--warn` (default) | unverifiable 항목 ⚠ 마킹 후 결과 포함 |
 | `--loose` | 자유형 인용, fs 검증 생략 |
