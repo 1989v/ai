@@ -69,11 +69,24 @@ TDD 규칙          | CLAUDE.md:??              | line out of range
 ...
 ```
 
-## `--by-topic` 옵션 (M2)
+## `--by-topic` 옵션
 
-주제별 그룹 + 각 주제 안에서 Active/Overridden 표시.
+주제별 그룹 + 각 주제 안에서 Active/Overridden 표시:
 
-## `--tree` 옵션 (M2)
+```
+📌 테스트 작성 규칙
+   ⚠ Overridden — CLAUDE.md:42 (project)  ▶  ~/.claude/CLAUDE.md:17 (global)
+                  근거: project > global
+   ✅ Active     — domain/test-rules.md:8 (local)
+
+📌 @Transactional 규칙
+   ⚠ Overridden — order/CLAUDE.md:88 (local)  ▶  CLAUDE.md:120 (project)
+                  근거: local > project
+   ✅ Active     — common/CLAUDE.md:55 (local)
+...
+```
+
+## `--tree` 옵션
 
 레이어 계층 트리:
 
