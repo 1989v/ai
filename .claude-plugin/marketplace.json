@@ -43,6 +43,11 @@
       "name": "portfolio",
       "source": "./plugins/portfolio",
       "description": "Build and incrementally update a developer portfolio from git commit history. Default: current repo + ~/.claude/portfolio/{user}.md. Modes: single repo, multi-repo, GitHub-wide scan"
+    },
+    {
+      "name": "claude-md-analyzer",
+      "source": "./plugins/claude-md-analyzer",
+      "description": "Analyze layered CLAUDE.md/memory/settings to surface which rules survive (Active) vs overridden in the current session. Introspect + fs evidence verification + hybrid output."
     }
   ]
 }
