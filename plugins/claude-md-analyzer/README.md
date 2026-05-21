@@ -14,10 +14,11 @@ Claude Code composes context from multiple layers — global (`~/.claude/`), pro
 
 ## Commands
 
-| Command | Purpose | Status |
-|---------|---------|--------|
-| `/claude-md:analyze` | Main analysis — composed context, conflict resolution, evidence verification | M1 (current) |
-| `/claude-md:diff` | Cross-repo layered-context comparison | M4 |
+| Command | Purpose | Version |
+|---------|---------|---------|
+| `/claude-md:analyze` | Main analysis — composed context, conflict resolution, evidence verification | v1.0.0 |
+| `/claude-md:diff` | Cross-repo layered-context comparison | v1.0.0 |
+| `/claude-md:simulate` | Virtual prompt dry-run — which rules will trigger for a given prompt? `--cheap` (free) / `--full` (paid) | v1.1.0 |
 
 ## Quick start
 
