@@ -48,6 +48,11 @@
       "name": "claude-md-analyzer",
       "source": "./plugins/claude-md-analyzer",
       "description": "Analyze layered CLAUDE.md/memory/settings to surface which rules survive (Active) vs overridden in the current session. Introspect + fs evidence verification + hybrid output. Cross-repo diff + virtual prompt simulation."
+    },
+    {
+      "name": "skill-quality-eval",
+      "source": "./plugins/skill-quality-eval",
+      "description": "Dynamic skill quality evaluator — fork target skills, enforce JSON output via --json-schema, run against ground-truth snapshots, surface regressions vs baseline (strict matching for v0.1)"
     }
   ]
 }
