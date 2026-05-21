@@ -64,10 +64,12 @@ All milestones M1–M5 landed in `v1.0.0`:
 - **M4** ✅ `/claude-md:diff` cross-repo comparison
 - **M5** ✅ marketplace registration, `hns:doctor` redirect, exported module interfaces for `#16 toggler` (see `references/exported-modules.md`)
 
-Future (v2.x):
-- Simulation mode (virtual prompt dry-run with cost gating)
+v1.1.0:
+- ✅ Simulation mode (`/claude-md:simulate`) — `--cheap` (keyword/heading overlap, free) / `--full` (Haiku judgment, paid) with cost guard
+
+Future:
+- v1.2.0 (TBD) — Embedding-based clustering if introspect proves insufficient
 - Additional Dead heuristics from hook log time-series
-- Embedding-based clustering if introspect proves insufficient
 
 ## License
 
