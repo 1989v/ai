@@ -1,0 +1,30 @@
+{
+  "$root": {
+    "normalize": {
+      "trim": true,
+      "null-equals-missing": true
+    },
+    "fields": {
+      "terms": {
+        "match-by": "name",
+        "normalize": {
+          "trim": true
+        },
+        "fields": {
+          "name": "strict",
+          "type": "strict",
+          "category": "strict",
+          "description": "structural",
+          "evidence": "structural"
+        }
+      },
+      "metadata": {
+        "fields": {
+          "skill_version": "structural",
+          "fixture_path": "structural",
+          "mode": "strict"
+        }
+      }
+    }
+  }
+}
