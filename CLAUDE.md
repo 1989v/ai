@@ -49,3 +49,4 @@ claude --plugin-dir ./plugins/{name}     # 로컬 테스트
 | ideabank | 3 | 아이디어 → PRD → 구현 파이프라인 (init → bs → impl) |
 | portfolio | 1 | git commit history 기반 개발자 포트폴리오 생성·incremental 보완 (`/portfolio:build`) |
 | claude-md-analyzer | 3 | 레이어별 CLAUDE.md/메모리/settings 합성 분석 (`/claude-md:analyze` 활성/덮어쓴 룰 가시화, `/claude-md:diff` 레포 간 비교, `/claude-md:simulate` 가상 프롬프트 dry-run) |
+| skill-quality-eval | 4 | 스킬 품질 동적 평가 (fork + `--json-schema` + 스냅샷 디렉토리). `/skill-eval:baseline` 사람 1회 컨펌 → `/skill-eval:run` 자동 회귀 측정 → `/skill-eval:compare` / `/skill-eval:promote`. v0.1 = strict matching, dogfooding = `hns:glossary` |
