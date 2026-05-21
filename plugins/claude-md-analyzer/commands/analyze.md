@@ -140,15 +140,23 @@ summary 의 `stale` / `dead` 카운트가 자동 업데이트된다.
 ...
 ```
 
-`--all` 면 Active 룰까지 추가 섹션으로 출력.
-`--by-topic` / `--tree` / `--unverifiable` 는 M2 구현 — 현재는 stub (옵션 수신만, 동작은 default 와 동일 + 안내 메시지).
+### 출력 모드별 렌더링
 
-## M1 범위 제한 (현재 구현)
+| 플래그 | 동작 |
+|--------|------|
+| (default) | 요약 헤더 + Conflict-only 표 |
+| `--all` | 디폴트 + Active 룰 전체 섹션 추가 |
+| `--by-topic` | 주제별 그룹화 — 각 주제 안에 Active/Overridden 같이 표시 |
+| `--tree` | 글로벌/프로젝트/로컬 레이어 트리 (각 노드에 룰 수 + 충돌 수) |
+| `--unverifiable` | evidence 검증 실패 항목만 별도 표시 |
+| `--json` | 위 옵션과 무관하게 raw JSON 출력 (`{summary, rules, cached_at, context_hash}`) |
 
-- `--source=auto|introspect|fs` 만 동작. `hook` 은 자동 fs 폴백 + 안내.
-- `--strict` / `--warn` / `--loose` 동작.
-- `--all` 동작. `--by-topic` / `--tree` / `--unverifiable` 는 M2 에서 활성화.
-- Dead/Stale 검출은 M2.
+조합 가능: `--all --by-topic` 는 주제별 그룹에 Active 도 포함.
+
+## 구현 노트
+
+- `--source=hook` 은 M3 에서 활성화. M1~M2 에서는 자동으로 `fs` 로 폴백하고 안내 메시지 출력.
+- Dead 휴리스틱 중 `unreferenced` 는 introspect 단계에서 처리 (의미 매칭 필요). 나머지 2종(`path-bound-irrelevant`, `permanently-overridden`) + Stale 검출은 `scripts/detect-dead-stale.sh` 가 정적으로 처리.
 
 ## 산출물
 
