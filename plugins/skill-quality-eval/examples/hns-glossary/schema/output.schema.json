@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "hns-glossary eval output",
+  "description": "Schema enforced when hns:glossary runs under skill-quality-eval. Skill emits its glossary extraction result as structured JSON.",
+  "type": "object",
+  "required": ["terms", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "terms": {
+      "type": "array",
+      "description": "Extracted domain terms.",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "category"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Canonical term name (PascalCase for classes, kebab-case for concepts)."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "Aggregate",
+              "Entity",
+              "VO",
+              "Domain Service",
+              "Domain Event",
+              "Policy",
+              "Port"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "description": "12-category bucket (e.g., 'order-lifecycle', 'product-catalog', 'inventory')."
+          },
+          "description": {
+            "type": "string",
+            "description": "1-2 line natural-language definition. Treated as 'structural' in default matching-policy."
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Source code location proving this term (e.g., 'order/Order.kt:12'). Treated as 'structural'."
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["skill_version"],
+      "additionalProperties": false,
+      "properties": {
+        "skill_version": {
+          "type": "string",
+          "description": "Version string from the skill's frontmatter."
+        },
+        "fixture_path": {
+          "type": "string",
+          "description": "Relative path of the fixture used."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["shallow", "deep", "review", "conflict", "bootstrap"]
+        }
+      }
+    }
+  }
+}
