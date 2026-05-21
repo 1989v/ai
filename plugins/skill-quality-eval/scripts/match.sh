@@ -44,7 +44,7 @@ fi
 
 # v0.1 uses an all-in-jq comparator. Normalization rules at the root, then
 # per-field strict/structural dispatch, then optional match-by for arrays.
-jq -n \
+RESULT_JSON="$(jq -n \
    --argfile expected "$EXPECTED" \
    --argfile actual   "$ACTUAL" \
    --argjson policy   "$POLICY_JSON" '
