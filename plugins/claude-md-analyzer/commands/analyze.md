@@ -153,9 +153,22 @@ summary 의 `stale` / `dead` 카운트가 자동 업데이트된다.
 
 조합 가능: `--all --by-topic` 는 주제별 그룹에 Active 도 포함.
 
-## 구현 노트
+### `--source=hook` 동작
 
-- `--source=hook` 은 M3 에서 활성화. M1~M2 에서는 자동으로 `fs` 로 폴백하고 안내 메시지 출력.
+1. `~/.claude/projects/{slug}/cma-snapshots/*.json` 디렉토리 검사
+2. 최근 스냅샷이 없으면 fs 로 폴백 + 안내 (`hooks/install-hooks.sh` 호출 권유)
+3. 있으면 가장 최신 스냅샷의 `inventory` 를 사용. 가능하면 두 시점 비교(예: 이전 스냅샷 vs 최신) 로 "어떤 룰/레이어가 추가/제거되었는지" 추가 표시
+4. introspect 단계는 동일 — 스냅샷은 인벤토리 신뢰성 향상 + 시점별 변화 추적 용도
+
+스냅샷 등록 방법:
+
+```bash
+$CLAUDE_PLUGIN_ROOT/hooks/install-hooks.sh --scope=user --events=SessionStart
+```
+
+(현재 세션부터 다음 세션 시작 시 자동 스냅샷)
+
+## 구현 노트
 - Dead 휴리스틱 중 `unreferenced` 는 introspect 단계에서 처리 (의미 매칭 필요). 나머지 2종(`path-bound-irrelevant`, `permanently-overridden`) + Stale 검출은 `scripts/detect-dead-stale.sh` 가 정적으로 처리.
 
 ## 산출물
