@@ -48,3 +48,4 @@ claude --plugin-dir ./plugins/{name}     # 로컬 테스트
 | study | 3 | 스터디 파이프라인 (init → bs → exec) |
 | ideabank | 3 | 아이디어 → PRD → 구현 파이프라인 (init → bs → impl) |
 | portfolio | 1 | git commit history 기반 개발자 포트폴리오 생성·incremental 보완 (`/portfolio:build`) |
+| claude-md-analyzer | 2 | 레이어별 CLAUDE.md/메모리/settings 합성 분석 (`/claude-md:analyze` 활성/덮어쓴 룰 가시화, `/claude-md:diff` 레포 간 비교) |
