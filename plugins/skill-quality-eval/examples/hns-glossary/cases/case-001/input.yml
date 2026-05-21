@@ -1,0 +1,17 @@
+# Case input for hns-glossary baseline / run
+#
+# The skill-quality-eval runner reads this YAML and uses it to construct
+# the invoke prompt for the forked hns:glossary skill.
+
+skill_id: hns:glossary
+mode: shallow                     # use --shallow to keep deterministic + fast for v0.1
+fixture: ../../fixtures/toy-domain
+description: |
+  Toy commerce domain (order + product + inventory). hns:glossary should
+  extract 6 terms: Order (Aggregate), OrderId (VO), OrderPlaced (Event),
+  Product (Aggregate), Sku (VO), InventoryService (Domain Service).
+  Category groupings are the policy's check — names and types must match strictly.
+
+# Optional: override the args passed to hns:glossary on the CLI.
+# The runner replaces {{FIXTURE}} with the absolute path of `fixture`.
+args: ["--shallow", "{{FIXTURE}}"]
