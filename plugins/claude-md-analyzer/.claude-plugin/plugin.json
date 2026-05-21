@@ -6,6 +6,7 @@
   "license": "MIT",
   "keywords": ["claude-md", "introspect", "context-analysis", "rule-resolution", "prompt-debugging"],
   "commands": [
-    "./commands/analyze.md"
+    "./commands/analyze.md",
+    "./commands/diff.md"
   ]
 }
