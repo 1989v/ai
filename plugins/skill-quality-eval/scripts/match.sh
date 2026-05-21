@@ -66,18 +66,16 @@ def strip_null(rules):
   end;
 
 # ─── canonicalize a value under a (sub-)policy ───
-# Modes for leaf:
-#   strict / null / undefined  → keep value (after norm)
-#   structural / semantic      → replace with "<TYPE:value-type>" marker
+# p can be a string ("strict"/"structural"/"semantic") for leaf-mode,
+# or an object with optional fields/match-by/normalize keys.
 def canon(p):
-  ((p.normalize // {}) as $rules
+  ((if (p | type) == "object" then (p.normalize // {}) else {} end) as $rules
    | strip_null($rules)
    | norm($rules)) as $v
   | if (p | type) == "string" then
-      # leaf mode at this node
       if p == "structural" or p == "semantic"
       then "<TYPE:" + ($v | type) + ">"
-      else $v  # strict
+      else $v  # strict (or any unrecognized mode degrades to strict)
       end
     else
       ((p.fields // {}) as $fields
