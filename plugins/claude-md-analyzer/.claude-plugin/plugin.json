@@ -1,0 +1,11 @@
+{
+  "name": "claude-md-analyzer",
+  "description": "Analyze layered CLAUDE.md/memory/settings to surface which rules survive (Active) vs overridden in the current session. Introspect + fs evidence verification + hybrid output (summary header + Conflict-only).",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["claude-md", "introspect", "context-analysis", "rule-resolution", "prompt-debugging"],
+  "commands": [
+    "./commands/analyze.md"
+  ]
+}
