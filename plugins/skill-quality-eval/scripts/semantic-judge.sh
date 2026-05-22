@@ -105,5 +105,6 @@ then
 fi
 
 # ─── judge failure → conservative default (mismatch with low confidence) ─
-echo '{"match": false, "confidence": 0.0, "reasoning": "judge invocation failed; defaulting to mismatch"}' | tee "$CACHE_FILE"
+# Do NOT cache failures: a transient budget/network issue shouldn't poison the cache.
+echo '{"match": false, "confidence": 0.0, "reasoning": "judge invocation failed; defaulting to mismatch"}'
 exit 0
