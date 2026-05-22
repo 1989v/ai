@@ -153,8 +153,7 @@ elif [[ -f "$TMP_PLUGIN/skills/$FORK_SKILL_NAME/SKILL.md" ]]; then
   : # already at expected level
 fi
 
-cleanup() { rm -rf "$TMP_PLUGIN"; }
-trap cleanup EXIT
+# cleanup handled by the consolidated trap above (covers SCHEMA_TMP, OVERLAY_TMP, TMP_PLUGIN)
 
 # ───── 4) build invoke prompt ─────
 INPUT_BODY="$(cat "$INPUT")"
