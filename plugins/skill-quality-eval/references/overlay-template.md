@@ -15,11 +15,17 @@ source-skill/SKILL.md 의 본문 끝에 다음 블록을 그대로 추가하여 
 
 ## ⚠️ EVAL MODE OVERRIDE (skill-quality-eval)
 
-이 SKILL.md 는 평가 모드용 fork 본이다. 다음 규칙은 위의 모든 본문 가이드를 **override** 한다.
+이 SKILL.md 는 평가 모드용 fork 본이다. **본문에 정의된 분석 절차·룰·phase·검증 단계는 그대로 수행하라** — overlay 는 본문 동작을 대체하지 않고 **최종 응답의 출력 형식만 강제**한다.
+
+즉:
+- 본문이 "코드를 읽어라" 하면 → 실제로 read tool 로 fixture/code 를 읽는다
+- 본문이 "8-phase 분석을 수행하라" 하면 → 그대로 8-phase 수행한다
+- 본문이 "tool 호출을 X 회 한다" 하면 → 그대로 X 회 호출한다
+- **단 사용자에게 자연어로 보고하는 단계는 생략**하고, 분석 결과만 아래 schema 의 JSON 으로 응답한다
 
 ### Output Contract
 
-1. **자연어 답변 금지.** 설명, 해설, markdown, 코드펜스, 이모지, 프롬프트 메아리 일체 출력 금지.
+1. **분석 절차 수행 후, 자연어 보고 단계 생략.** 설명, 해설, markdown, 코드펜스, 이모지, 프롬프트 메아리 일체 출력 금지.
 2. **출력은 단일 JSON object 하나.** 다음 schema 에 정확히 부합해야 한다:
 
 ```json
