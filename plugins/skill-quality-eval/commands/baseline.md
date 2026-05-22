@@ -1,11 +1,11 @@
 ---
-description: "Create a baseline snapshot for a target skill — fork + invoke + human confirms expected.json once"
-argument-hint: "<skill-id> [--model haiku|opus] [--tag baseline]"
+description: "Create a baseline snapshot for a target skill — fork + N-repeat invoke + human confirms expected.json once + records stability"
+argument-hint: "<skill-id> [--model haiku|opus] [--tag baseline] [--repeat N]"
 ---
 
 # /skill-eval:baseline
 
-평가 대상 스킬의 **baseline 스냅샷**을 생성한다. fork 본을 1회 실행 → JSON 출력 → 사용자가 "이게 정답인가?" 컨펌 → `expected.json` 으로 박힘 → `current` 심볼릭 링크가 새 baseline 으로 이동.
+평가 대상 스킬의 **baseline 스냅샷**을 생성한다. fork 본을 N회 실행 → 가장 안정적인 출력을 baseline 후보로 제시 → 사용자가 "이게 정답인가?" 컨펌 → `expected.json` 으로 박힘 → `current` 심볼릭 링크가 새 baseline 으로 이동 + 안정성 지표 기록.
 
 ## Usage
 
