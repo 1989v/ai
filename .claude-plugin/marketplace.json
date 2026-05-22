@@ -52,7 +52,7 @@
     {
       "name": "skill-quality-eval",
       "source": "./plugins/skill-quality-eval",
-      "description": "Dynamic skill quality evaluator — fork target skills, enforce JSON output via --json-schema, run against ground-truth snapshots, surface regressions vs baseline (strict matching for v0.1)"
+      "description": "Dynamic skill quality evaluator — fork target skills, enforce JSON output via --json-schema, run N-repeat against ground-truth snapshots with semantic-judge + calibration, surface regressions vs baseline + auto-propose SKILL.md edits"
     }
   ]
 }
