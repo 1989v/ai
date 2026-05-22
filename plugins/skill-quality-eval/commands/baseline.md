@@ -41,18 +41,20 @@ goldset/{skill-id}/
 3. **원본 스킬 위치 탐색**
    - `~/.claude/plugins/cache/*/`{plugin}`/*/skills/`{skill-name}`/SKILL.md` 우선
    - 없으면 사용자에게 경로 입력 요청
-4. **fork + invoke** — 각 case 마다 `scripts/fork-and-invoke.sh` 호출 (`--output-kind expected`)
-5. **사용자 컨펌** — 생성된 `expected.json` 을 화면에 출력, "이게 정답인가요? (y/n)" 질의
-   - **y**: 그대로 박음 + `report.md` 생성 + step 6 진행
+4. **N-repeat invoke** — 각 case 마다 `scripts/eval-case.sh` 호출 (baseline 단계는 `--baseline-dir` 생략 → 비교 없이 N회 invoke + 안정성만 측정)
+5. **안정성 검증** — `case-summary.json` 의 stability 가 임계 (기본 0.8) 미만이면 경고. 사용자에게 "이 스킬은 매번 다른 답을 냄. baseline 박는 게 의미가 약함. 진행할까?" 질의
+6. **사용자 컨펌** — N개 actual 중 가장 안정적인 (canonical 그룹 대표) 출력을 `expected.json` 후보로 화면에 출력, "이게 정답인가요? (y/n)" 질의
+   - **y**: 그 actual 을 `expected.json` 으로 박음 + `report.md` (안정성 포함) 생성 + step 7 진행
    - **n**: 스냅샷 디렉토리 폐기 (rm -rf) + 사용자에게 사유 질의 → 스킬 또는 input 수정 후 재시도 안내
-6. **promote** — `scripts/snapshot.sh promote {skill-id} {snapshot-id}` 호출하여 `current` 심볼릭 링크 이동
-7. **결과 보고** — baseline 디렉토리 경로 + 케이스별 expected 요약 + 다음 단계 (`/skill-eval:run`) 안내
+7. **promote** — `scripts/snapshot.sh promote {skill-id} {snapshot-id}` 호출하여 `current` 심볼릭 링크 이동
+8. **결과 보고** — baseline 디렉토리 경로 + 케이스별 expected 요약 + 안정성 지표 + 다음 단계 (`/skill-eval:run`) 안내
 
 ## 출력 예시
 
 ```
 ✅ baseline 생성 완료: goldset/hns-glossary/snapshots/2026-05-22-baseline
-   case-001: terms 24개 (Aggregate 5, Entity 8, VO 6, Service 5)
+   case-001: terms 7개 (Aggregate 2, Entity 1, VO 2, Event 1, Service 1)
+   stability: 3/3 (모든 반복 동일 — 매우 안정)
    다음: 스킬 수정 후 /skill-eval:run hns:glossary
 ```
 
