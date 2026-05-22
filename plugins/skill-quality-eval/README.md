@@ -9,19 +9,34 @@ Claude Code 스킬의 품질을 객관 수치로 평가하는 메타 플러그�
 - **match** — baseline 의 `expected.json` 과 deep-equal 비교 (v0.1 = strict only). 회귀 발견 즉시 diff 표시.
 - **snapshot** — 평가 1회 = 디렉토리 1개. 그 시점 스킬 사본 / schema / 정답 / 결과 / diff 가 한 곳에. 회귀 추적이 디렉토리 구조로 표현됨.
 
-## v0.1 범위
+## v0.2 범위 (현재)
 
 - 4 커맨드: `baseline` / `run` / `compare` / `promote`
-- strict matching (deep-equal via jq) + 정렬·canonicalize 정규화
+- **N-repeat** (`eval-case.sh`) — case 마다 N회 invoke → accuracy + stability 두 지표
+- **Semantic judge** (`semantic-judge.sh` Haiku) — 자연어 필드의 의미 동등성 평가 + 값 hash 캐시
+- **match-semantic** (`match-semantic.sh`) — strict/structural 기본 + semantic 필드는 judge 위임
+- **Calibration set** (`calibrate-judge.sh`) — judge 신뢰도 정량 측정 (judge-calibration/ 디렉토리)
+- **Suggester** (`suggest-improvements.sh` Opus) — 회귀 발견 시 SKILL.md 의 어디를 어떻게 고치면 좋을지 구체 edit 제안
 - 첫 dogfooding 대상: `hns:glossary` (`examples/hns-glossary/` 참조)
 
-## v0.1 에서 제외 (v0.2+ 예정)
+## 평가 loop (v0.2)
 
-- semantic matching (Haiku judge) + calibration set
-- CI 게이팅 모드 (`--threshold`)
-- 캐시 메커니즘
-- multi-acceptable expected
+**측정 → 진단 → 개선 → 재측정** 의 closed loop:
+
+1. `/skill-eval:baseline` — N 회 호출 → 사람 1회 컨펌 → expected.json 박힘 + accuracy/stability 첫 기록
+2. 사용자가 스킬 수정
+3. `/skill-eval:run` — N 회 호출 → match-semantic 으로 매칭 → 회귀 발견 시 suggester 호출 → suggestions.md 생성
+4. 사용자가 suggestions.md 참고해서 SKILL.md 추가 수정
+5. `/skill-eval:run` 다시 → accuracy/stability 비교 → 개선 여부 확인
+6. 의도된 개선이면 `/skill-eval:promote` 로 새 baseline 으로 승격
+
+## v0.2 에서 제외 (v0.3+ 예정)
+
+- CI 게이팅 모드 (exit code 임계값)
+- 캐시 TTL/eviction 정책 (현재는 무한 캐시)
+- multi-acceptable expected (`oneOf` 정답 후보 집합)
 - 부수효과 큰 스킬 평가 (`/ideabank:impl` 등) — isolated workspace 필요
+- tier 프리셋 (dev/ci/full)
 
 ## Quickstart (5분)
 
