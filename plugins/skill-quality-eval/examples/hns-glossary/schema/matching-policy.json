@@ -14,7 +14,7 @@
           "name": "strict",
           "type": "strict",
           "category": "strict",
-          "description": "structural",
+          "description": "semantic",
           "evidence": "structural"
         }
       },
