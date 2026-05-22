@@ -93,27 +93,35 @@ mkdir -p "$(dirname "$FORK_SKILL_MD")"
 # Copy entire source-skill content into fork (preserve refs/scripts etc.)
 rsync -a --delete "$SOURCE_DST/" "$FORK_DST/"
 
-# Read overlay template body (extract markdown between fences, but here we just substitute and append)
-SCHEMA_PRETTY="$(jq . "$SCHEMA")"
-OVERLAY_BODY="$(
-  sed -n '/^## ⚠️ EVAL MODE OVERRIDE/,$p' "$OVERLAY_TEMPLATE" \
-  | sed -e "s/{{SKILL_ID}}/$SKILL_ID/g" \
-        -e "s/{{SNAPSHOT_ID}}/$SNAPSHOT_ID/g" \
-        -e "s/{{CASE_ID}}/$CASE_ID/g"
-)"
+# Build overlay body from template:
+#   1) extract between <!-- OVERLAY_BEGIN --> / <!-- OVERLAY_END --> sentinels
+#   2) substitute {{SKILL_ID}}, {{SNAPSHOT_ID}}, {{CASE_ID}}
+#   3) substitute {{OUTPUT_SCHEMA_JSON}} line by line, reading schema from a temp file
+SCHEMA_TMP="$(mktemp -t skill-eval-schema-XXXXXX)"
+OVERLAY_TMP="$(mktemp -t skill-eval-overlay-XXXXXX)"
+trap 'rm -f "$SCHEMA_TMP" "$OVERLAY_TMP"; rm -rf "${TMP_PLUGIN:-}"' EXIT
+jq . "$SCHEMA" > "$SCHEMA_TMP"
 
-# Substitute {{OUTPUT_SCHEMA_JSON}} via python-free shell — use awk
+sed -n '/<!-- OVERLAY_BEGIN -->/,/<!-- OVERLAY_END -->/p' "$OVERLAY_TEMPLATE" \
+  | grep -v '<!-- OVERLAY_\(BEGIN\|END\) -->' \
+  | sed -e "s|{{SKILL_ID}}|$SKILL_ID|g" \
+        -e "s|{{SNAPSHOT_ID}}|$SNAPSHOT_ID|g" \
+        -e "s|{{CASE_ID}}|$CASE_ID|g" \
+  > "$OVERLAY_TMP"
+
 {
   cat "$FORK_SKILL_MD"
-  printf '\n\n---\n\n'
-  awk -v schema="$SCHEMA_PRETTY" '
-    /\{\{OUTPUT_SCHEMA_JSON\}\}/ {
-      print schema; next
-    }
-    { print }
-  ' <<< "$OVERLAY_BODY"
+  printf '\n\n'
+  while IFS= read -r line; do
+    if [[ "$line" == *"{{OUTPUT_SCHEMA_JSON}}"* ]]; then
+      cat "$SCHEMA_TMP"
+    else
+      printf '%s\n' "$line"
+    fi
+  done < "$OVERLAY_TMP"
 } > "$FORK_SKILL_MD.tmp"
 mv "$FORK_SKILL_MD.tmp" "$FORK_SKILL_MD"
+SCHEMA_PRETTY="$(cat "$SCHEMA_TMP")"
 
 # ───── 3) materialize a minimal plugin layout in tmp ─────
 FORK_PLUGIN_NAME="skill-eval-fork-$(echo "$SKILL_ID" | tr '/:' '-')"
