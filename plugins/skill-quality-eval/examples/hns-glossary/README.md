@@ -19,20 +19,27 @@ hns-glossary/
 
 ## 예상 추출 결과 (baseline 컨펌 시 사용자가 확인할 정답 후보)
 
-7 개 용어:
+### `--shallow` 모드 (cases/case-001 디폴트) — 7 terms
+
+shallow 는 **파일명 스캔만** 한다 (속도 우선). fixture 의 7 파일 각각에서 1 term:
 
 | name | type | category | 근거 |
 |---|---|---|---|
-| Order | Aggregate | order-lifecycle | `order/Order.kt:12` |
-| OrderId | VO | order-lifecycle | `order/OrderId.kt:8` |
-| OrderItem | Entity | order-lifecycle | `order/OrderItem.kt:8` |
-| OrderPlaced | Domain Event | order-lifecycle | `order/OrderPlaced.kt:9` |
-| Product | Aggregate | product-catalog | `product/Product.kt:6` |
-| Sku | VO | product-catalog | `product/Sku.kt:8` |
-| InventoryService | Domain Service | inventory | `product/InventoryService.kt:7` |
-| WarehousePort | Port | inventory | `product/InventoryService.kt:18` |
+| Order | Aggregate | order-lifecycle | `order/Order.kt` |
+| OrderItem | Entity | order-lifecycle | `order/OrderItem.kt` |
+| OrderId | VO | order-lifecycle | `order/OrderId.kt` |
+| OrderPlaced | Domain Event | order-lifecycle | `order/OrderPlaced.kt` |
+| Product | Aggregate | product-catalog | `product/Product.kt` |
+| Sku | VO | product-catalog | `product/Sku.kt` |
+| InventoryService | Domain Service | inventory | `product/InventoryService.kt` |
 
-(8 entries — InventoryService 와 WarehousePort 는 같은 파일에 있지만 별개 타입이라 둘 다 추출)
+### `--deep` 모드 (v0.2+ case 후보) — 8 terms
+
+deep 는 파일 body 까지 스캔하여 같은 파일 안의 추가 타입까지 잡아낸다. 위 7 + 다음:
+
+| name | type | category | 근거 |
+|---|---|---|---|
+| WarehousePort | Port | inventory | `product/InventoryService.kt:18` (인터페이스, 같은 파일 내) |
 
 ## 평가 정책 요점
 
