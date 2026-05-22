@@ -10,12 +10,13 @@ argument-hint: "<skill-id> [--model haiku|opus] [--tag baseline] [--repeat N]"
 ## Usage
 
 ```
-/skill-eval:baseline <skill-id> [--model haiku|opus] [--tag baseline]
+/skill-eval:baseline <skill-id> [--model haiku|opus] [--tag baseline] [--repeat N]
 ```
 
 - `skill-id` — 평가 대상 스킬 (예: `hns:glossary`, `ideabank:init`)
 - `--model` — invoke 시 사용 모델 (기본 opus)
 - `--tag` — 스냅샷 디렉토리 suffix (기본 `baseline`)
+- `--repeat` — 안정성 측정용 반복 횟수 (기본 3). LLM 비결정성을 측정 — 동일 입력에 동일 출력이 나오는지 검증
 
 ## 사전 준비 (사람 1회 작업)
 
