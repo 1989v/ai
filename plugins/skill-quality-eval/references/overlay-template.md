@@ -8,8 +8,9 @@ source-skill/SKILL.md 의 본문 끝에 다음 블록을 그대로 추가하여 
 
 ## 표준 Overlay
 
-```markdown
+`fork-and-invoke.sh` 는 `<!-- OVERLAY_BEGIN -->` 와 `<!-- OVERLAY_END -->` 사이의 모든 내용을 추출해서 SKILL.md 뒤에 붙인다.
 
+<!-- OVERLAY_BEGIN -->
 ---
 
 ## ⚠️ EVAL MODE OVERRIDE (skill-quality-eval)
@@ -40,7 +41,7 @@ source-skill/SKILL.md 의 본문 끝에 다음 블록을 그대로 추가하여 
 JSON 형식이 깨지거나 schema 검증을 통과하지 못하면 runner 가 retry 한다. retry 한도 (기본 N=2) 도달 시 케이스 fail 로 카운트된다.
 
 ---
-```
+<!-- OVERLAY_END -->
 
 ## 변수 치환
 
