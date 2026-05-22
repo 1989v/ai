@@ -10,10 +10,12 @@ argument-hint: "<skill-id> [--model haiku|opus] [--tag <name>] [--repeat N] [--n
 ## Usage
 
 ```
-/skill-eval:run <skill-id> [--model haiku|opus] [--tag <name>]
+/skill-eval:run <skill-id> [--model haiku|opus] [--tag <name>] [--repeat N] [--no-suggester]
 ```
 
 - `--tag` — 신규 스냅샷 디렉토리 suffix (기본 `after-fix-{HHMMSS}`)
+- `--repeat` — N회 반복 (기본 3) → accuracy + stability 두 지표 동시 산출
+- `--no-suggester` — 회귀 발견 시 suggester 자동 호출 끔 (비용 절감용)
 
 ## 사전 조건
 
