@@ -1,11 +1,11 @@
 ---
-description: "Run regression eval — fork current skill, invoke, compare to current baseline, generate diff + report (no human confirmation)"
-argument-hint: "<skill-id> [--model haiku|opus] [--tag <name>]"
+description: "Run regression eval — fork current skill, N-repeat invoke, match-semantic vs baseline, auto-invoke suggester on regression"
+argument-hint: "<skill-id> [--model haiku|opus] [--tag <name>] [--repeat N] [--no-suggester]"
 ---
 
 # /skill-eval:run
 
-스킬 수정 후 회귀 측정. 현재 스킬 상태를 fork → 실행 → 직전 baseline 의 `expected.json` 과 자동 매칭 → 신규 스냅샷 디렉토리에 결과 적재.
+스킬 수정 후 회귀 측정. 현재 스킬 상태를 fork → N회 실행 → 직전 baseline 의 `expected.json` 과 자동 매칭 (strict/structural + semantic judge) → 회귀 발견 시 자동으로 suggester 호출하여 SKILL.md 수정 제안 → 신규 스냅샷 디렉토리에 결과 적재.
 
 ## Usage
 
