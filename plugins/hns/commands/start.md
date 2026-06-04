@@ -150,7 +150,7 @@ Delegate to `/hns:spec-review` flow:
 Delegate to `/hns:create-tasks` flow:
 1. tasks-list-creator → tasks.md
 
-### PHASE 5: User Approval Gate
+### PHASE 5: User Approval Gate & Execution Mode
 
 Present pipeline results summary:
 ```
@@ -166,11 +166,21 @@ Artifacts:
 Proceed with implementation? [Y/n]
 ```
 
-Wait for user approval before proceeding.
+승인 시 **구현 방식**을 함께 묻는다 (`@references/step-execution-protocol.md`):
+```
+구현 방식 선택:
+  [1] Task-Group 모드 (기본) — task group 단위로 한 세션에서 누적 구현. 작은~중간 기능에 적합.
+  [2] Step 모드 — task group을 self-contained step으로 쪼개 step마다 독립 컨텍스트(subagent)로
+      구현. step이 많은 큰 작업·step간 간섭 최소화에 적합. steps/index.json 상태머신으로 resume.
+선택 [1/2] (기본: 1)
+```
+
+> Query Mode에서는 묻지 않는다(구현 없음). `--feat` 진입 시에도 이 게이트에서 동일하게 묻는다.
 
 ### PHASE 6: Implement Tasks
 
-Delegate to `/hns:implement-tasks` flow.
+- **모드 1 (Task-Group)** → Delegate to `/hns:implement-tasks` flow.
+- **모드 2 (Step)** → Delegate to `/hns:orchestrate-tasks` PHASE 5 **Step mode** (`@references/step-execution-protocol.md`): tasks.md → `steps/` 변환 → step별 subagent 순차 실행 + 상태머신.
 
 ### PHASE 7: Post-Implementation Validation
 

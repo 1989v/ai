@@ -34,7 +34,7 @@ If yes → apply `@references/worktree-protocol.md`
 Determine current session type:
 
 **First Window** (no prior progress):
-- Create `context/progress.md` with initial state
+- Create `context/progress.md` with initial state (서술형 진행 노트)
 - Set up verification scripts if needed (e.g., `./verify.sh`)
 - Focus on foundation task groups first
 
@@ -42,6 +42,8 @@ Determine current session type:
 - Read `context/progress.md` → resume from recorded next step
 - Run quick smoke test on prior work before continuing
 - Do NOT re-implement completed groups
+
+> step별 독립 컨텍스트로 쪼개 실행하고 싶으면(step 많은 큰 작업) Task-Group 모드 대신 Step 모드 사용 — `/hns:orchestrate-tasks` PHASE 5 Step mode + `@references/step-execution-protocol.md`. (`steps/index.json` 상태 머신으로 결정론적 resume.)
 
 ## PHASE 1: Select Scope
 

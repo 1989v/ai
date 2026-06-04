@@ -38,6 +38,10 @@ CSS/TSX/JSX 파일을 패턴 매칭으로 스캔.
 | A-6: 과용 폰트 | `font-family:.*Inter\|Roboto\|Open Sans\|Lato\|Montserrat` (명시적 선택 근거 없으면) | WARN |
 | A-7: Glassmorphism 남용 | `backdrop-filter:\s*blur` 3회 이상 | WARN |
 | A-8: Layout property animation | `transition:.*(?:width\|height\|padding\|margin)\|animation:.*(?:width\|height\|padding\|margin)` | FAIL |
+| A-9: "Powered by AI" 배지 | `Powered by AI\|AI-powered\|✨\s*AI` (장식용 배지) | WARN |
+| A-10: 네온 글로우 애니메이션 | `box-shadow:.*\b(?:glow)\|animation:.*glow\|box-shadow:.*0\s+0\s+\d{2,}px` (글로우 펄스) | FAIL |
+| A-11: 균일 rounded-2xl 남용 | `rounded-2xl` 모든 카드/컨테이너에 동일 적용 (수동 확인 — 템플릿 느낌) | WARN |
+| A-12: 배경 gradient orb | `blur-3xl` + 원형(`rounded-full`) 장식 요소 / `radial-gradient` 배경 orb | WARN |
 
 ### Category B: 타이포그래피 (자동 + 수동)
 
