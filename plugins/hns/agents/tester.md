@@ -27,7 +27,7 @@ You are the test writing specialist.
 ### Step 1: Context
 - Read spec.md for acceptance criteria
 - Read tasks.md for test requirements
-- Read agent-os/product/tech-stack.md for test framework
+- Read docs/architecture/overview.md for test framework
 - Analyze existing test patterns in codebase
 
 ### Step 2: Write Tests

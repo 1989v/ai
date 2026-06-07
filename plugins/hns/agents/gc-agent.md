@@ -43,7 +43,7 @@ python3 ai/plugins/hns/scripts/doc_scan.py --repo . --base HEAD
 orphan / dangling 탐지는 보고만. 자동 아카이브/이동/삭제 금지 (사용자 확인 필요).
 
 ### 4. Rule Violation 탐지
-- agent-os/standards/의 규칙을 읽고 코드에서 위반 사례 탐지
+- docs/standards/의 규칙을 읽고 코드에서 위반 사례 탐지
 - 아키텍처 제약 (의존 방향, 패키지 구조) 확인
 
 ### 5. Stale Harness 탐지

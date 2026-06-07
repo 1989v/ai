@@ -24,12 +24,12 @@ Check `docs/specs/[this-spec]/tasks.md`:
 - Mark verified tasks, flag incomplete ones
 
 ### Step 2: Update Roadmap
-Check `agent-os/product/roadmap.md`:
+Check `docs/product/roadmap.md`:
 - Mark completed items from this spec
 - Skip if no matching roadmap items
 
 ### Step 3: Run Test Suite
-Run full test suite (from agent-os/product/tech-stack.md commands).
+Run full test suite (from docs/architecture/overview.md commands).
 Record: total, passing, failing, errors.
 Do NOT fix failing tests — only report.
 

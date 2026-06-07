@@ -23,7 +23,7 @@ If `docs/index.yml` exists and command has `auto_reference: true`:
 
 ## Session Start
 1. Level 0: Read CLAUDE.md
-2. Read agent-os/product/mission.md (if exists)
+2. Read docs/product/mission.md (if exists)
 3. Check latest spec status in docs/specs/
 4. Load active task context from tasks.md
 

@@ -4,7 +4,7 @@ description: "Build and evolve domain glossary with 8-phase deep analysis. Auto-
 
 # /hns:glossary (v0.9.0+)
 
-도메인 유비쿼터스 사전(`agent-os/product/glossary.md` 또는 BC별 `{bc}/glossary.md`)을 **8-phase 깊이 분석**으로 구축·갱신한다.
+도메인 유비쿼터스 사전(`docs/product/glossary.md` 또는 BC별 `{bc}/glossary.md`)을 **8-phase 깊이 분석**으로 구축·갱신한다.
 
 v0.8.x의 단순 파일명 스캔과 달리, v0.9.0+ 는 **8개 소스**(파일명 + 클래스 본문 + JPA + enum/sealed + Exception + Kafka topic + 테스트 BehaviorSpec + docs/ADR)를 종합 분석하고, 모든 용어를 **7개 Type**(Aggregate/Entity/VO/Domain Service/Domain Event/Policy/Port)로 분류한 뒤, **12개 카테고리**의 표준 구조로 출력한다.
 
@@ -27,7 +27,7 @@ v0.8.x의 단순 파일명 스캔과 달리, v0.9.0+ 는 **8개 소스**(파일�
 - (선택) BC 이름, 신규 용어 후보, 충돌 의심 용어
 
 ## Expected Outputs
-- `agent-os/product/glossary.md` (단일 BC) 또는 `{bc}/glossary.md` (멀티 BC)
+- `docs/product/glossary.md` (단일 BC) 또는 `{bc}/glossary.md` (멀티 BC)
 - `docs/context-map.md` (멀티 BC인데 없을 때 신규 생성)
 - 필요 시 `docs/adr/{nnnn}-{term-decision}.md`
 - 보고서: Type별 개수 + Quality Gate 결과 + Cross-context 매칭 + Next steps

@@ -13,7 +13,7 @@ You are a spec initialization specialist. Create the spec folder structure and s
 
 ### Step 1: Get Feature Description
 IF given a description, use it.
-OTHERWISE check `agent-os/product/roadmap.md` for next feature, ask user.
+OTHERWISE check `docs/product/roadmap.md` for next feature, ask user.
 
 ### Step 2: Initialize Spec Structure
 ```bash

@@ -38,10 +38,10 @@ user-invocable: false
 ## PHASE 1: Scope Resolution
 
 1. 단일 BC 인지 멀티 BC 인지 결정:
-   - `agent-os/product/glossary.md` 존재 → 단일 BC 경로
+   - `docs/product/glossary.md` 존재 → 단일 BC 경로
    - `docs/context-map.md` 존재 → 멀티 BC, 표를 따라 각 BC 처리
 2. 대상 BC 디렉토리 확정 (사용자 인자 또는 전체)
-3. 출력 경로 결정 (`{bc}/glossary.md` 또는 `agent-os/product/glossary.md`)
+3. 출력 경로 결정 (`{bc}/glossary.md` 또는 `docs/product/glossary.md`)
 
 ## PHASE 2: Source Inventory
 
@@ -56,7 +56,7 @@ user-invocable: false
 | 5 | `{bc}/{domain,app}/src/main/kotlin/**/*Exception.kt` | 선택 |
 | 6 | `{bc}/{app,consumer,batch}/src/main/kotlin/**/{Kafka*,*Consumer,*Producer}.kt` + topic 상수 | 선택 (이벤트 사용 시) |
 | 7 | `{bc}/{domain,app}/src/test/kotlin/**/*.kt` (BehaviorSpec) | 선택 |
-| 8 | `{bc}/CLAUDE.md`, `{bc}/docs/**`, `agent-os/product/mission.md`, `docs/adr/*`, `docs/specs/*` | 선택 |
+| 8 | `{bc}/CLAUDE.md`, `{bc}/docs/**`, `docs/product/mission.md`, `docs/adr/*`, `docs/specs/*` | 선택 |
 
 누락된 소스는 보고서에 `(no source)` 마크.
 

@@ -15,9 +15,9 @@ user-invocable: false
 6. Read key-decisions.md for prior decisions
 
 ## Standard Loading
-1. Read `agent-os/standards/` relevant to current task
-2. Read `agent-os/product/tech-stack.md` for build/test commands
-3. Apply conventions from `agent-os/standards/global/`
+1. Read `docs/standards/` relevant to current task
+2. Read `docs/architecture/overview.md` for build/test commands
+3. Apply conventions from `docs/conventions/`
 4. Load `spec-evolution` skill (always active during implementation)
 
 ## Verification Loop (per Task Group)

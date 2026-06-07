@@ -9,7 +9,7 @@ user-invocable: false
 
 ## Required Inputs
 - docs/ directory
-- agent-os/ directory (if exists)
+- docs/ directory (if exists)
 - docs/specs/{feature}/ (if checking specific feature)
 
 ## Expected Outputs
@@ -24,20 +24,20 @@ docs/ 내 문서들 간 모순 체크:
 - docs 내 상호 참조 링크가 유효한지
 - CLAUDE.md와 docs/architecture/overview.md 간 모듈 목록 일치
 
-## Layer 2: docs ↔ agent-os Sync
+## Layer 2: docs ↔ CLAUDE.md Sync
 
-- agent-os/standards/의 규칙이 CLAUDE.md에도 반영되어 있는지
-- agent-os/product/tech-stack.md와 CLAUDE.md 빌드 명령 일치
-- agent-os/config.yml 설정과 실제 파일 구조 일치
+- docs/standards/의 규칙이 CLAUDE.md에도 반영되어 있는지
+- docs/architecture/overview.md와 CLAUDE.md 빌드 명령 일치
+- .claude/config.yml 설정과 실제 파일 구조 일치
 
 ## Layer 3: Product ↔ Specs
 
-- agent-os/product/mission.md의 목표가 spec에 반영되어 있는지
+- docs/product/mission.md의 목표가 spec에 반영되어 있는지
 - 스펙이 미션과 무관한 범위를 포함하지 않는지
 
 ## Layer 4: Standards ↔ Specs
 
-- agent-os/standards/의 코딩 규칙이 spec의 기술 결정과 충돌하지 않는지
+- docs/standards/의 코딩 규칙이 spec의 기술 결정과 충돌하지 않는지
 - spec에서 표준을 위반하는 결정이 있으면 ADR 존재 여부 확인
 
 ## Layer 5: Specs ↔ Tasks
@@ -60,7 +60,7 @@ docs/ 내 문서들 간 모순 체크:
 | Layer | Status | Issues |
 |-------|--------|--------|
 | 1. SOT Internal | PASS | 0 |
-| 2. docs ↔ agent-os | WARN | 1 |
+| 2. docs ↔ CLAUDE.md | WARN | 1 |
 | 3. Product ↔ Specs | PASS | 0 |
 | 4. Standards ↔ Specs | PASS | 0 |
 | 5. Specs ↔ Tasks | FAIL | 2 |
@@ -69,7 +69,7 @@ docs/ 내 문서들 간 모순 체크:
 Overall: FAIL
 
 ## Details
-### Layer 2: docs ↔ agent-os
+### Layer 2: docs ↔ CLAUDE.md
 - ⚠ tech-stack.md lists Java 25 but CLAUDE.md says Java 21
 
 ### Layer 5: Specs ↔ Tasks

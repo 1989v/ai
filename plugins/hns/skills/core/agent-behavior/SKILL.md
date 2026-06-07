@@ -14,7 +14,7 @@ user-invocable: false
 1. Read `docs/specs/{feature}/context/key-decisions.md` (if exists)
 2. Read `docs/specs/{feature}/spec.md`
 3. Read `docs/specs/{feature}/tasks.md` → confirm current task
-4. Check `agent-os/standards/` → matching standard
+4. Check `docs/standards/` → matching standard
 5. If unclear → ask specific question
 
 ## 2. Risk Classification
@@ -47,7 +47,7 @@ Failure Classification:
 - Verdict: SHIP / REVISE (max 2) / BLOCK
 
 ## 5. Doc Impact Scan
-Changed file keywords → agent-os/standards/ match → report related docs
+Changed file keywords → docs/standards/ match → report related docs
 
 ## 6. Decision Recording
 ```md

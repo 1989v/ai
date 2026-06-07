@@ -8,20 +8,20 @@ entries:
     keywords: [architecture, layer, dependency, port, adapter, clean-architecture, module]
 
   - id: conventions
-    path: agent-os/standards/global/conventions.md
+    path: docs/conventions/conventions.md
     keywords: [convention, naming, style, format, coding-standard]
 
   - id: test-rules
-    path: agent-os/standards/global/conventions.md
+    path: docs/conventions/conventions.md
     section: "## Test"
     keywords: [test, testing, mock, bdd, spec, assertion]
 
   - id: mission
-    path: agent-os/product/mission.md
+    path: docs/product/mission.md
     keywords: [mission, vision, goal, purpose, product]
 
   - id: tech-stack
-    path: agent-os/product/tech-stack.md
+    path: docs/architecture/overview.md
     keywords: [build, gradle, maven, npm, dependency, version, toolchain]
 
   - id: harness-philosophy

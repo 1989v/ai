@@ -48,7 +48,7 @@ Follow `@references/gc-protocol.md` for scan modes and report format.
 ## Scan Checklist
 - [ ] Dead code: 미사용 import, 빈 파일, 호출 없는 public 함수
 - [ ] Doc drift: CLAUDE.md/docs 내용 vs 실제 코드 괴리 (`--docs` 시 doc_map + doc_scan 파이프라인 사용)
-- [ ] Rule violation: agent-os/standards/ 규칙 vs 코드 위반
+- [ ] Rule violation: docs/standards/ 규칙 vs 코드 위반
 - [ ] Stale harness: 불필요한 규칙/스킬/훅 (→ diet 연계)
 
 ## Auto-fix Policy

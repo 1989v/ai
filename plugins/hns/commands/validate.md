@@ -74,7 +74,7 @@ docs/policies/ 하위 문서에 명시된 규칙:
 
 ## Mode 2: Code Validation (`--code`)
 
-코드가 하네스 규칙(CLAUDE.md, docs/architecture/, agent-os/standards/)에 맞게 작성되었는지 검증한다.
+코드가 하네스 규칙(CLAUDE.md, docs/architecture/, docs/standards/)에 맞게 작성되었는지 검증한다.
 검증 방향: **rules → code** (규칙이 source of truth).
 
 ### Check 1: 아키텍처 원칙 준수

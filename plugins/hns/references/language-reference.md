@@ -20,7 +20,7 @@
 
 ```
 프로젝트 루트/
-├── agent-os/product/
+├── docs/product/
 │   ├── mission.md
 │   ├── tech-stack.md
 │   └── glossary.md           ← 단일 컨텍스트 (기본)
@@ -30,7 +30,7 @@
         └── 0001-*.md
 ```
 
-- **단일 컨텍스트**: `agent-os/product/glossary.md` 하나
+- **단일 컨텍스트**: `docs/product/glossary.md` 하나
 - **멀티 BC**: `docs/context-map.md`가 각 BC의 `glossary.md` 위치를 가리킴 (예: `src/ordering/glossary.md`)
 - 파일은 **lazy 생성** — 첫 용어가 확정될 때 만든다
 

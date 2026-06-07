@@ -15,7 +15,7 @@ Set up a complete AI harness environment for the current project.
 ## Expected Outputs
 - CLAUDE.md (project-customized)
 - PLANS.md
-- agent-os/ directory tree
+- docs/ directory tree
 - docs/ directory tree (architecture, adr, index)
 - docs/index.yml (context routing map)
 - .claude/hooks/ (selected tier)
@@ -88,11 +88,11 @@ Copy selected template from `templates/hooks/hnsf-hooks-{tier}.json` to `.claude
 
 Using templates, generate:
 - `PLANS.md` — from `templates/plans-md.md`
-- `agent-os/config.yml` — mode + layer settings
-- `agent-os/product/mission.md` — from user input
-- `agent-os/product/tech-stack.md` — from scan results
-- `agent-os/standards/agent-behavior/` — all 6 files
-- `agent-os/standards/global/conventions.md` — from scan + user input
+- `.claude/config.yml` — mode + layer settings
+- `docs/product/mission.md` — from user input
+- `docs/architecture/overview.md` — from scan results
+- `docs/standards/agent-behavior.md` — all 6 files
+- `docs/conventions/conventions.md` — from scan + user input
 - `.claude/COMPACTION-GUIDE.md` — from template
 - `docs/specs/` — empty directory
 - (Conditional) `.claude/scripts/parallel-work.sh`
@@ -112,7 +112,7 @@ AI harness initialized for [project-name]!
 Generated:
 - CLAUDE.md (project configuration)
 - PLANS.md (execution plan rules)
-- agent-os/ (standards, product, config)
+- docs/ (standards, product, config)
 - docs/ (architecture, adr, index, routing)
 - .claude/hooks/ ({tier} tier)
 - docs/specs/ (SDD spec directory)

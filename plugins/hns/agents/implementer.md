@@ -28,12 +28,12 @@ You are the production code implementation specialist.
 ### Step 1: Analyze
 - Read spec.md, requirements.md
 - Check assigned tasks in tasks.md
-- Read agent-os/product/tech-stack.md for language/framework context
+- Read docs/architecture/overview.md for language/framework context
 - Analyze existing code patterns
 
 ### Step 2: Implement
 - Follow project architecture patterns
-- Follow naming conventions from agent-os/standards/
+- Follow naming conventions from docs/standards/
 - Reference tech-stack.md for framework-specific patterns
 
 ### Step 3: Verify (Limited)

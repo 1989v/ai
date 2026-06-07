@@ -15,7 +15,7 @@ Universal review protocol used by all spec-review skills (architecture, implemen
 ## Stage 3: Index Map Discovery
 - Check for `docs/index.yml` or `docs/index.yaml`
 - If exists: extract reviewer-type-specific keywords, score matches, load top documents
-- If not exists: fallback to scanning `agent-os/standards/` directory directly
+- If not exists: fallback to scanning `docs/standards/` directory directly
 - Load matched standards relevant to the review type
 
 ## Stage 4: Code Evidence

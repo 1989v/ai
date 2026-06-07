@@ -95,9 +95,9 @@ PHASE 7: Post-Implementation Validation (기본 ON)
 ### PHASE 0: Context Loading
 
 1. Read docs/index.yml (if exists) for auto-reference
-2. Read agent-os/product/mission.md
-3. Read agent-os/product/tech-stack.md
-4. Read agent-os/product/glossary.md (if exists) — domain ubiquitous language; if missing, note recommendation to run `/hns:glossary` and continue with degraded coherence
+2. Read docs/product/mission.md
+3. Read docs/architecture/overview.md
+4. Read docs/product/glossary.md (if exists) — domain ubiquitous language; if missing, note recommendation to run `/hns:glossary` and continue with degraded coherence
 5. Read docs/context-map.md (if exists, multi-BC project) — identify which BC this request belongs to and load that BC's glossary.md
 6. **Hierarchical sub-context (Level 0.5)** — cwd에서 repo root까지 거슬러 올라가며 발견되는 모든 `CLAUDE.md` + 인접 `docs/index.yml` 을 누적 로드. 가장 가까운 것이 우선(override), root는 base. 모노레포 / multi-service 레포에서 서비스 로컬 규칙(예: `order/CLAUDE.md`, `order/docs/`)을 spec/review/tasks 단계가 자동 흡수. 단일 모듈 프로젝트에서는 root 외 추가 로드 없음(regression 없음). 상세 프로토콜: `references/hierarchical-delegation.md`
 

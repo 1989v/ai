@@ -29,23 +29,23 @@
 
 코드 수정/생성 작업 시 다음 표준을 적용하세요:
 
-- **리스크 분류 & 검증 루프** → `agent-os/standards/agent-behavior/confirmation.md`
+- **리스크 분류 & 검증 루프** → `docs/standards/agent-behavior.md#risk-classification--confirmation`
   - Level 1-3 분류, Ralph Loop (BUILD→TEST→FIX, max 3회), Level 3 승인 필수
-- **구현 후 리뷰** → `agent-os/standards/agent-behavior/self-review.md`
+- **구현 후 리뷰** → `docs/standards/agent-behavior.md#self-review-protocol`
   - Level 1-2: 자동 lint, Level 3: fresh context reviewer
-- **문서 동기화** → `agent-os/standards/agent-behavior/doc-gardening.md`
+- **문서 동기화** → `docs/standards/agent-behavior.md#doc-gardening`
   - 구현 성공 후 Doc Impact Scan 실행
 
 **범용 행동 원칙**:
-- **탐색 우선, 증거 기반** → `agent-os/standards/agent-behavior/core-rules.md`
-- **컴팩션 복구** → `agent-os/standards/agent-behavior/compaction.md`
-- **세션 관리** → `agent-os/standards/agent-behavior/session.md`
+- **탐색 우선, 증거 기반** → `docs/standards/agent-behavior.md#core-rules`
+- **컴팩션 복구** → `docs/standards/agent-behavior.md#compaction-rules`
+- **세션 관리** → `docs/standards/agent-behavior.md#session-management`
 
 ---
 
 ## Standards & Conventions
 
-All rules are routed via `agent-os/standards/`.
+All rules are routed via `docs/standards/`.
 
 ---
 
@@ -90,5 +90,5 @@ All rules are routed via `agent-os/standards/`.
 ## Navigation Tips
 
 - Feature-specific work → `docs/specs/`
-- Standards → `agent-os/standards/`
-- Product context → `agent-os/product/`
+- Standards → `docs/standards/`
+- Product context → `docs/product/`

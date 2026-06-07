@@ -22,7 +22,7 @@ Read `docs/specs/[this-spec]/spec.md` and `planning/requirements.md`.
 ## PHASE 2: Load Standards
 
 1. IF `docs/index.yml` exists → keyword match → load relevant standards
-2. Load `agent-os/standards/` applicable rules
+2. Load `docs/standards/` applicable rules
 
 ## PHASE 3: Create Tasks
 

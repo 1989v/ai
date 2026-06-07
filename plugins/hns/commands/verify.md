@@ -17,7 +17,7 @@ Verify implementation against standards, lint, build, and tests. Record evidence
 
 ## Step 1: Standards Verification
 
-1. Load relevant standards from `agent-os/standards/`
+1. Load relevant standards from `docs/standards/`
 2. Verify code compliance (architecture, conventions, error handling)
 3. Record pass/fail with brief evidence
 4. **Failure Policy**: Standards violations = **FAIL**
@@ -31,14 +31,14 @@ Verify implementation against standards, lint, build, and tests. Record evidence
 
 ## Step 3: Build Verification
 
-1. Get build command from `agent-os/product/tech-stack.md`
+1. Get build command from `docs/architecture/overview.md`
 2. Execute build
 3. Record result
 4. **Failure Policy**: Build failure = **FAIL**
 
 ## Step 4: Test Verification
 
-1. Get test command from `agent-os/product/tech-stack.md`
+1. Get test command from `docs/architecture/overview.md`
 2. Execute tests
 3. Record result (total, pass, fail)
 4. **Failure Policy**: Test failure = **FAIL**

@@ -26,7 +26,7 @@ You are a specification writing specialist. Write documentation only.
 
 ### Step 1: Analyze
 - Read requirements.md and visual assets
-- Read related specs/standards from agent-os/standards/
+- Read related specs/standards from docs/standards/
 
 ### Step 2: Search Reusable Code
 Search codebase with Read tool for:

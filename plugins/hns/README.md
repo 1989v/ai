@@ -13,7 +13,7 @@ AI 하네스 엔지니어링 완전체 플러그인.
 |---------|-------------|
 | `/hns:init` | 하네스 스캐폴딩 — auto-scan → doc-gen → hooks → context routing |
 
-프로젝트에 처음 적용할 때 사용. CLAUDE.md, agent-os/, docs/, hooks를 한번에 생성한다.
+프로젝트에 처음 적용할 때 사용. CLAUDE.md, docs/, docs/, hooks를 한번에 생성한다.
 이미 CLAUDE.md가 있는 프로젝트에도 사용 가능 (idempotency check로 병합/건너뛰기 선택).
 
 ### SDD 파이프라인
@@ -50,7 +50,7 @@ AI 하네스 엔지니어링 완전체 플러그인.
 **verify-crosscheck 6레이어:**
 ```
 Layer 1: docs 내부 일관성
-Layer 2: docs ↔ agent-os
+Layer 2: docs ↔ CLAUDE.md
 Layer 3: product ↔ specs
 Layer 4: standards ↔ specs
 Layer 5: specs ↔ tasks
@@ -166,7 +166,7 @@ harness-scaffold/
 │   ├── hooks/                      3-tier hook templates
 │   ├── docs-index.yml              context routing map template
 │   ├── site-template.html          HTML doc site template
-│   ├── agent-os/                   agent-os directory templates
+│   ├── docs/                   docs directory templates
 │   ├── specs/                      spec/tasks templates
 │   └── scripts/                    parallel-work.sh
 └── docs/                           Knowledge Base

@@ -85,7 +85,7 @@
 | 5 | **`{bc}/app/.../usecase/*.kt`** | Use Case 이름의 동사+명사 분리 |
 | 6 | **Kafka 토픽 상수** (코드 grep `topic`, `@KafkaListener`) | 이벤트 이름 + 페이로드 클래스 |
 | 7 | **테스트 BehaviorSpec given/when/then** | 비즈니스 시나리오에서 도메인 표현 추출 |
-| 8 | **문서**: `{bc}/CLAUDE.md`, `agent-os/product/mission.md`, `docs/architecture/*`, `docs/adr/*`, `docs/specs/*` 중 BC 관련 | 비즈니스 컨텍스트·정책 결정·전이 규칙 |
+| 8 | **문서**: `{bc}/CLAUDE.md`, `docs/product/mission.md`, `docs/architecture/*`, `docs/adr/*`, `docs/specs/*` 중 BC 관련 | 비즈니스 컨텍스트·정책 결정·전이 규칙 |
 
 ---
 

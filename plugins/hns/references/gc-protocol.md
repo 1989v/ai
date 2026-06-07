@@ -11,7 +11,7 @@
 프로젝트 전체 순회.
 1. **Dead code**: 미사용 import, 빈 파일, 호출 없는 public 함수
 2. **Doc drift**: CLAUDE.md/docs 내용 vs 실제 코드 구조 비교
-3. **Rule violation**: agent-os/standards/의 규칙 vs 코드 위반 탐지
+3. **Rule violation**: docs/standards/의 규칙 vs 코드 위반 탐지
 4. **Stale harness**: 3개월 이상 트리거 안 된 규칙/훅 식별
 
 ## Report Format

@@ -27,7 +27,7 @@ Delegate to `spec-initializer` agent:
 ## PHASE 2: Load Documentation Context
 
 ### 2.1 Domain Glossary (always)
-IF `agent-os/product/glossary.md` exists:
+IF `docs/product/glossary.md` exists:
 - Load full content — this is the **ubiquitous language** all subsequent phases must use
 - Note all `Avoid:` synonyms — if the feature description uses any, flag for grilling in PHASE 3
 ELSE:
@@ -45,15 +45,15 @@ IF `docs/index.yml` exists:
 - Load top 2 references (full content)
 - Load matching standards
 
-ELSE: Note "no docs/index.yml — using agent-os/standards/ fallback"
+ELSE: Note "no docs/index.yml — using docs/standards/ fallback"
 
 ## PHASE 3: Research Requirements
 
 Delegate to `spec-shaper` agent with:
 - Feature initialization from Phase 1
 - Documentation context from Phase 2 (incl. glossary.md if present)
-- `agent-os/product/` context (mission, tech-stack)
-- `agent-os/standards/` for compliance
+- `docs/product/` context (mission, tech-stack)
+- `docs/standards/` for compliance
 
 Agent will:
 1. Generate 4-8 clarifying questions — **use glossary.md vocabulary**; if user introduces a term that conflicts with `Avoid:` synonyms, ask first

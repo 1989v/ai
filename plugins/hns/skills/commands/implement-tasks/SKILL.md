@@ -51,8 +51,8 @@ Present task groups from tasks.md. Ask: "Which groups to implement? (all / speci
 
 ## PHASE 1.5: Load Standards
 
-1. Load from `agent-os/standards/` matching task keywords
-2. Load `agent-os/product/tech-stack.md` for build/test commands
+1. Load from `docs/standards/` matching task keywords
+2. Load `docs/architecture/overview.md` for build/test commands
 
 ## PHASE 1.8: Skill Routing
 

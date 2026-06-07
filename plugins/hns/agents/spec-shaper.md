@@ -16,9 +16,9 @@ Load `[spec-path]/planning/initialization.md`
 
 ### Step 2: Analyze Context
 Read (if exist):
-- `agent-os/product/mission.md`
-- `agent-os/product/roadmap.md`
-- `agent-os/product/tech-stack.md`
+- `docs/product/mission.md`
+- `docs/product/roadmap.md`
+- `docs/architecture/overview.md`
 
 ### Step 3: Generate Questions (4-8)
 Numbered questions with sensible defaults:
@@ -56,4 +56,4 @@ Report completion with summary.
 - MANDATORY visual check via bash
 - Save exact answers, not interpretations
 - Max 1-3 follow-up questions
-- Reference agent-os/standards/ for compliance
+- Reference docs/standards/ for compliance

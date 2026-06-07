@@ -14,7 +14,7 @@ Apply `@references/review-protocol.md` stages 1-4.
 
 ## Checklist
 - [ ] Bounded context boundaries clearly defined? No leakage across contexts?
-- [ ] **Glossary present?** `agent-os/product/glossary.md` exists, or (multi-BC) `docs/context-map.md` points to per-BC glossary
+- [ ] **Glossary present?** `docs/product/glossary.md` exists, or (multi-BC) `docs/context-map.md` points to per-BC glossary
 - [ ] **Spec vocabulary matches glossary?** Every domain noun in spec.md is defined in glossary (or is a newly-introduced term flagged for `/hns:glossary`)
 - [ ] **No `Avoid:` synonyms used in spec?** Deprecated synonyms in glossary's `Avoid` lines are not used in spec.md
 - [ ] Ubiquitous language consistent between spec and existing codebase?

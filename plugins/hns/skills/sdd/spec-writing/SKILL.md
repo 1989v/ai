@@ -23,7 +23,7 @@ user-invocable: false
 
 ## Context Loading
 1. If `docs/index.yml` exists → keyword match → load related specs/standards
-2. Fallback: scan `agent-os/standards/` directly
+2. Fallback: scan `docs/standards/` directly
 3. Check `context/open-questions.yml` → include unresolved pre-impl items as context
 
 ## Documentation References

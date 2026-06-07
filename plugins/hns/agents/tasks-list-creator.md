@@ -50,4 +50,4 @@ Total Task Groups: [count]
 - Verification sub-task at end of each group
 - Include phase + required_skills metadata
 - Target: <= 600 lines
-- Reference agent-os/standards/ for compliance
+- Reference docs/standards/ for compliance
