@@ -50,6 +50,27 @@ Analyze the project root to build a profile:
 
 Present scan results to user.
 
+## PHASE 1.5: Convention Library (optional)
+
+1. PHASE 1 스캔 결과를 `templates/conventions/manifest.yml`의 각 번들 `detect` 규칙과 매칭하여 적용 가능한 번들을 식별한다.
+2. 매칭된 번들이 있으면 사용자에게 제시 (없으면 이 단계 스킵):
+   ```
+   감지된 스택: {detected_stack}
+   매칭 컨벤션 번들:
+     - backend-kotlin-spring (9 files)
+     - messaging-kafka (1 file)
+   이 스택에 맞는 코딩 컨벤션 파일도 생성할까요? [Y/n] (번들 개별 선택 가능)
+   ```
+3. 승인된 번들의 파일을 `docs/conventions/` 하위로 복사하고, 플레이스홀더를 치환한다:
+   - `{{base_package}}` → 스캔된 루트 패키지 (dot form, 예: `com.example.app`)
+   - `{{base_package_path}}` → 위 값의 dots→slashes (예: `com/example/app`)
+   - `{{design_system}}` → 사용자 입력 (없으면 `@org/design-system` 기본값 + TODO 주석)
+   - `{{service}}` → 모듈/서비스명
+4. `docs/conventions/conventions.md`(베이스라인)에 생성된 번들 파일 링크를 인덱스로 추가한다.
+5. 거절 시 베이스라인 `conventions.md`만 생성하고 계속한다.
+
+> `performance` 번들은 `detect: opt-in` 이므로 자동 매칭되지 않고, 사용자가 명시적으로 원할 때만 제안한다.
+
 ## PHASE 2: Interactive Setup (3-5 questions)
 
 **Q1**: "프로젝트 프로파일이 맞나요?" + [scan results summary]
