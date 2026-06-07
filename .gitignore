@@ -3,3 +3,7 @@
 *.swp
 node_modules/
 docs-site/
+
+# Claude Code local artifacts
+.claude/settings.local.json
+.claude/worktrees/
