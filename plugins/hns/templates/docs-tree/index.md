@@ -6,10 +6,13 @@
 
 | Directory | Description |
 |-----------|-------------|
-| [adr/](adr/) | Architecture Decision Records — one file per decision, sequential numbering (ADR-0001, ADR-0002, …) |
-| [architecture/](architecture/) | System architecture overviews, layer diagrams, and design rationale |
-| [policies/](policies/) | Engineering policies, coding standards, and process guidelines |
-| [plans/](plans/) | Project plans, roadmaps, and milestone tracking |
+| [adr/](adr/) | Architecture Decision Records — sequential numbering (ADR-0001, …) |
+| [architecture/](architecture/) | System architecture, tech stack, layer diagrams |
+| [standards/](standards/) | Agent behavior standards (how the agent works) |
+| [conventions/](conventions/) | Code conventions — baseline + stack-specific bundles |
+| [product/](product/) | Product mission and context |
+| [plans/](plans/) | Project plans and roadmaps |
+| [specs/](specs/) | Feature specs (SDD pipeline output) |
 
 ## Quick Links
 
@@ -17,10 +20,11 @@
 
 - [Architecture Overview](architecture/overview.md)
 - [ADR Template](adr/_template.md)
+- [Agent Behavior](standards/agent-behavior.md)
+- [Conventions](conventions/conventions.md)
 
 ## How to Contribute
 
 1. For architectural decisions, create a new ADR using `adr/_template.md` as a starting point.
 2. Keep `architecture/overview.md` in sync whenever the tech stack or layer structure changes.
-3. Place engineering-wide rules and standards under `policies/`.
-4. Place time-bound planning documents under `plans/`.
+3. Place time-bound planning documents under `plans/`.

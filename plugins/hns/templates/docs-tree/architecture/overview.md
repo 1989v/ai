@@ -66,3 +66,14 @@
 |---------------|---------|---------|
 | {{event_1}} | {{producer_1}} | {{consumer_1}} |
 | {{event_2}} | {{producer_2}} | {{consumer_2}} |
+
+## Build & Test Commands
+
+| Purpose | Command |
+|---------|---------|
+| Build | {{build_commands}} |
+| Test | {{test_commands}} |
+
+## Module Structure
+
+{{module_structure}}
