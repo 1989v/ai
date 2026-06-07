@@ -11,7 +11,7 @@
 
 어떤 프로젝트든 `/hns:init` 한 번으로 성숙한 AI 하네스 환경을 구축하는 범용 Claude Code 플러그인.
 
-mrt3-order 프로젝트의 검증된 AI 하네스 엔지니어링(SDD Pipeline, Agent-OS, Agent Behavior Standards, Spec-Reviewer, Hooks, Parallel Execution)을 범용화하여 언어/프레임워크 무관하게 적용 가능한 플러그인으로 제공한다.
+검증된 AI 하네스 엔지니어링 패턴(SDD Pipeline, Agent Behavior Standards, Spec-Reviewer, Hooks, Parallel Execution)을 범용화하여 언어/프레임워크 무관하게 적용 가능한 플러그인으로 제공한다.
 
 ### 핵심 가치
 
@@ -313,7 +313,7 @@ Step 5: Record Evidence → status.md에 결과 + 타임스탬프
 
 ### 범용화 전략
 
-| mrt3-order (특화) | hnsf (범용) |
+| 특정 프로젝트 (특화) | hnsf (범용) |
 |-------------------|------------|
 | Java/Spring 하드코딩 | 언어/프레임워크 감지 후 적응 |
 | `./gradlew compileJava` | `agent-os/tech-stack.md`에서 빌드 커맨드 참조 |

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** mrt3-order의 검증된 AI 하네스 엔지니어링을 범용 Claude Code 플러그인으로 구현
+**Goal:** 검증된 AI 하네스 엔지니어링을 범용 Claude Code 플러그인으로 구현
 
 **Architecture:** 단일 플러그인 내 4-Layer 모듈 구조 (Core/SDD/Review/Project-Adaptive). 각 레이어는 skills/, commands/, agents/로 구성. 프로젝트 스캔 → 대화형 셋업 → 산출물 생성의 `/hns:init` 진입점.
 
@@ -562,7 +562,7 @@ Create: `templates/hooks/hnsf-automation.json`
 
 - [ ] **Step 7: Create parallel-work.sh template**
 
-Create: `templates/scripts/parallel-work.sh` — generalized version of mrt3-order's script (same logic, remove project-specific references, use `main` as default base branch instead of `develop`)
+Create: `templates/scripts/parallel-work.sh` — generalized version of a proven internal script (same logic, remove project-specific references, use `main` as default base branch instead of `develop`)
 
 - [ ] **Step 8: Create PLANS.md and COMPACTION-GUIDE templates**
 
@@ -634,7 +634,7 @@ git commit -m "feat(hnsf): add all templates for init scaffolding"
 
 Create: `plugins/harness-scaffold/references/command-execution-contract.md`
 
-Generalized from mrt3-order's version:
+Generalized from a proven internal version:
 
 ```markdown
 # Command Execution Contract
@@ -1205,7 +1205,7 @@ git commit -m "feat(hnsf): add review skills (architecture, implementation, usec
 
 Create: `plugins/harness-scaffold/agents/spec-initializer.md`
 
-Generalized from mrt3-order: creates `docs/specs/YYYY-MM-DD-{name}/` with planning/, planning/visuals/, context/, implementation/ subdirectories. No language-specific references.
+Generalized from a proven pattern: creates `docs/specs/YYYY-MM-DD-{name}/` with planning/, planning/visuals/, context/, implementation/ subdirectories. No language-specific references.
 
 - [ ] **Step 2: Create spec-shaper agent**
 

@@ -9,7 +9,7 @@
 | 작성일 | 2026-04-06 |
 | 상태 | APPROVED |
 | 기반 | harness-scaffold v0.1.0 + doc-scaffolding v0.1.0 |
-| 벤치마크 | mrt3-order 하네스 시스템 |
+| 벤치마크 | 검증된 하네스 시스템 |
 | 철학 참조 | 하네스 엔지니어링 분석 (외부 레포 문서 — 링크 deprecated) |
 
 ---
