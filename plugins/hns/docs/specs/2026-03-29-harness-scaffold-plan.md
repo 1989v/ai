@@ -50,16 +50,16 @@ plugins/harness-scaffold/
 │   └── verifier.md
 ├── templates/
 │   ├── claude-md/default.md
-│   ├── agent-os/config.yml
-│   ├── agent-os/product/mission.md
-│   ├── agent-os/product/tech-stack.md
-│   ├── agent-os/standards/agent-behavior/core-rules.md
-│   ├── agent-os/standards/agent-behavior/confirmation.md
-│   ├── agent-os/standards/agent-behavior/self-review.md
-│   ├── agent-os/standards/agent-behavior/compaction.md
-│   ├── agent-os/standards/agent-behavior/session.md
-│   ├── agent-os/standards/agent-behavior/doc-gardening.md
-│   ├── agent-os/standards/global/conventions.md
+│   ├── .claude/config.yml
+│   ├── docs/product/mission.md
+│   ├── docs/architecture/overview.md
+│   ├── docs/standards/agent-behavior.md
+│   ├── docs/standards/agent-behavior.md
+│   ├── docs/standards/agent-behavior.md
+│   ├── docs/standards/agent-behavior.md
+│   ├── docs/standards/agent-behavior.md
+│   ├── docs/standards/agent-behavior.md
+│   ├── docs/conventions/conventions.md
 │   ├── hooks/hnsf-automation.json
 │   ├── specs/spec-template.md
 │   ├── specs/tasks-template.md
@@ -87,11 +87,11 @@ Create: `plugins/harness-scaffold/.claude-plugin/plugin.json`
 ```json
 {
   "name": "harness-scaffold",
-  "description": "Universal AI harness scaffolding: SDD pipeline, agent-OS, behavior standards, spec-review, hooks, and parallel execution for any project",
+  "description": "Universal AI harness scaffolding: SDD pipeline, behavior standards, spec-review, hooks, and parallel execution for any project",
   "version": "0.1.0",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
-  "keywords": ["harness", "sdd", "agent-os", "scaffolding", "spec-driven", "ai-harness"],
+  "keywords": ["harness", "sdd", "scaffolding", "spec-driven", "ai-harness"],
   "commands": [
     "./commands/init.md",
     "./commands/shape-spec.md",
@@ -115,7 +115,7 @@ Modify: `.claude-plugin/marketplace.json` — add harness-scaffold entry to plug
 {
   "name": "harness-scaffold",
   "source": "./plugins/harness-scaffold",
-  "description": "Universal AI harness scaffolding: SDD pipeline, agent-OS, behavior standards, spec-review, hooks, and parallel execution for any project"
+  "description": "Universal AI harness scaffolding: SDD pipeline, behavior standards, spec-review, hooks, and parallel execution for any project"
 }
 ```
 
@@ -175,23 +175,23 @@ Create: `plugins/harness-scaffold/templates/claude-md/default.md`
 
 코드 수정/생성 작업 시 다음 표준을 적용하세요:
 
-- **리스크 분류 & 검증 루프** → `agent-os/standards/agent-behavior/confirmation.md`
+- **리스크 분류 & 검증 루프** → `docs/standards/agent-behavior.md`
   - Level 1-3 분류, Ralph Loop (BUILD→TEST→FIX, max 3회), Level 3 승인 필수
-- **구현 후 리뷰** → `agent-os/standards/agent-behavior/self-review.md`
+- **구현 후 리뷰** → `docs/standards/agent-behavior.md`
   - Level 1-2: 자동 lint, Level 3: fresh context reviewer
-- **문서 동기화** → `agent-os/standards/agent-behavior/doc-gardening.md`
+- **문서 동기화** → `docs/standards/agent-behavior.md`
   - 구현 성공 후 Doc Impact Scan 실행
 
 **범용 행동 원칙**:
-- **탐색 우선, 증거 기반** → `agent-os/standards/agent-behavior/core-rules.md`
-- **컴팩션 복구** → `agent-os/standards/agent-behavior/compaction.md`
-- **세션 관리** → `agent-os/standards/agent-behavior/session.md`
+- **탐색 우선, 증거 기반** → `docs/standards/agent-behavior.md`
+- **컴팩션 복구** → `docs/standards/agent-behavior.md`
+- **세션 관리** → `docs/standards/agent-behavior.md`
 
 ---
 
 ## Standards & Conventions
 
-All rules are routed via `agent-os/standards/`.
+All rules are routed via `docs/standards/`.
 
 ---
 
@@ -214,15 +214,15 @@ All rules are routed via `agent-os/standards/`.
 ## Navigation Tips
 
 - Feature-specific work → `docs/specs/`
-- Standards → `agent-os/standards/`
-- Product context → `agent-os/product/`
+- Standards → `docs/standards/`
+- Product context → `docs/product/`
 ```
 
-- [ ] **Step 2: Create agent-os templates**
+- [ ] **Step 2: Create docs/ + config templates**
 
 Create the following template files:
 
-`templates/agent-os/config.yml`:
+`templates/.claude/config.yml`:
 ```yaml
 # harness-scaffold configuration
 mode: {{MODE}}  # quality | efficient
@@ -233,7 +233,7 @@ layers:
 parallel_execution: {{PARALLEL_ENABLED}}
 ```
 
-`templates/agent-os/product/mission.md`:
+`templates/docs/product/mission.md`:
 ```markdown
 # {{PROJECT_NAME}} Mission
 
@@ -247,7 +247,7 @@ parallel_execution: {{PARALLEL_ENABLED}}
 {{CORE_VALUE}}
 ```
 
-`templates/agent-os/product/tech-stack.md`:
+`templates/docs/architecture/overview.md`:
 ```markdown
 # Tech Stack
 
@@ -272,7 +272,7 @@ parallel_execution: {{PARALLEL_ENABLED}}
 
 - [ ] **Step 3: Create agent-behavior standard templates**
 
-Create 6 files under `templates/agent-os/standards/agent-behavior/`:
+Create 6 files under `templates/docs/standards/`:
 
 `core-rules.md`:
 ```markdown
@@ -287,7 +287,7 @@ Create 6 files under `templates/agent-os/standards/agent-behavior/`:
 1. Read `docs/specs/{feature}/context/key-decisions.md` (있을 경우)
 2. Read `docs/specs/{feature}/spec.md`
 3. Read `docs/specs/{feature}/tasks.md` → confirm current task
-4. Check `agent-os/standards/` → matching standard
+4. Check `docs/standards/` → matching standard
 5. If unclear → ask "Please confirm: [specific question]"
 ```
 
@@ -387,7 +387,7 @@ Proceed?
 
 ## Session Start
 1. Read CLAUDE.md
-2. Read agent-os/product/mission.md (있을 경우)
+2. Read docs/product/mission.md (있을 경우)
 3. Check recent spec status (docs/specs/ 최신 폴더)
 4. Load active task context
 
@@ -411,7 +411,7 @@ Proceed?
 git diff --name-only HEAD
 ```
 
-변경된 파일 키워드 → agent-os/standards/ 매칭 → 관련 문서 보고
+변경된 파일 키워드 → docs/standards/ 매칭 → 관련 문서 보고
 
 ## 동기화 대상
 - spec.md ↔ 실제 구현
@@ -425,7 +425,7 @@ git diff --name-only HEAD
 
 - [ ] **Step 4: Create conventions template**
 
-Create: `templates/agent-os/standards/global/conventions.md`
+Create: `templates/docs/conventions/conventions.md`
 
 ```markdown
 # {{PROJECT_NAME}} Conventions
@@ -701,7 +701,7 @@ Follow relative Markdown links.
 
 ## Stage 3: Index Map Discovery
 If docs/index.yml exists → keyword match → load relevant standards.
-Fallback: scan agent-os/standards/ directly.
+Fallback: scan docs/standards/ directly.
 
 ## Stage 4: Code Evidence
 Grep/Glob for referenced classes, modules, APIs in codebase.
@@ -750,7 +750,7 @@ compatibility: claude-code
 1. Read `docs/specs/{feature}/context/key-decisions.md` (if exists)
 2. Read `docs/specs/{feature}/spec.md`
 3. Read `docs/specs/{feature}/tasks.md` → confirm current task
-4. Check `agent-os/standards/` → matching standard
+4. Check `docs/standards/` → matching standard
 5. If unclear → ask specific question
 
 ## 2. Risk Classification
@@ -783,7 +783,7 @@ Failure Classification:
 - Verdict: SHIP / REVISE (max 2) / BLOCK
 
 ## 5. Doc Impact Scan
-변경 파일 키워드 → agent-os/standards/ 매칭 → 관련 문서 보고
+변경 파일 키워드 → docs/standards/ 매칭 → 관련 문서 보고
 
 ## 6. Decision Recording
 ```md
@@ -918,7 +918,7 @@ compatibility: claude-code
 
 ## Session Start
 1. Read CLAUDE.md
-2. Read agent-os/product/mission.md (if exists)
+2. Read docs/product/mission.md (if exists)
 3. Check latest spec status in docs/specs/
 4. Load active task context from tasks.md
 
@@ -980,7 +980,7 @@ compatibility: claude-code
 
 ## Context Loading
 If docs/index.yml exists → keyword match → load related specs/standards
-Fallback: scan agent-os/standards/ directly
+Fallback: scan docs/standards/ directly
 
 ## NEVER
 - Write actual code in spec.md
@@ -1051,9 +1051,9 @@ Before implementation starts:
 3. Read spec.md, tasks.md, key-decisions.md
 
 ## Standard Loading
-1. Read agent-os/standards/ relevant to current task
-2. Read agent-os/product/tech-stack.md for build/test commands
-3. Apply conventions from agent-os/standards/global/
+1. Read docs/standards/ relevant to current task
+2. Read docs/architecture/overview.md for build/test commands
+3. Apply conventions from docs/conventions/
 
 ## Verification Loop
 - Apply Ralph Loop per task group
@@ -1211,31 +1211,31 @@ Generalized from a proven pattern: creates `docs/specs/YYYY-MM-DD-{name}/` with 
 
 Create: `plugins/harness-scaffold/agents/spec-shaper.md`
 
-Generalized: Q&A requirements gathering (4-8 questions), visual asset check, reusability check. References `agent-os/product/` and `agent-os/standards/` instead of hardcoded paths. No domain-specific terminology.
+Generalized: Q&A requirements gathering (4-8 questions), visual asset check, reusability check. References `docs/product/` and `docs/standards/` instead of hardcoded paths. No domain-specific terminology.
 
 - [ ] **Step 3: Create spec-writer agent**
 
 Create: `plugins/harness-scaffold/agents/spec-writer.md`
 
-Generalized: documentation-only (Write MD only, Read, WebFetch). No Bash, no code. References `agent-os/standards/` for compliance. No domain glossary.
+Generalized: documentation-only (Write MD only, Read, WebFetch). No Bash, no code. References `docs/standards/` for compliance. No domain glossary.
 
 - [ ] **Step 4: Create tasks-list-creator agent**
 
 Create: `plugins/harness-scaffold/agents/tasks-list-creator.md`
 
-Generalized: creates tasks.md from spec.md. Groups by skill/layer. Enforces 2-8 tests per group, metadata per group. References `agent-os/standards/`.
+Generalized: creates tasks.md from spec.md. Groups by skill/layer. Enforces 2-8 tests per group, metadata per group. References `docs/standards/`.
 
 - [ ] **Step 5: Create implementer agent**
 
 Create: `plugins/harness-scaffold/agents/implementer.md`
 
-Generalized: production code only (Write code, Read, IDE diagnostics). No test writing, no Bash. References `agent-os/product/tech-stack.md` for language/framework context.
+Generalized: production code only (Write code, Read, IDE diagnostics). No test writing, no Bash. References `docs/architecture/overview.md` for language/framework context.
 
 - [ ] **Step 6: Create tester agent**
 
 Create: `plugins/harness-scaffold/agents/tester.md`
 
-Generalized: test code only (Write tests, Read, Bash for test execution). No production code modification. References `agent-os/product/tech-stack.md` for test framework.
+Generalized: test code only (Write tests, Read, Bash for test execution). No production code modification. References `docs/architecture/overview.md` for test framework.
 
 - [ ] **Step 7: Create verifier agent**
 
@@ -1348,7 +1348,7 @@ The most complex command. 3 phases:
 **Phase 3 — Generate:**
 - CLAUDE.md (from template, fill placeholders)
 - PLANS.md
-- agent-os/ directory tree (config.yml, product/, standards/)
+- docs/ directory tree (config.yml, product/, standards/)
 - .claude/hooks/hnsf-automation.json
 - .claude/scripts/parallel-work.sh (if parallel enabled)
 - .claude/COMPACTION-GUIDE.md

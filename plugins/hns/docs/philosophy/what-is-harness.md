@@ -16,7 +16,7 @@ Mitchell Hashimoto (2026-02): AI 에이전트가 같은 실수를 반복하는 �
 - MCP servers
 - Skills, Commands
 - Hooks
-- docs/, agent-os/
+- docs/
 
 ## Harness vs Prompt
 

@@ -82,8 +82,8 @@ auto_reference:
 ```yaml
 # 각 command .md frontmatter
 requires:
-  - agent-os/standards/global/conventions.md
-  - agent-os/product/tech-stack.md
+  - docs/conventions/conventions.md
+  - docs/architecture/overview.md
 auto_reference: true   # Level 2 키워드 매칭 허용
 ```
 
@@ -340,7 +340,7 @@ Phase 5:   사용자 승인 게이트
 
 ```
 Layer 1: SOT 내부 일관성    — docs/ 내 문서 간 모순
-Layer 2: docs ↔ agent-os    — 표준/규칙 문서 동기화
+Layer 2: docs ↔ standards   — 표준/규칙 문서 동기화
 Layer 3: product ↔ specs    — 미션/요구사항 vs 스펙 정합성
 Layer 4: standards ↔ specs  — 코딩 표준 vs 스펙 준수
 Layer 5: specs ↔ tasks      — 스펙 요구사항 vs 태스크 커버리지
@@ -519,7 +519,7 @@ harness-scaffold/
 │   ├── site-template.html             (흡수)
 │   ├── compaction-guide.md
 │   ├── plans-md.md
-│   ├── agent-os/                      (기존 유지)
+│   ├── docs/                      (기존 유지)
 │   ├── specs/                         (기존 유지)
 │   ├── hooks/
 │   │   ├── hnsf-hooks-reminder.json   (기존 rename)

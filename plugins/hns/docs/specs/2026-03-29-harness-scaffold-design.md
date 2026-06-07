@@ -44,7 +44,7 @@ Layer 3 — Review (기본 활성)
   spec-reviewer (architecture, implementation, usecase)
 
 Layer 4 — Project-Adaptive (init 시 생성)
-  CLAUDE.md, agent-os/, hooks, parallel-work.sh
+  CLAUDE.md, docs/, hooks, parallel-work.sh
 ```
 
 ### 품질 모드 vs 효율 모드
@@ -60,7 +60,7 @@ Layer 4 — Project-Adaptive (init 시 생성)
 | Drift Check | 4렌즈 전체 | 선택적 렌즈 |
 | Verify | 표준 + Lint + 빌드 + 테스트 전체 | 빌드 + 테스트만 |
 
-`agent-os/config.yml`에 저장:
+`.claude/config.yml`에 저장:
 ```yaml
 mode: quality  # quality | efficient
 ```
@@ -107,7 +107,7 @@ plugins/harness-scaffold/
 │   └── verifier.md
 ├── templates/
 │   ├── claude-md/               # CLAUDE.md 템플릿
-│   ├── agent-os/                # agent-os 디렉토리 구조 템플릿
+│   ├── docs/                    # docs/ 구조 템플릿
 │   ├── hooks/                   # hooks 설정 템플릿
 │   ├── specs/                   # spec.md, tasks.md 템플릿
 │   └── scripts/                 # parallel-work.sh 등
@@ -150,7 +150,7 @@ Q5. 병렬 실행 지원이 필요한가요? (worktree 스크립트 설치)
 프로젝트/
 ├── CLAUDE.md                                    # 프로젝트 맞춤
 ├── PLANS.md                                     # ExecPlan 규칙
-├── agent-os/
+├── docs/
 │   ├── config.yml                               # mode, 활성 레이어
 │   ├── product/
 │   │   ├── mission.md                           # 프로젝트 미션
@@ -193,8 +193,8 @@ Q5. 병렬 실행 지원이 필요한가요? (worktree 스크립트 설치)
 ### Build Commands          ← tech-stack.md에서 자동 추출
 ### Test Commands           ← 테스트 프레임워크 감지 기반
 
-## Agent Behavior Standards ← agent-os/standards/ 라우팅
-## Standards & Conventions  ← agent-os/standards/global/ 라우팅
+## Agent Behavior Standards ← docs/standards/ 라우팅
+## Standards & Conventions  ← docs/conventions/ 라우팅
 ## Active Commands          ← hnsf 커맨드 목록
 
 ## Navigation Tips
@@ -209,7 +209,7 @@ Q5. 병렬 실행 지원이 필요한가요? (worktree 스크립트 설치)
 ├── 신규 파일       → 생성
 ├── 기존 동일 파일   → 스킵
 ├── 기존 수정된 파일 → diff 표시 → 사용자 선택 (병합/스킵/덮어쓰기)
-├── agent-os/config.yml → 기존 설정 보존, 새 옵션만 추가
+├── .claude/config.yml → 기존 설정 보존, 새 옵션만 추가
 └── CLAUDE.md        → 섹션별 병합 (사용자 추가 섹션 보존)
 ```
 
@@ -298,7 +298,7 @@ agentskills.io 호환: 스킬 YAML frontmatter를 agentskills.io 스펙에 맞�
 #### `/hns:verify` — 구현 검증
 
 ```
-Step 1: Standards Verification → agent-os/standards/ 준수 확인
+Step 1: Standards Verification → docs/standards/ 준수 확인
 Step 2: Lint Verification → 프로젝트 린터 실행 (감지 기반)
 Step 3: Build Verification → tech-stack.md 빌드 커맨드
 Step 4: Test Verification → 테스트 스위트 실행
@@ -316,14 +316,14 @@ Step 5: Record Evidence → status.md에 결과 + 타임스탬프
 | 특정 프로젝트 (특화) | hnsf (범용) |
 |-------------------|------------|
 | Java/Spring 하드코딩 | 언어/프레임워크 감지 후 적응 |
-| `./gradlew compileJava` | `agent-os/tech-stack.md`에서 빌드 커맨드 참조 |
-| 도메인 스킬 (주문/결제) | 프로젝트별 `agent-os/standards/` 참조 |
+| `./gradlew compileJava` | `docs/architecture/overview.md`에서 빌드 커맨드 참조 |
+| 도메인 스킬 (주문/결제) | 프로젝트별 `docs/standards/` 참조 |
 | `docs/index.yml` 필수 | `docs/index.yml` 선택 (없으면 폴더 스캔 폴백) |
 | BDD Spock 테스트 | 감지된 테스트 프레임워크 적응 |
 
 ---
 
-## 5. Agent-OS 에이전트
+## 5. SDD 에이전트
 
 ### 7개 에이전트 — 역할 경계
 
@@ -348,7 +348,7 @@ tester는 절대 프로덕션 코드를 수정하지 않는다
 ### 설계 원칙
 
 1. **컨텍스트 격리** — 각 에이전트는 fresh context (서브에이전트), 필요한 파일만 명시적 전달
-2. **범용 적응** — 언어/프레임워크 하드코딩 없음, `agent-os/tech-stack.md` 참조
+2. **범용 적응** — 언어/프레임워크 하드코딩 없음, `docs/architecture/overview.md` 참조
 3. **Progressive Disclosure** — 에이전트 정의 ≤180줄, 상세는 references/ 참조
 
 ---
@@ -386,7 +386,7 @@ tester는 절대 프로덕션 코드를 수정하지 않는다
 #### `core/session`
 
 - **트리거**: 세션 시작, 컴팩션 후 복구
-- 세션 시작: CLAUDE.md → agent-os/product/ → 최근 spec status 로딩
+- 세션 시작: CLAUDE.md → docs/product/ → 최근 spec status 로딩
 - 복구: key-decisions.md → open-questions.yml → tasks.md 체크박스
 
 ### Layer 2 — SDD Skills
@@ -406,7 +406,7 @@ tester는 절대 프로덕션 코드를 수정하지 않는다
 #### `sdd/implementation`
 
 - Source-of-truth 게이트 (pre-impl 미결 시 BLOCK)
-- 표준 로딩: agent-os/standards/ 참조
+- 표준 로딩: docs/standards/ 참조
 - 검증 루프: Ralph Loop 연동
 
 ### Layer 3 — Review Skills
@@ -434,7 +434,7 @@ tester는 절대 프로덕션 코드를 수정하지 않는다
 ```
 Stage 1: Seed — 대상 spec 읽기, 문서 유형 분류
 Stage 2: First-Ring — 같은 디렉토리 siblings (tasks*, status*, context/*)
-Stage 3: Index Map — docs/index.yml 키워드 매칭 (없으면 agent-os/standards/ 폴백)
+Stage 3: Index Map — docs/index.yml 키워드 매칭 (없으면 docs/standards/ 폴백)
 Stage 4: Code Evidence — Grep/Glob → 참조 클래스/모듈 확인
 ```
 
@@ -524,7 +524,7 @@ questions:
 ### `/hns:verify` 실행 흐름
 
 ```
-Step 1: Standards → agent-os/standards/ 준수 (FAIL on violation)
+Step 1: Standards → docs/standards/ 준수 (FAIL on violation)
 Step 2: Lint → 프로젝트 린터 (FAIL on errors, WARN on warnings)
 Step 3: Build → tech-stack.md 빌드 커맨드 (FAIL on failure)
 Step 4: Test → 테스트 스위트 (FAIL on failure)

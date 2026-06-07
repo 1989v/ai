@@ -47,7 +47,7 @@ Mitchell Hashimoto (2026-02): AI 에이전트가 같은 실수를 반복하는 �
 - MCP servers
 - Skills, Commands
 - Hooks
-- docs/, agent-os/
+- docs/
 
 ## Harness vs Prompt
 
@@ -302,7 +302,7 @@ git commit -m "docs(harness-v2): add knowledge base — philosophy, changelog, A
 프로젝트 전체 순회.
 1. **Dead code**: 미사용 import, 빈 파일, 호출 없는 public 함수
 2. **Doc drift**: CLAUDE.md/docs 내용 vs 실제 코드 구조 비교
-3. **Rule violation**: agent-os/standards/의 규칙 vs 코드 위반 탐지
+3. **Rule violation**: docs/standards/의 규칙 vs 코드 위반 탐지
 4. **Stale harness**: 3개월 이상 트리거 안 된 규칙/훅 식별
 
 ## Report Format
@@ -458,7 +458,7 @@ Change Integration section:
 name: doc-gen
 description: "Generate CLAUDE.md and docs/ tree for the current project"
 requires:
-  - agent-os/product/tech-stack.md
+  - docs/architecture/overview.md
 auto_reference: false
 ---
 
@@ -1061,7 +1061,7 @@ Follow `@references/gc-protocol.md` for scan modes and report format.
 ## Scan Checklist
 - [ ] Dead code: 미사용 import, 빈 파일, 호출 없는 public 함수
 - [ ] Doc drift: CLAUDE.md/docs 내용 vs 실제 코드 괴리
-- [ ] Rule violation: agent-os/standards/ 규칙 vs 코드 위반
+- [ ] Rule violation: docs/standards/ 규칙 vs 코드 위반
 - [ ] Stale harness: 불필요한 규칙/스킬/훅 (→ diet 연계)
 
 ## Auto-fix Policy
@@ -1203,7 +1203,7 @@ description: Use when comparing current harness against external benchmarks — 
 name: harness-gc
 description: "Run garbage collection — detect dead code, doc drift, rule violations, stale harness"
 requires:
-  - agent-os/standards/global/conventions.md
+  - docs/conventions/conventions.md
 auto_reference: true
 ---
 
@@ -1359,7 +1359,7 @@ model: inherit
 - docs/ 내 경로 참조가 유효한지 확인
 
 ### 4. Rule Violation 탐지
-- agent-os/standards/의 규칙을 읽고 코드에서 위반 사례 탐지
+- docs/standards/의 규칙을 읽고 코드에서 위반 사례 탐지
 - 아키텍처 제약 (의존 방향, 패키지 구조) 확인
 
 ### 5. Stale Harness 탐지
@@ -1432,8 +1432,8 @@ git commit -m "feat(harness-v2): add Lifecycle layer — GC, evolve, diet, audit
 name: new-feature
 description: "End-to-end spec pipeline: shape → write → review → create-tasks"
 requires:
-  - agent-os/product/mission.md
-  - agent-os/product/tech-stack.md
+  - docs/product/mission.md
+  - docs/architecture/overview.md
 auto_reference: true
 ---
 
@@ -1459,8 +1459,8 @@ shape-spec → write-spec → spec-review → create-tasks를 한 번에 실행�
 ## PHASE 0: Context Loading
 
 1. Read docs/index.yml (if exists) for auto-reference
-2. Read agent-os/product/mission.md
-3. Read agent-os/product/tech-stack.md
+2. Read docs/product/mission.md
+3. Read docs/architecture/overview.md
 
 ## PHASE 1: Shape Spec
 
@@ -1518,7 +1518,7 @@ Wait for user approval before suggesting `/hns:implement-tasks`.
 name: verify-crosscheck
 description: "6-layer cross-consistency verification: docs ↔ code ↔ specs ↔ tasks"
 requires:
-  - agent-os/standards/global/conventions.md
+  - docs/conventions/conventions.md
 auto_reference: true
 ---
 
@@ -1529,7 +1529,6 @@ auto_reference: true
 
 ## Required Inputs
 - docs/ directory
-- agent-os/ directory (if exists)
 - docs/specs/{feature}/ (if checking specific feature)
 
 ## Expected Outputs
@@ -1544,20 +1543,21 @@ docs/ 내 문서들 간 모순 체크:
 - docs 내 상호 참조 링크가 유효한지
 - CLAUDE.md와 docs/architecture/overview.md 간 모듈 목록 일치
 
-## Layer 2: docs ↔ agent-os Sync
+## Layer 2: docs ↔ standards Sync
 
-- agent-os/standards/의 규칙이 CLAUDE.md에도 반영되어 있는지
-- agent-os/product/tech-stack.md와 CLAUDE.md 빌드 명령 일치
-- agent-os/config.yml 설정과 실제 파일 구조 일치
+
+- docs/standards/의 규칙이 CLAUDE.md에도 반영되어 있는지
+- docs/architecture/overview.md와 CLAUDE.md 빌드 명령 일치
+- .claude/config.yml 설정과 실제 파일 구조 일치
 
 ## Layer 3: Product ↔ Specs
 
-- agent-os/product/mission.md의 목표가 spec에 반영되어 있는지
+- docs/product/mission.md의 목표가 spec에 반영되어 있는지
 - 스펙이 미션과 무관한 범위를 포함하지 않는지
 
 ## Layer 4: Standards ↔ Specs
 
-- agent-os/standards/의 코딩 규칙이 spec의 기술 결정과 충돌하지 않는지
+- docs/standards/의 코딩 규칙이 spec의 기술 결정과 충돌하지 않는지
 - spec에서 표준을 위반하는 결정이 있으면 ADR 존재 여부 확인
 
 ## Layer 5: Specs ↔ Tasks
@@ -1580,7 +1580,7 @@ docs/ 내 문서들 간 모순 체크:
 | Layer | Status | Issues |
 |-------|--------|--------|
 | 1. SOT Internal | PASS | 0 |
-| 2. docs ↔ agent-os | WARN | 1 |
+| 2. docs ↔ standards | WARN | 1 |
 | 3. Product ↔ Specs | PASS | 0 |
 | 4. Standards ↔ Specs | PASS | 0 |
 | 5. Specs ↔ Tasks | FAIL | 2 |
@@ -1589,7 +1589,7 @@ docs/ 내 문서들 간 모순 체크:
 Overall: FAIL
 
 ## Details
-### Layer 2: docs ↔ agent-os
+### Layer 2: docs ↔ standards
 - ⚠ tech-stack.md lists Java 25 but CLAUDE.md says Java 21
 
 ### Layer 5: Specs ↔ Tasks
@@ -1787,20 +1787,20 @@ entries:
     keywords: [architecture, layer, dependency, port, adapter, clean-architecture, module]
 
   - id: conventions
-    path: agent-os/standards/global/conventions.md
+    path: docs/conventions/conventions.md
     keywords: [convention, naming, style, format, coding-standard]
 
   - id: test-rules
-    path: agent-os/standards/global/conventions.md
+    path: docs/conventions/conventions.md
     section: "## Test"
     keywords: [test, testing, mock, bdd, spec, assertion]
 
   - id: mission
-    path: agent-os/product/mission.md
+    path: docs/product/mission.md
     keywords: [mission, vision, goal, purpose, product]
 
   - id: tech-stack
-    path: agent-os/product/tech-stack.md
+    path: docs/architecture/overview.md
     keywords: [build, gradle, maven, npm, dependency, version, toolchain]
 
   - id: harness-philosophy
@@ -1859,7 +1859,7 @@ If `docs/index.yml` exists and command has `auto_reference: true`:
 
 ## Session Start
 1. Level 0: Read CLAUDE.md
-2. Read agent-os/product/mission.md (if exists)
+2. Read docs/product/mission.md (if exists)
 3. Check latest spec status in docs/specs/
 4. Load active task context from tasks.md
 
@@ -1898,7 +1898,7 @@ Set up a complete AI harness environment for the current project.
 ## Expected Outputs
 - CLAUDE.md (project-customized)
 - PLANS.md
-- agent-os/ directory tree
+- docs/ directory tree
 - docs/ directory tree (architecture, adr, index)
 - docs/index.yml (context routing map)
 - .claude/hooks/ (selected tier)
@@ -1971,11 +1971,11 @@ Copy selected template from `templates/hooks/hnsf-hooks-{tier}.json` to `.claude
 
 Using templates, generate:
 - `PLANS.md` — from `templates/plans-md.md`
-- `agent-os/config.yml` — mode + layer settings
-- `agent-os/product/mission.md` — from user input
-- `agent-os/product/tech-stack.md` — from scan results
-- `agent-os/standards/agent-behavior/` — all 6 files
-- `agent-os/standards/global/conventions.md` — from scan + user input
+- `.claude/config.yml` — mode + layer settings
+- `docs/product/mission.md` — from user input
+- `docs/architecture/overview.md` — from scan results
+- `docs/standards/` — all 6 files
+- `docs/conventions/conventions.md` — from scan + user input
 - `.claude/COMPACTION-GUIDE.md` — from template
 - `docs/specs/` — empty directory
 - (Conditional) `.claude/scripts/parallel-work.sh`
@@ -1995,7 +1995,7 @@ AI harness initialized for [project-name]!
 Generated:
 - CLAUDE.md (project configuration)
 - PLANS.md (execution plan rules)
-- agent-os/ (standards, product, config)
+- docs/ (standards, product, config)
 - docs/ (architecture, adr, index, routing)
 - .claude/hooks/ ({tier} tier)
 - docs/specs/ (SDD spec directory)
@@ -2017,7 +2017,7 @@ Next: Use /hns:shape-spec to start your first feature spec.
   "version": "0.2.0",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
-  "keywords": ["harness", "sdd", "agent-os", "scaffolding", "spec-driven", "ai-harness", "gc", "enforcement", "evolution"],
+  "keywords": ["harness", "sdd", "scaffolding", "spec-driven", "ai-harness", "gc", "enforcement", "evolution"],
   "commands": [
     "./commands/init.md",
     "./commands/shape-spec.md",
