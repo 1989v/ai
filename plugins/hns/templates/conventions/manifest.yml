@@ -1,0 +1,39 @@
+# 스택 → 컨벤션 번들 매핑. hns:init PHASE 1.5에서 사용.
+bundles:
+  backend-kotlin-spring:
+    label: "Kotlin + Spring (Clean Architecture)"
+    detect:
+      any: ["build.gradle.kts", "**/*.kt"]
+    files:
+      - kotlin-style.md
+      - code-convention.md
+      - package-structure.md
+      - jpa-persistence.md
+      - transactional-usage.md
+      - entity-mutation.md
+      - api-format.md
+      - logging.md
+      - testing.md
+  messaging-kafka:
+    label: "Kafka messaging"
+    detect:
+      any: ["spring-kafka", "**/*KafkaConfig*", "**/*Consumer.kt"]
+    files:
+      - kafka-topics.md
+  frontend-web:
+    label: "Frontend (React/TS)"
+    detect:
+      any: ["package.json", "**/*.tsx"]
+    files:
+      - frontend-design.md
+      - design-system.md
+  performance:
+    label: "Latency/performance budgets"
+    detect: opt-in
+    files:
+      - latency-budget.md
+placeholders:
+  base_package: "scan: root package, dot form (e.g. com.example.app)"
+  base_package_path: "derived: base_package with dots→slashes (e.g. com/example/app)"
+  design_system: "ask or default to @org/design-system"
+  service: "scan: module/service name"
