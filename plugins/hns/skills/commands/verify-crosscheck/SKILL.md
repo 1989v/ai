@@ -70,7 +70,7 @@ Overall: FAIL
 
 ## Details
 ### Layer 2: docs ↔ CLAUDE.md
-- ⚠ tech-stack.md lists Java 25 but CLAUDE.md says Java 21
+- ⚠ docs/architecture/overview.md lists Java 25 but CLAUDE.md says Java 21
 
 ### Layer 5: Specs ↔ Tasks
 - ✗ SR-003 has no corresponding task

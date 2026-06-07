@@ -1,10 +1,10 @@
 {
   "name": "hns",
   "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, 6-dimension review, lifecycle (GC/evolve/diet/audit), doctor health-check, enforcement hooks, context routing, and doc generation",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
-  "keywords": ["harness", "sdd", "agent-os", "scaffolding", "spec-driven", "ai-harness", "gc", "enforcement", "evolution", "doctor", "healthcheck", "cost-gate"],
+  "keywords": ["harness", "sdd", "scaffolding", "spec-driven", "ai-harness", "gc", "enforcement", "evolution", "doctor", "healthcheck", "cost-gate"],
   "commands": [
     "./commands/init.md",
     "./commands/start.md",

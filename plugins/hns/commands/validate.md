@@ -88,8 +88,8 @@ CLAUDE.md와 docs/architecture/에 명시된 아키텍처 규칙:
 
 ### Check 2: 패키지 네이밍 컨벤션
 
-CLAUDE.md에 명시된 `com.kgd.{service}` 패턴:
-- 각 서비스의 base package가 `com.kgd.{service}`로 시작하는지
+CLAUDE.md에 명시된 `{base_package}.{service}` 패턴:
+- 각 서비스의 base package가 `{base_package}.{service}`로 시작하는지
 - domain/application/infrastructure/presentation 하위 구조가 컨벤션과 일치하는지
 - model/, policy/, event/, exception/ 등 세부 패키지가 적절한 레이어에 위치하는지
 
@@ -135,8 +135,8 @@ CLAUDE.md에 명시된 `{domain}.{entity}.{event}` 형식:
 
 ### Code Validation
   ✓ 아키텍처 원칙 — domain 모듈 Spring 의존성 없음
-  ✓ 패키지 네이밍 — com.kgd.{service} 패턴 준수
-  ✗ 테스트 규칙 — order:domain에 MockK 사용 발견 (Mock 금지 위반)
+  ✓ 패키지 네이밍 — {base_package}.{service} 패턴 준수
+  ✗ 테스트 규칙 — {service}:domain에 MockK 사용 발견 (Mock 금지 위반)
   ✓ Kafka 토픽 — 컨벤션 일치
   ✓ API 응답 포맷 — ApiResponse<T> 준수
 
