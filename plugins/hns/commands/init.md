@@ -90,9 +90,9 @@ Using templates, generate:
 - `PLANS.md` — from `templates/plans-md.md`
 - `.claude/config.yml` — mode + layer settings
 - `docs/product/mission.md` — from user input
-- `docs/architecture/overview.md` — from scan results
-- `docs/standards/agent-behavior.md` — all 6 files
-- `docs/conventions/conventions.md` — from scan + user input
+- `docs/architecture/overview.md` — tech stack + layers + build/test commands (from scan)
+- `docs/standards/agent-behavior.md` — agent behavior standards (6 sections)
+- `docs/conventions/conventions.md` — baseline code conventions (from scan + user input)
 - `.claude/COMPACTION-GUIDE.md` — from template
 - `docs/specs/` — empty directory
 - (Conditional) `.claude/scripts/parallel-work.sh`
@@ -112,9 +112,8 @@ AI harness initialized for [project-name]!
 Generated:
 - CLAUDE.md (project configuration)
 - PLANS.md (execution plan rules)
-- docs/ (standards, product, config)
-- docs/ (architecture, adr, index, routing)
-- .claude/hooks/ ({tier} tier)
+- docs/ (product, architecture, standards, conventions, adr, index, routing)
+- .claude/ (config.yml, hooks/ {tier} tier, COMPACTION-GUIDE.md)
 - docs/specs/ (SDD spec directory)
 
 Harness philosophy: docs/philosophy/
