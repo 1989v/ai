@@ -103,13 +103,26 @@ PHASE 7: Post-Implementation Validation (기본 ON)
 5. Read docs/context-map.md (if exists, multi-BC project) — identify which BC this request belongs to and load that BC's glossary.md
 6. **Hierarchical sub-context (Level 0.5)** — cwd에서 repo root까지 거슬러 올라가며 발견되는 모든 `CLAUDE.md` + 인접 `docs/index.yml` 을 누적 로드. 가장 가까운 것이 우선(override), root는 base. 모노레포 / multi-service 레포에서 서비스 로컬 규칙(예: `order/CLAUDE.md`, `order/docs/`)을 spec/review/tasks 단계가 자동 흡수. 단일 모듈 프로젝트에서는 root 외 추가 로드 없음(regression 없음). 상세 프로토콜: `references/hierarchical-delegation.md`
 
-### PHASE 1: Shape Spec
+### PHASE 1: Shape Spec (ambiguity-gated)
 
-Delegate to `/hns:shape-spec` flow:
+Requirements clarity is gated by a mathematical ambiguity score — write-spec does not
+start until clarity crosses the threshold. Mechanics: `@references/ambiguity-gating-protocol.md`.
+
 1. spec-initializer → create spec folder
-2. spec-shaper → requirements.md
+2. spec-shaper → Socratic interview:
+   - Resolve threshold (`hns.shape.ambiguityThreshold`, project → user → default `0.2`)
+   - Detect greenfield/brownfield; Explore-before-asking, cite repo evidence
+   - **Round 0 topology gate** — lock 1–6 top-level components before scoring
+   - Interview loop: one question/round, weakest-dimension targeting, ambiguity scoring,
+     ontology tracking, challenge modes (R4 Contrarian / R6 Simplifier / R8 Ontologist)
+   - Stop conditions: early exit R3+, soft cap R10, hard cap R20, stall → Ontologist
+   - → `planning/requirements.md` + `planning/shaping-state.yml` (resumable)
 3. Build test strategy → test-quality.md
-4. Seed open-questions.yml
+4. Seed unresolved items into open-questions.yml (`pre-impl`)
+5. Hand ontology to `hns:glossary` as candidate ubiquitous-language terms
+
+**Depth:** `--quick` (topology + 1–3 Q), default `standard`, `--deep` (all challenge modes, cap 20).
+**Skip:** `--no-interview` or request already concrete (file paths / class names / acceptance criteria).
 
 ### PHASE 2: Write Spec
 
