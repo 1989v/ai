@@ -85,7 +85,7 @@ Query 중 피처 개발이 필요하다고 판단되면 사용자에게 피처 �
 
 ```
 PHASE 0: Context Loading
-PHASE 1: Shape Spec        ← /hns:shape-spec
+PHASE 1: Shape Spec        ← spec-shaper + ambiguity gate (clarity ≤ threshold)
 PHASE 2: Write Spec         ← /hns:write-spec
 PHASE 3: Spec Review        ← /hns:spec-review (5-dimension)
 PHASE 4: Create Tasks       ← /hns:create-tasks
