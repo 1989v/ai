@@ -41,7 +41,7 @@ claude --plugin-dir ./plugins/{name}     # 로컬 테스트
 
 | Plugin | Commands | Description |
 |--------|----------|-------------|
-| hns | 13 | 하네스 엔지니어링 (SDD 파이프라인, 6-차원 리뷰, 유비쿼터스 사전 `/hns:glossary`, Step 모드 구현, ADR) |
+| hns | 13 | 하네스 엔지니어링 (SDD 파이프라인, 모호성 게이트 Shape 인터뷰, 6-차원 리뷰, 유비쿼터스 사전 `/hns:glossary`, Step 모드 구현, ADR) |
 | ai-debugger | 2 | API 디버깅 |
 | private-repo | 1 | Private repo 분리 |
 | content-analyzer | 1 | 콘텐츠 분석 |
