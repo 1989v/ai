@@ -22,7 +22,7 @@
     {
       "name": "hns",
       "source": "./plugins/hns",
-      "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, 6-dimension review, lifecycle (GC/evolve/diet/audit), doctor health-check, enforcement hooks, context routing, and doc generation"
+      "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, ambiguity-gated shaping, 6-dimension review, lifecycle (GC/evolve/diet/audit), doctor health-check, enforcement hooks, context routing, and doc generation"
     },
     {
       "name": "study",
