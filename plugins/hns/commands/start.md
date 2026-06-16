@@ -12,6 +12,8 @@ description: "Unified entry point: analyzes user request → codebase query OR f
 ```
 /hns:start                       # 기본: 요청 분석 후 적절한 경로로 라우팅
 /hns:start --feat                # 피처 파이프라인 강제 실행
+/hns:start --quick|--deep        # Shape 단계 모호성 인터뷰 깊이 (기본: standard)
+/hns:start --no-interview        # Shape 단계 모호성 게이트 스킵 (요청이 이미 구체적일 때)
 /hns:start --no-validate         # 피처 파이프라인 실행 시 검증 단계 스킵
 /hns:start --skip-to implement   # 이미 spec이 있을 때 구현부터 시작
 ```
