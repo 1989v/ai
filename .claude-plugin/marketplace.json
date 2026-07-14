@@ -53,6 +53,11 @@
       "name": "skill-quality-eval",
       "source": "./plugins/skill-quality-eval",
       "description": "Dynamic skill quality evaluator — fork target skills, enforce JSON output via --json-schema, run N-repeat against ground-truth snapshots with semantic-judge + calibration, surface regressions vs baseline + auto-propose SKILL.md edits"
+    },
+    {
+      "name": "sustain-loop",
+      "source": "./plugins/sustain-loop",
+      "description": "Loop-engineering runner: work through a Jira parent ticket's sub-tasks one at a time, each in a fresh sub-agent, producing a draft PR per sub-task with a human go/no-go gate between tasks. Repo-derived commit identity, safety-gated."
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "name": "sustain-loop",
+  "description": "Loop-engineering runner: work through a Jira parent ticket's sub-tasks one at a time, each in a fresh sub-agent, producing a draft PR per sub-task with a human go/no-go gate between tasks. Repo-derived commit identity, safety-gated.",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["loop-engineering", "jira", "issue-to-pr", "autonomous-agent", "sustain", "ticket-loop", "pull-request", "sub-agent"],
+  "commands": [
+    "./commands/run.md"
+  ]
+}
