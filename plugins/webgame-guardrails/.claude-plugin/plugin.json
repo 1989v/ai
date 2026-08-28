@@ -1,0 +1,8 @@
+{
+  "name": "webgame-guardrails",
+  "description": "Quality guardrails and genre presets for browser games — screen scale, mobile touch floors, thermal budget, benchmark scale, third-party parity audit. Platform-independent; derived from a production pipeline that shipped 74+ canvas games and a Unity WebGL title.",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["game", "webgl", "canvas", "unity", "mobile", "quality-gate", "guardrails", "presets"]
+}

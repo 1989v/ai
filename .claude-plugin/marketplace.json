@@ -58,6 +58,11 @@
       "name": "sustain-loop",
       "source": "./plugins/sustain-loop",
       "description": "Loop-engineering runner: work through a Jira parent ticket's sub-tasks one at a time, each in a fresh sub-agent, producing a draft PR per sub-task with a human go/no-go gate between tasks. Repo-derived commit identity, safety-gated."
+    },
+    {
+      "name": "webgame-guardrails",
+      "source": "./plugins/webgame-guardrails",
+      "description": "Quality guardrails and genre presets for browser games (screen scale, mobile floors, thermal budget, benchmark scale, parity audit)"
     }
   ]
 }
