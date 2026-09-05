@@ -15,6 +15,7 @@ Universal review protocol used by every `hns:spec-reviewer` run (architecture, d
 ## Stage 3: Standards Discovery
 - Read `docs/standards/`, `docs/conventions/`, and `.claude/rules/` entries relevant to the review dimension (by filename and headings)
 - Service-local `CLAUDE.md` next to the code under review counts as a standard
+- If `HNS_KB_PATH` is configured, run `${CLAUDE_PLUGIN_ROOT}/skills/kb/kb-search.sh <keywords>` and treat matching concept pages as standards; cite `[[page]] (vault, updated)`. Repo docs win on conflict — report the conflict
 
 ## Stage 4: Code Evidence
 - Grep/Glob for referenced classes, modules, APIs in codebase

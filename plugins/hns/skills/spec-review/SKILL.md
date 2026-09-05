@@ -28,5 +28,8 @@ Action: {다음 행동}
 ```
 리뷰 원문은 각 리뷰어가 `context/engineer-review-{dim}.md` 에 남긴다.
 
+## 지식베이스
+`HNS_KB_PATH` 가 설정돼 있으면 각 리뷰어 프롬프트에 "`hns:kb` 로 스펙의 기술 결정 키워드를 조회해 개념 페이지를 표준으로 취급하고 `[[page]] (볼트, updated)` 로 인용" 을 넣는다.
+
 ## 리뷰어 자료
 `reviewers/{dim}/checklist.md` 가 체크리스트, `reviewers/{dim}/skillsets/*.md` 가 항목별 절차. 도메인 리뷰는 `references/language-reference.md`, 아키텍처 리뷰는 같은 문서 §3(모듈 깊이·seam) 을 참조한다.

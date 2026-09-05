@@ -36,6 +36,7 @@ L3 승인 요청 형식: `Task / Reason / Impact(files) / Evidence(docs·code) /
 ## 5. 세션과 컨텍스트
 - 로딩은 플랫폼이 한다: 루트 `CLAUDE.md` 는 항상, 하위 디렉토리 `CLAUDE.md` 와 `.claude/rules/*.md`(`paths:`) 는 그 경로의 파일을 읽을 때, 스킬은 호출될 때. hns 가 따로 라우팅하지 않는다.
 - 세션 시작·컴팩션 후에는 `SessionStart` 훅(`/hns:setup-hooks`)이 최신 `progress.md` · key-decisions · 열린 pre-impl 수 · 최근 커밋을 주입한다. 훅이 없으면 같은 것을 직접 읽는다.
+- 레포 밖 지식베이스가 설정돼 있으면(`HNS_KB_PATH`) `hns:kb` 규칙대로 필요할 때만 최대 3페이지를 읽고 `updated` 와 함께 인용한다. 쓰기는 `obsidian-organize` 로.
 - 이어가기 전에 이전 작업의 빌드/테스트를 한 번 돌린다. 완료된 그룹을 다시 구현하지 않는다.
 - 컴팩션은 자동이다. 시점을 통제하려 하지 말고 **파일을 원본**으로 유지한다: task group 완료·결정·블로커가 생길 때마다 `context/progress.md`(현재 위치·완료·다음 단계·블로커)와 `key-decisions.md` 를 갱신하고 커밋한다. `PreCompact` 훅이 요약에 보존할 항목을 지시한다.
 

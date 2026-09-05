@@ -29,3 +29,6 @@ argument-hint: "[--spec path]"
 | 사용자 교정 | "이렇게 하지 마" | auto memory |
 
 LOW 리스크 항목은 사용자 승인 후 `/hns:evolve` 로 바로 반영하고, MEDIUM/HIGH 는 문서에만 남긴다. 적용 결과를 회고 문서 `## Self-Healing Actions Taken` 표에 적는다.
+
+## 4. 지식베이스 핸드오프
+`HNS_KB_PATH` 가 설정된 프로젝트면 회고에서 **새로 확정·발견한 것**(결정·함정·측정)을 `obsidian-organize` 스킬에 넘겨 볼트에 파일링한다. 볼트 판정·스키마·로그·커밋은 그 스킬이 한다. hns 는 볼트에 직접 쓰지 않는다.

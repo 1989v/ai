@@ -11,7 +11,7 @@ argument-hint: "[url | repo path | auto]"
 외부 소스와 비교하여 하네스 개선 기회를 식별한다.
 
 ## Required Inputs
-- External source (URL, repo path, or "auto" for web search)
+- External source (URL, repo path, "auto" for web search, or "kb" — the project's knowledge base via `hns:kb`, e.g. harness/prompt playbook pages)
 
 ## Expected Outputs
 - docs/benchmarks/YYYY-MM-DD-{source}.md

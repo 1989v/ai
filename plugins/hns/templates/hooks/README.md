@@ -6,7 +6,7 @@ Claude Code 2.1 실제 훅 스키마로 짠 4 스크립트 + Stop 게이트 1개
 
 | 이벤트 | 스크립트 | tier | 동작 |
 |---|---|---|---|
-| `SessionStart` (startup·resume·compact·clear) | `session-start-recover.sh` | 전부 | 최신 `docs/specs/*/context/progress.md` + key-decisions + 열린 pre-impl 수 + 최근 커밋을 `additionalContext` 로 주입. 진행 노트가 없으면 침묵 |
+| `SessionStart` (startup·resume·compact·clear) | `session-start-recover.sh` | 전부 | 최신 `docs/specs/*/context/progress.md` + key-decisions + 열린 pre-impl 수 + 최근 커밋을 `additionalContext` 로 주입. `HNS_KB_PATH` 가 있으면 지식베이스 한 줄(이름·페이지 수·마지막 ingest) 추가. 둘 다 없으면 침묵 |
 | `PreCompact` | `precompact-preserve.sh` | 전부 | 요약이 보존할 5항목과 progress 파일 경로를 지시 |
 | `PreToolUse` Bash, `if: Bash(git commit *)` | `commit-gate.sh` | feedback / enforce | `HNS_COMPILE_CMD` 실행. 실패 시 feedback=알림, enforce=`permissionDecision: deny` |
 | `PostToolUse` Write\|Edit | `edit-lint.sh` | feedback / enforce | 바뀐 파일만 `HNS_LINT_CMD`. 실패 시 알림(PostToolUse 는 차단 불가) |

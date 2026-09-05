@@ -19,7 +19,9 @@ Claude Code 2.1 위에서 도는 하네스 엔지니어링 플러그인. 세 기
 | `/hns:evolve` · `/hns:diet` · `/hns:gc` · `/hns:audit` | 규칙 추가 · 사용 증거 기반 감량 · 청소 · 외부 벤치마크 |
 | `/hns:init` · `/hns:setup-hooks` · `/hns:doc-gen` · `/hns:health-mode` · `/hns:validate-fe-design` | 초기화 · 훅 설치 · 문서 생성 · CI 모드 · FE 디자인 린트 |
 
-파이프라인 단계(`shape-spec` `write-spec` `spec-review` `create-tasks` `implement-tasks` `drift-check`)와 행동 규칙(`agent-behavior` `spec-evolution`)은 모델만 호출하는 숨은 스킬이다.
+파이프라인 단계(`shape-spec` `write-spec` `spec-review` `create-tasks` `implement-tasks` `drift-check`)와 행동 규칙(`agent-behavior` `spec-evolution`), 외부 지식베이스 읽기(`kb`)는 모델만 호출하는 숨은 스킬이다.
+
+**지식베이스**: `HNS_KB_PATH` 에 Obsidian LLM-wiki 볼트를 가리키면 `start`·`shape-spec`·`spec-review`·`evolve`·`audit` 가 필요할 때만 최대 3페이지를 읽어 `[[page]] (볼트, updated)` 로 인용한다. 읽기 전용이며 쓰기는 `obsidian-organize` 에 넘긴다.
 
 ## 훅 (실제 스키마)
 
