@@ -1,5 +1,5 @@
-# Context Routing Map Template
-# Replace {{PLACEHOLDER}} values during /hns:init
+# docs/index.yml — doctor(L1 Index Integrity)·docs-health CI 가 보는 문서 색인. 컨텍스트 라우팅에는 쓰지 않는다(로딩은 CLAUDE.md·.claude/rules·스킬이 한다).
+# /hns:init 이 생성하고 /hns:validate --docs 가 누락 문서를 보완한다.
 schema_version: 1
 
 entries:
@@ -28,7 +28,3 @@ entries:
     path: docs/philosophy/three-pillars.md
     keywords: [harness, gc, enforcement, evolution, diet, pillar]
 
-auto_reference:
-  threshold: 2
-  max_docs: 3
-  prefer_section: true

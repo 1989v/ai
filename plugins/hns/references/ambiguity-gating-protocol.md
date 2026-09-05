@@ -1,7 +1,7 @@
 # Ambiguity Gating Protocol
 
 Socratic requirements clarification with a mathematical ambiguity gate.
-Used by the Shape Spec phase (`hns:start` PHASE 1 / `spec-shaper`) to refuse
+Used by the Shape Spec phase (`hns:start` PHASE 1 / `hns:shape-spec`, main conversation) to refuse
 progression to spec-writing until requirements clarity crosses a threshold.
 
 Benchmarked from oh-my-claudecode `deep-interview` (Ouroboros-inspired).
@@ -47,7 +47,7 @@ Shape gate threshold: {percent} (source: {project|user|default})
 Gather codebase facts before asking the user. Never ask what the code already reveals —
 when a question is triggered by repo evidence, cite the file/symbol/pattern in the question.
 
-Load hierarchical sub-context per `hierarchical-delegation.md` (service-local CLAUDE.md / glossary).
+Service-local `CLAUDE.md` and `.claude/rules/` load natively when their files are read; read the BC glossary explicitly if `docs/context-map.md` points to one.
 
 ## Round 0: Topology enumeration gate
 

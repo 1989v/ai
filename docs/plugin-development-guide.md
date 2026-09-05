@@ -33,47 +33,34 @@ plugins/{plugin-name}/
 
 ---
 
-## 2. Command 파일 작성 규칙
+## 2. 스킬 파일 작성 규칙
 
-### frontmatter에 `name` 필드를 넣지 않는다
-
-```yaml
-# BAD — name이 있으면 prefix 없이 /init으로 등록됨
----
-name: init
-description: "Initialize harness"
----
-
-# GOOD — name 없으면 파일명 기반 + plugin prefix → /hns:init
----
-description: "Initialize harness"
----
-```
-
-**이유**: `name` 필드가 있으면 plugin prefix가 붙지 않아 다른 플러그인과 충돌할 수 있고, 자동완성에서 플러그인 소속을 구분할 수 없다.
-
-### plugin.json의 `commands` 배열에 등록한다
-
-```json
-{
-  "name": "hns",
-  "commands": [
-    "./commands/init.md",
-    "./commands/new-feature.md"
-  ]
-}
-```
-
-**주의**: `commands/` 디렉토리 안의 .md 파일은 `plugin.json` 등록 여부와 무관하게 **자동 발견되어 자동완성에 노출**된다. 자동완성에서 숨기려면 `commands/` 밖으로 이동해야 한다 (예: `internal/`, `deprecated/`).
-
-### description은 간결하고 검색 가능하게
+### 2.1 프론트매터
 
 ```yaml
-description: "Initialize AI harness for any project — auto-scan + doc-gen + hooks + routing"
+---
+name: start                       # 표시용. 호출명은 디렉토리명이 정한다
+description: Use to … — 언제 쓰는지만. 절차를 요약하지 않는다
+when_to_use: 새 기능, 기능 추가, new feature      # 트리거 문구 (description 과 합쳐 1,536자에서 잘린다)
+argument-hint: "[request] [--feat]"
+disable-model-invocation: true    # 또는 user-invocable: false. 둘 다 없으면 양쪽 호출
+---
 ```
 
-- 250자 이내 (초과 시 잘림)
-- 사용자가 검색할 키워드를 앞쪽에 배치
+- `description` 이 절차를 요약하면 모델이 본문을 읽지 않고 요약대로 움직인다. "언제" 만 쓴다.
+- 본문은 호출된 뒤 세션 내내 컨텍스트에 남는다. 짧게. 무거운 참조는 같은 폴더의 보조 파일로.
+- `$ARGUMENTS`, `$0`/`$1`, `${CLAUDE_PLUGIN_ROOT}`, `${CLAUDE_SKILL_DIR}` 치환을 쓸 수 있다.
+- 그 밖의 필드: `allowed-tools` `model` `effort` `context: fork` + `agent` `hooks` `paths`.
+
+### 2.2 plugin.json 에 `commands` 배열을 두지 않는다
+
+`skills/` 는 자동 발견된다. `commands` 필드는 legacy 평면 `.md` 용이며 기본 탐색을 대체하므로 쓰지 않는다.
+
+### 2.3 훅은 실제 스키마로
+
+이벤트 32종 · 핸들러 `command` `http` `mcp_tool` `prompt` `agent` · 차단은 exit 2 또는 `permissionDecision: deny` · 피드백은 `additionalContext`. 치트시트: `plugins/hns/references/hooks-reference.md`. **실패 입력을 주입해 빨간불을 본 뒤에만 켰다고 말한다** — hns 의 옛 템플릿은 존재하지 않는 필드(`type: reminder` `PrePrompt` `condition`)로 5개월간 무동작이었다.
+
+플러그인 레벨 `hooks/hooks.json` 은 그 플러그인이 켜진 **모든** 프로젝트에서 발화한다. 전역 활성 플러그인이면 프로젝트별 설치(settings 병합)를 택한다.
 
 ---
 
@@ -182,9 +169,9 @@ marketplace 설치 없이 직접 로드. 변경 시 `/reload-plugins`로 핫 리
 
 ## 7. 현재 플러그인 목록
 
-| Plugin | Prefix | Commands | Skills | Agents |
-|--------|--------|----------|--------|--------|
-| **hns** | `/hns:` | 13 | 13 (background, incl. `glossary`) | 10 |
+| Plugin | Prefix | Skills (user) | Skills (model-only) | Agents |
+|--------|--------|---------------|---------------------|--------|
+| **hns** | `/hns:` | 15 | 8 | 5 |
 | **ai-debugger** | `/ai-debugger:` | 2 | 6 | 1 |
 | **private-repo** | `/private-repo:` | 1 | 1 | 0 |
 | **content-analyzer** | `/content-analyzer:` | 1 | 3 | 1 |
@@ -261,30 +248,19 @@ claude plugins install hns@ai-common
 # 5. 반드시 새 세션 시작 (현재 세션은 이전 캐시 유지)
 ```
 
-### 9.2 commands/ 자동 발견 문제
+### 9.2 스킬이 목록에 없다
 
-**증상**: plugin.json commands[]에서 제거한 커맨드가 자동완성에 계속 보임.
+**증상**: `skills/` 에 파일을 두었는데 모델도 `/` 메뉴도 그 스킬을 모른다.
 
-**원인**: Claude Code는 `commands/` 디렉토리 안의 **모든 .md 파일을 재귀 스캔**하여 자동완성에 등록한다. plugin.json 등록 여부와 **무관**.
+**원인 1**: 2단계 이하 디렉토리(`skills/group/name/SKILL.md`). 플러그인 `skills/` 는 한 단계만 탐색한다. → `skills/name/SKILL.md` 로 올린다.
+**원인 2**: `disable-model-invocation: true` 인데 모델에게 시켰다. 그 스킬은 사용자가 `/name` 으로만 실행한다.
+**원인 3**: 프론트매터 `name:` 으로 호출명을 바꾸려 했다. 호출명은 디렉토리명이다.
 
-**시도했으나 실패한 방법들**:
-1. ❌ `commands/_internal/`로 하위 디렉토리 이동 — 재귀 스캔으로 여전히 발견됨
-2. ❌ frontmatter에서 description 제거 — 여전히 파일명 기반으로 발견됨
-3. ❌ `commands/` 밖의 별도 디렉토리(`internal/`)로 이동 — 파일명으로 여전히 발견됨
-
-**해결**: `skills/{name}/SKILL.md` 디렉토리 구조로 전환 + `user-invocable: false` frontmatter 설정.
-
+확인 방법(설치본을 끄고 워킹카피만 로드):
+```bash
+claude -p --plugin-dir ./plugins/{name} --settings '{"enabledPlugins":{"{name}@ai-common":false}}' --model haiku --max-turns 1 \
+  "List every skill name starting with '{name}:' available via the Skill tool, one per line."
 ```
-# Before (자동완성에 노출됨)
-commands/shape-spec.md
-
-# After (자동완성에서 숨겨짐)
-skills/commands/shape-spec/SKILL.md  ← user-invocable: false
-```
-
-**핵심 규칙**:
-- `commands/*.md` = **항상 자동완성 노출** (숨길 수 없음)
-- `skills/{name}/SKILL.md` + `user-invocable: false` = **자동완성 미노출**, 내부 호출 가능
 
 ### 9.3 marketplace diverge 에러
 
@@ -327,18 +303,19 @@ cd ~/.claude/plugins/marketplaces/ai-common && git reset --hard origin/main
 ## Quick Reference
 
 ```
-새 커맨드 추가:
-1. commands/{name}.md 생성 (frontmatter에 name 없이 description만)
-2. plugin.json commands[] 배열에 추가
-3. version bump
-4. marketplace.json 확인
-5. commit + push
-6. claude plugins uninstall + install (또는 --plugin-dir로 테스트)
+새 스킬 추가:
+1. skills/{name}/SKILL.md 생성 (한 단계, description 은 "언제" 만, 호출 주체 프론트매터)
+2. `claude plugin validate ./plugins/{plugin} --strict`
+3. 탐색 확인 (§9.2 명령) + 동작 확인 (`claude -p "/{plugin}:{name} …"`)
+4. version bump
+5. marketplace.json 확인
+6. commit + push
+7. claude plugin uninstall + install (또는 --plugin-dir 로 테스트)
 
-새 백그라운드 스킬 추가:
-1. skills/{name}/SKILL.md 생성 (user-invocable: false)
-2. version bump
-3. commit + push
+훅 추가:
+1. 실제 스키마로 작성 (`plugins/hns/references/hooks-reference.md`)
+2. 실패 입력 주입 → 빨간불, 정상 입력 → 침묵 확인
+3. `claude -p --settings <hooks.json> --output-format stream-json --include-hook-events` 로 발화 확인
 
 새 플러그인 추가:
 1. plugins/{name}/ 디렉토리 생성

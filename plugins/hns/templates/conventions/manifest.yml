@@ -1,7 +1,9 @@
-# 스택 → 컨벤션 번들 매핑. hns:init PHASE 1.5에서 사용.
+# 스택 → 컨벤션 번들 매핑. hns:init 3단계에서 사용.
+# rules_paths: 번들을 .claude/rules/{bundle}/ 로 설치할 때 각 파일 상단에 붙일 `paths:` 글롭 (그 파일을 읽을 때만 로드).
 bundles:
   backend-kotlin-spring:
     label: "Kotlin + Spring (Clean Architecture)"
+    rules_paths: ["**/*.kt", "**/*.kts"]
     detect:
       any: ["build.gradle.kts", "**/*.kt"]
     files:
@@ -16,12 +18,14 @@ bundles:
       - testing.md
   messaging-kafka:
     label: "Kafka messaging"
+    rules_paths: ["**/*Kafka*", "**/*Consumer*", "**/*Producer*", "**/*Event*"]
     detect:
       any: ["spring-kafka", "**/*KafkaConfig*", "**/*Consumer.kt"]
     files:
       - kafka-topics.md
   frontend-web:
     label: "Frontend (React/TS)"
+    rules_paths: ["**/*.{ts,tsx,css}", "**/index.html"]
     detect:
       any: ["package.json", "**/*.tsx"]
     files:
@@ -29,6 +33,7 @@ bundles:
       - design-system.md
   performance:
     label: "Latency/performance budgets"
+    rules_paths: ["**/*.kt", "**/*.ts"]
     detect: opt-in
     files:
       - latency-budget.md

@@ -22,7 +22,6 @@
 프로젝트 루트/
 ├── docs/product/
 │   ├── mission.md
-│   ├── tech-stack.md
 │   └── glossary.md           ← 단일 컨텍스트 (기본)
 └── docs/
     ├── context-map.md        ← 다중 BC일 때만, 각 BC의 glossary.md 위치를 가리킴
@@ -159,13 +158,11 @@ v0.8.x로 생성된 사전은 자유 형식 `## Terms` 섹션만 가졌다. v0.9
 이 reference를 인용하는 곳:
 
 - `references/glossary-extraction-rules.md` — Include/Exclude 결정 규칙 (v0.9.0+)
-- `commands/glossary.md` — 사전 구축·갱신 흐름
-- `skills/commands/glossary/SKILL.md` — 8-PHASE 깊이 분석 절차 (v0.9.0+)
-- `skills/commands/shape-spec/SKILL.md` PHASE 2 — glossary 로딩
-- `skills/commands/interview-capture/SKILL.md` PHASE 4 — Terminology drift 버킷
-- `skills/review/domain/SKILL.md` — 사전 충돌 체크리스트
-- `skills/review/architecture/SKILL.md` — Depth/Seam 체크리스트
-- `commands/start.md` PHASE 0 — glossary.md 자동 로딩
+- `skills/glossary/SKILL.md` — 사전 구축·갱신 흐름, `procedure.md` — 8-PHASE 절차
+- `skills/shape-spec/SKILL.md` — 사전 로딩·용어 충돌 확인
+- `skills/spec-review/reviewers/domain/checklist.md` — 사전 충돌 체크리스트
+- `skills/spec-review/reviewers/architecture/checklist.md` — Depth/Seam 체크리스트
+- `skills/start/SKILL.md` PHASE 0 — glossary.md 로딩
 
 ---
 

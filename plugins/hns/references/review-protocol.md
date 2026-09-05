@@ -1,6 +1,6 @@
 # Seed Discovery Protocol (Review)
 
-Universal review protocol used by all spec-review skills (architecture, implementation, usecase).
+Universal review protocol used by every `hns:spec-reviewer` run (architecture, domain, implementation, security, test-strategy, usecase).
 
 ## Stage 1: Seed Analysis
 - Read target spec file
@@ -12,11 +12,9 @@ Universal review protocol used by all spec-review skills (architecture, implemen
   - `tasks*`, `status*`, `design*`, `context/*`
 - Follow relative Markdown links found in spec
 
-## Stage 3: Index Map Discovery
-- Check for `docs/index.yml` or `docs/index.yaml`
-- If exists: extract reviewer-type-specific keywords, score matches, load top documents
-- If not exists: fallback to scanning `docs/standards/` directory directly
-- Load matched standards relevant to the review type
+## Stage 3: Standards Discovery
+- Read `docs/standards/`, `docs/conventions/`, and `.claude/rules/` entries relevant to the review dimension (by filename and headings)
+- Service-local `CLAUDE.md` next to the code under review counts as a standard
 
 ## Stage 4: Code Evidence
 - Grep/Glob for referenced classes, modules, APIs in codebase

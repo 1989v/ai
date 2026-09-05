@@ -1,6 +1,6 @@
 # Step Execution Protocol
 
-구현 실행의 두 가지 방식(mode)을 정의한다. 둘 다 **대화형 세션 안**에서 동작하며 별도 스크립트가 필요 없다.
+구현 실행의 Step 모드를 정의한다(기본 Task-Group 모드는 `skills/implement-tasks/SKILL.md`). 대화형 세션 안에서 동작하며 별도 스크립트가 필요 없다. 사용자가 Workflow 도구(멀티 에이전트 오케스트레이션)를 요청한 경우 그 스크립트가 이 상태머신의 드라이버가 될 수 있다.
 
 > 출처: jha0313/harness_framework `execute.py`의 step 분할·자가교정·상태머신 패턴을 흡수하되, 세션 외부 python 드라이버 대신 **세션 내 subagent 루프**로 실현. 벤치마크: `docs/benchmarks/2026-06-04-jha0313-harness-framework.md`.
 
@@ -9,7 +9,7 @@
 | | **Task-Group 모드** (기존/기본) | **Step 모드** (분할) |
 |---|---|---|
 | 실행 단위 | task group (tasks.md 그대로) | self-contained step 파일 |
-| 컨텍스트 | implementer/tester subagent가 부모 세션 맥락 위에서 작업 | step마다 새 subagent = **독립 컨텍스트**, 가드레일+이전요약만 주입 |
+| 컨텍스트 | implementer subagent 가 부모 세션 맥락 위에서 작업 | step마다 새 subagent = **독립 컨텍스트**, 가드레일+이전요약만 주입 |
 | 적합 | 작은~중간 기능, 같이 보며 진행 | step 많은 큰 작업, step간 간섭 최소화하고 싶을 때 |
 | 상태 추적 | `status.md` (서술) | `steps/index.json` (상태 머신) + `status.md` |
 
@@ -30,7 +30,7 @@
 
 ### 2) 순차 실행 루프
 `index.json`의 첫 `pending` step부터:
-1. **subagent 위임** — `implementer`(+필요시 `tester`)에게 위임. 프롬프트 = `step{N}.md` 본문 + 가드레일 + 이전 완료 step의 `summary` 누적. subagent는 자기 컨텍스트에서 실행.
+1. **subagent 위임** — `hns:implementer` 에게 위임(테스트 포함). 프롬프트 = `step{N}.md` 본문 + 가드레일 + 이전 완료 step의 `summary` 누적. subagent는 자기 컨텍스트에서 실행.
 2. **AC 검증** — step에 적힌 검증 커맨드 실행.
 3. **상태 기록** — `index.json` 업데이트:
    - 통과 → `completed` + `summary`(산출물 한 줄: 생성 파일·핵심 결정) + `completed_at`
@@ -64,4 +64,4 @@
 
 ## 가드레일 주입
 
-step subagent 프롬프트에는 cwd→repo_root의 `CLAUDE.md` + `docs/` 규칙을 누적 주입 (`@references/hierarchical-delegation.md` 정합). 가장 가까운 것이 우선, root는 base.
+step subagent 는 루트 `CLAUDE.md` 를 자동으로 받는다. step 파일이 다루는 디렉토리의 `CLAUDE.md`·`.claude/rules/` 는 그 파일을 읽을 때 로드되므로, step 파일의 "읽을 파일" 목록에 해당 경로를 넣는다.

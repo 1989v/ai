@@ -62,34 +62,15 @@ Proceed?
 - Note next steps in tasks.md
 
 ### Post-Compaction Recovery
-- Follow compaction.md recovery steps
-- Ask specific questions if context insufficient
+- SessionStart 훅 주입 내용부터 읽는다. 없으면 Compaction Rules 의 직접 읽기 순서
+- 부족하면 구체적으로 질문
 
 ## Compaction Rules
 
-### 컴팩션 실행 권장 시점
-- Task Group 완료 시
-- Spec 문서 작성 완료 시
-- 구현 완료 후 테스트 작성 전
-- Phase 전환 시
-
-### 컴팩션 실행 금지 시점
-- 구현 도중
-- 테스트 디버깅 중
-- 중요한 의사결정 논의 중
-
-### Pre-Compact Checklist
-- [ ] 현재 작업을 git commit으로 저장
-- [ ] 중요 의사결정을 key-decisions.md에 기록
-- [ ] 다음 Task 계획 확인
-- [ ] 현재 작업이 완전히 종료되었는지 확인
-
-### Post-Compact Recovery
-1. CLAUDE.md 읽기
-2. key-decisions.md 읽기
-3. open-questions.yml 확인
-4. tasks.md 체크박스 확인
-5. git log 최근 커밋 확인
+컴팩션은 자동이다. 시점을 통제하지 말고 **파일을 원본**으로 유지한다.
+- task group 완료·결정·블로커마다 `docs/specs/{feature}/context/progress.md` (현재 위치·완료·다음 단계·블로커) 와 `key-decisions.md` 갱신 + 커밋
+- `PreCompact` 훅이 요약에 보존할 항목을 지시하고, `SessionStart` 훅이 컴팩션 후 progress·결정·열린 질문·최근 커밋을 다시 주입한다 (`/hns:setup-hooks`)
+- 훅이 없으면 같은 것을 직접 읽는다: CLAUDE.md → key-decisions.md → open-questions.yml → tasks.md 체크박스 → `git log`
 
 ## Doc Gardening
 
@@ -115,16 +96,10 @@ git diff --name-only HEAD
 ### L1/L2: Automated Review
 - 프로젝트 린터 실행 → 위반 시 수정
 
-### L3: Fresh Context Review (품질 모드)
+### L3: Fresh Context Review
 - 서브에이전트로 fresh context reviewer 호출
 - git diff + spec + standards만 제공
 - 구현 히스토리 제외 (편향 방지)
-
-### L3: Inline Checklist (효율 모드)
-- [ ] spec.md 요구사항 전부 반영?
-- [ ] 기존 코드 패턴 일관?
-- [ ] 에러 핸들링 누락 없음?
-- [ ] 테스트 약화/삭제 없음?
 
 ### Verdict
 - **SHIP** → BUILD 진행

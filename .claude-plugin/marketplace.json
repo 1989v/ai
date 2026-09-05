@@ -22,7 +22,7 @@
     {
       "name": "hns",
       "source": "./plugins/hns",
-      "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, ambiguity-gated shaping, 6-dimension review, lifecycle (GC/evolve/diet/audit), doctor health-check, enforcement hooks, context routing, and doc generation"
+      "description": "AI harness engineering for Claude Code 2.1: ambiguity-gated spec pipeline, parallel 6-dimension spec review, real lifecycle hooks (SessionStart recovery / PreCompact / commit gate / Stop evidence gate), doctor health-check, usage-evidence diet, glossary"
     },
     {
       "name": "study",

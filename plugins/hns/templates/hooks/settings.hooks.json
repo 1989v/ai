@@ -1,0 +1,67 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/hns/session-start-recover.sh\"",
+            "timeout": 10,
+            "statusMessage": "hns: 진행 상태 복구"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/hns/precompact-preserve.sh\"",
+            "timeout": 10,
+            "statusMessage": "hns: 컴팩션 보존 지시"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/hns/commit-gate.sh\"",
+            "timeout": 300,
+            "statusMessage": "hns: 커밋 전 컴파일"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/hns/edit-lint.sh\"",
+            "timeout": 120,
+            "statusMessage": "hns: 린트"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "timeout": 30,
+            "prompt": "You are a completion gate for a coding session. Input JSON: $ARGUMENTS. If stop_hook_active is true, respond {\"ok\": true}. Read last_assistant_message. Block ONLY when the message claims a SUCCESSFUL outcome — that code was implemented, fixed, built, tested, linted, deployed, or verified successfully (for example 'tests pass', 'build succeeded', '빌드 성공', '테스트 통과', '구현 완료', '검증 완료', '확인했다') — AND it does not show the command that was run with its result lines (test counts, BUILD SUCCESSFUL, exit status, lint summary) or an explicit statement that the step was skipped. Then respond {\"ok\": false, \"reason\": \"<one Korean sentence naming the success claim that lacks evidence and telling the assistant to run the verification and paste its output>\"}. Everything else passes with {\"ok\": true}: questions, explanations, plans, analyses, reports that something FAILED or was BLOCKED, partial progress notes, and messages with no completion claim. Respond with JSON only."
+          }
+        ]
+      }
+    ]
+  }
+}

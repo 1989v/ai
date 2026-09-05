@@ -1,35 +1,26 @@
 # Prompting Tone Guide
 
-Claude 4.6+ 모델은 이전 모델보다 지시 따르기 능력이 높아졌으므로,
-과도한 강조 표현이 오히려 overtriggering을 유발할 수 있다.
+Claude 5(Fable 5.1·Opus 5·Sonnet 5)는 지시 준수율이 높다. 강조 표현은 과잉 발화를 부르고, 리마인더 체크리스트는 모델이 이미 아는 것을 다시 말한다.
 
-## Principle
+## 원칙
+강한 어조 대신 **조건이 명확한 지시**. "언제" 를 적고 "얼마나 중요한지" 는 적지 않는다.
 
-강한 어조는 줄이고, 조건부 명확성을 높인다.
-
-## Before → After
-
-| Before (over-prompting) | After (calibrated) |
-|------------------------|-------------------|
+| 이전 | 지금 |
+|---|---|
 | `CRITICAL: You MUST use this tool when...` | `Use this tool when...` |
 | `EXTREMELY IMPORTANT: NEVER skip...` | `Do not skip...` |
-| `ABSOLUTELY MUST invoke...` | `Invoke when applicable.` |
-| `This is not negotiable.` | (제거 — 지시 자체로 충분) |
-| `If you think there is even a 1% chance...` | `If a skill might apply, invoke it first.` |
+| `This is not negotiable.` | (삭제) |
+| "400줄 이하인지 확인했나요?" 리마인더 | 규칙 문장 하나: "400줄을 넘기면 이유를 적는다" |
+| "8가지 상태를 모두 구현했나요?" | 검사 스크립트로 (판단이 아니라 기계적 확인이면 코드로) |
 
-## When Strong Tone IS Appropriate
+## 강한 어조가 맞는 곳
+- 데이터 손실·보안 등 안전 제약
+- Iron Law(검증 루프 3회 실패 시 STOP, 증거 없는 완료 없음)
+- 사용자 승인 게이트(L3)
 
-- Safety-critical 제약 (data loss, security)
-- Iron Laws (Ralph Loop 3회 실패 시 STOP 등)
-- 사용자 승인 게이트 (L3 변경)
+## 스킬 작성
+- `description` 은 **언제 쓰는지**만. 절차를 요약하면 모델이 본문을 읽지 않고 요약대로 움직인다.
+- 본문은 호출된 뒤 턴마다 컨텍스트에 남는다. 한 줄이 반복 비용이다.
+- 모델이 아는 것은 쓰지 않는다("PDF 란…"). 모델이 모르는 프로젝트 사실·판단 기준만.
 
-## Application
-
-- 신규 스킬/커맨드 작성 시 이 가이드 참고
-- 기존 스킬은 점진적으로 톤 조정 (diet 사이클에서)
-- 톤 다운 후 동작 변화 관찰 → 문제 시 원복
-
-## Source
-
-[Claude Prompting Best Practices — Agentic Systems](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#agentic-systems):
-> "Where you might have said 'CRITICAL: You MUST use this tool when...', you can use more normal prompting like 'Use this tool when...'"
+출처: Anthropic *Effective context engineering for AI agents* ("smarter models require less prescriptive engineering"), Claude Code skills 문서.

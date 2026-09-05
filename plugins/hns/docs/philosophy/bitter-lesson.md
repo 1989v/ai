@@ -16,18 +16,16 @@
 | 모델 내장 능력과 중복되는가? | diet 후보 | 유지 |
 | 다른 규칙의 하위 규칙인가? | 통합/제거 | 유지 |
 
-## harness-diet 연계
-- `/hns:harness-diet` 실행 시 이 프레임워크로 판단
+## diet 연계
+- `/hns:diet` 실행 시 이 프레임워크로 판단. 1차 증거는 세션 기록의 실제 호출 수와 `/skill-doctor` (`references/diet-criteria.md`)
 - 제거된 규칙은 `docs/changelog/harness-changelog.md`에 기록
-- 제거 후 문제 발생 시 `harness-evolve`로 복원 가능
+- 제거 후 문제 발생 시 `/hns:evolve`로 복원 가능
 
 ## Complexity Tracking
-하네스 토큰 수를 주기적으로 측정:
-- CLAUDE.md 토큰
-- 스킬 파일 총 토큰
-- 에이전트 파일 총 토큰
-- 훅 설정 토큰
-- → 시간에 따른 추세를 changelog에 기록
+주기적으로 측정해 changelog 에 남긴다: CLAUDE.md 줄 수(상한 200) · 스킬/에이전트 파일 수와 총 줄 수 · 모델에 노출되는 스킬 설명 수(`/context`) · 세션당 훅 호출 수.
+
+## 2026-09 사례
+모델 상향 뒤 첫 다이어트(ADR-005): 사용 증거 0 인 커맨드 24종·에이전트 10종을 재편하고, 플랫폼이 내장한 라우팅·워크트리·컴팩션 로직을 뺐다. 반대로 한 번도 동작한 적 없던 훅은 **늘렸다** — 다이어트는 "적게" 가 아니라 "실제로 동작하는 것만" 이다.
 
 ## Future Direction
 - 에이전트가 스스로 하네스 엔지니어링을 할 것

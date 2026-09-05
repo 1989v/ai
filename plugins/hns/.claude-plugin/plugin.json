@@ -1,23 +1,8 @@
 {
   "name": "hns",
-  "description": "Universal AI harness engineering: 6-layer architecture with SDD pipeline, ambiguity-gated shaping, 6-dimension review, lifecycle (GC/evolve/diet/audit), doctor health-check, enforcement hooks, context routing, and doc generation",
-  "version": "0.13.0",
+  "description": "AI harness engineering for Claude Code 2.1: ambiguity-gated spec pipeline, parallel 6-dimension spec review, real lifecycle hooks (SessionStart recovery / PreCompact / commit gate / Stop evidence gate), doctor health-check, usage-evidence diet, glossary",
+  "version": "0.14.0",
   "author": { "name": "gideok-kwon" },
   "license": "MIT",
-  "keywords": ["harness", "sdd", "scaffolding", "spec-driven", "ai-harness", "gc", "enforcement", "evolution", "doctor", "healthcheck", "cost-gate"],
-  "commands": [
-    "./commands/init.md",
-    "./commands/start.md",
-    "./commands/validate.md",
-    "./commands/verify.md",
-    "./commands/audit.md",
-    "./commands/wrapup.md",
-    "./commands/gc.md",
-    "./commands/doc-gen.md",
-    "./commands/validate-fe-design.md",
-    "./commands/doctor.md",
-    "./commands/setup-hooks.md",
-    "./commands/health-mode.md",
-    "./commands/glossary.md"
-  ]
+  "keywords": ["harness", "sdd", "spec-driven", "hooks", "doctor", "diet", "glossary", "claude-code"]
 }

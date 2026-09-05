@@ -12,8 +12,8 @@ Claude Code 플러그인 모노레포.
 
 ### 핵심 규칙 요약
 
-1. **commands/ = 사용자 호출, skills/ = 백그라운드** — 혼동 금지
-2. **command frontmatter에 `name` 필드 금지** — 있으면 plugin prefix가 안 붙음
+1. **skills/<name>/SKILL.md 한 단계만** — 플러그인 `skills/` 는 하위 디렉토리를 탐색하지 않고, 호출명은 디렉토리명이다(`name:` 프론트매터가 덮어쓰지 않는다). `commands/` 는 deprecated
+2. **호출 주체는 프론트매터로** — 사용자만: `disable-model-invocation: true`, 모델만: `user-invocable: false`
 3. **marketplace.json 등록 필수** — 없으면 `claude plugins install` 실패
 4. **version bump 필수** — 안 올리면 캐시 갱신 안 됨
 5. **description 250자 이내** — 초과 시 자동완성에서 잘림
@@ -22,10 +22,10 @@ Claude Code 플러그인 모노레포.
 
 ```
 plugins/{name}/
-├── .claude-plugin/plugin.json    # 매니페스트 (commands[] 배열 포함)
-├── commands/{cmd}.md             # 사용자 호출 커맨드 (name 없이 description만)
-├── skills/{skill}/SKILL.md       # 백그라운드 스킬 (user-invocable: false)
+├── .claude-plugin/plugin.json    # 매니페스트 (name, version, description)
+├── skills/{skill}/SKILL.md       # 스킬 — 한 단계. 사용자 전용은 disable-model-invocation, 모델 전용은 user-invocable: false
 ├── agents/{agent}.md             # 서브에이전트
+├── hooks/hooks.json              # (선택) 플러그인 훅 — 실제 스키마, 전역 활성 플러그인이면 신중히
 ├── references/                   # 참조 프로토콜
 └── templates/                    # 생성 템플릿
 ```
@@ -41,7 +41,7 @@ claude --plugin-dir ./plugins/{name}     # 로컬 테스트
 
 | Plugin | Commands | Description |
 |--------|----------|-------------|
-| hns | 13 | 하네스 엔지니어링 (SDD 파이프라인, 모호성 게이트 Shape 인터뷰, 6-차원 리뷰, 유비쿼터스 사전 `/hns:glossary`, Step 모드 구현, ADR) |
+| hns | 15 + 8 hidden skills | 하네스 엔지니어링 — `/hns:start` 파이프라인(모호성 게이트 Shape · 6차원 병렬 리뷰 · Step 모드), 실제 훅(SessionStart 복구·PreCompact·커밋 게이트·Stop 증거 게이트), doctor, 사용 증거 기반 diet, `/hns:glossary`. v0.14.0 (2026-09-05, ADR-005) |
 | ai-debugger | 2 | API 디버깅 |
 | private-repo | 1 | Private repo 분리 |
 | content-analyzer | 1 | 콘텐츠 분석 |

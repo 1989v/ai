@@ -5,9 +5,9 @@
 
 ## Unified Rules
 
-- **AGENTS.md**: Shared baseline navigation (if exists)
-- **CLAUDE.md**: Project-specific overrides (this file)
-- **PLANS.md**: Complex work orchestration
+- **CLAUDE.md**: 이 파일. 200줄 이하, 항상 참인 것만
+- **.claude/rules/**: 경로 스코프 컨벤션 (`paths:`)
+- **docs/**: 상세 (필요할 때 읽는다)
 
 **On conflict**: CLAUDE.md wins.
 
@@ -38,7 +38,7 @@
 
 **범용 행동 원칙**:
 - **탐색 우선, 증거 기반** → `docs/standards/agent-behavior.md#core-rules`
-- **컴팩션 복구** → `docs/standards/agent-behavior.md#compaction-rules`
+- **세션 복구·컴팩션** → `docs/standards/agent-behavior.md#session-management` (hns SessionStart/PreCompact 훅이 진행 노트를 주입)
 - **세션 관리** → `docs/standards/agent-behavior.md#session-management`
 
 ---
@@ -67,23 +67,14 @@ All rules are routed via `docs/standards/`.
 
 | Command | Purpose |
 |---------|---------|
-| `/hns:start` | 통합 진입점: 요청 분석 → 질의 응답 or 피처 파이프라인 자동 라우팅 |
-| `/hns:shape-spec` | 요구사항 수집 및 스펙 폴더 초기화 |
-| `/hns:write-spec` | 스펙 문서 작성 |
-| `/hns:spec-review` | 스펙 리뷰 (architecture/implementation/usecase) |
-| `/hns:create-tasks` | 태스크 분해 |
-| `/hns:implement-tasks` | 구현 (워크트리 옵션) |
-| `/hns:orchestrate-tasks` | 순차/병렬 오케스트레이션 |
-| `/hns:interview-capture` | 구현 전 게이트 인터뷰 |
-| `/hns:drift-check` | 구현-스펙 불일치 감지 |
-| `/hns:verify` | 검증 (표준→린트→빌드→테스트) |
-| `/hns:validate` | docs 일관성 + 코드 규칙 준수 검증 |
-| `/hns:doc-gen` | 문서 생성 (기본: 빈 곳만 채움, --full: 전체) |
-| `/hns:gc` | 가비지 컬렉션 (dead code, doc drift 청소) |
-| `/hns:evolve` | 실패 패턴 → 규칙 인코딩 |
-| `/hns:diet` | 불필요한 규칙 제거 (Bitter Lesson) |
-| `/hns:audit` | 외부 벤치마크 비교 |
-| `/hns:wrapup` | 세션 회고 (evidence 기반, 리스크 분류) |
+| `/hns:start` | 통합 진입점: 질의 응답 or 피처 파이프라인 (shape→spec→review→tasks→implement→validate) |
+| `/hns:verify` | 검증 (표준→린트→빌드→테스트, 증거 기록) |
+| `/hns:validate` | docs 일관성 · 코드 규칙 · 교차 일관성 (`--docs` `--code` `--crosscheck`) |
+| `/hns:doctor` | 문서/하네스 헬스체크 (5 레이어 점수) |
+| `/hns:glossary` | 도메인 사전 구축·갱신 |
+| `/hns:wrapup` | 세션 회고 → evolve |
+| `/hns:evolve` · `/hns:diet` · `/hns:gc` · `/hns:audit` | 하네스 진화 · 감량 · 청소 · 외부 비교 |
+| `/hns:setup-hooks` | 라이프사이클 훅 설치 (reminder / feedback / enforce) |
 
 ---
 
