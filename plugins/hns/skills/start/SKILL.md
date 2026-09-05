@@ -22,7 +22,7 @@ argument-hint: "[request] [--feat] [--quick|--deep] [--no-interview] [--skip-to 
 ## PHASE 0: 컨텍스트
 - 플랫폼이 CLAUDE.md·하위 CLAUDE.md·`.claude/rules/` 를 로드한다. 추가로 있으면 읽는다: `docs/product/mission.md`, `docs/product/glossary.md`(멀티 BC 면 `docs/context-map.md` → 해당 BC 사전).
 - 사전이 없으면 "`/hns:glossary` 권장" 한 줄만 남기고 진행한다.
-- `HNS_KB_PATH` 가 설정돼 있으면 `hns:kb` 로 요청의 도메인 명사를 조회한다(최대 3페이지, 읽기 전용). Query 모드 답변과 브라운필드 판단의 근거로 `[[page]] (볼트, updated)` 를 인용한다.
+- 지식베이스 검색을 **한 번 실행한다**: `"${CLAUDE_PLUGIN_ROOT}/skills/kb/kb-search.sh" <키워드>` (요청의 도메인 명사 2~3개). `HNS_KB_PATH` 가 없으면 출력 없이 끝나므로 조건을 따로 검사하지 않는다. 결과 중 관련 페이지가 있을 때만 최대 3개를 Read 하고 `[[page]] (볼트, updated)` 로 인용한다(`hns:kb` 규칙). 레포 문서와 모순되면 레포가 이기고 모순을 한 줄로 보고한다.
 
 ## 라우팅
 | 분류 | 신호 | 경로 |

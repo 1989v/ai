@@ -19,7 +19,7 @@ SPEC="docs/specs/$(date +%Y-%m-%d)-{name}"; mkdir -p "$SPEC"/{planning/visuals,c
 
 ## 2. 컨텍스트
 - `docs/product/mission.md` · `roadmap.md` · `glossary.md`(있으면). 사전의 `Avoid:` 동의어를 사용자가 쓰면 먼저 바로잡는다.
-- 브라운필드 판정: 관련 소스가 있고 요청이 그것을 고치는 것이면 브라운필드 → `Explore` 로 관련 코드를 먼저 지도화한다. **코드가 답하는 것은 묻지 않는다**; 코드 때문에 생긴 질문은 파일·심볼을 인용한다. `hns:kb` 가 설정돼 있으면 **위키가 답하는 것도 묻지 않는다** — 컴포넌트명으로 조회해 결정·함정 페이지를 `[[page]] (볼트, updated)` 로 인용한다.
+- 브라운필드 판정: 관련 소스가 있고 요청이 그것을 고치는 것이면 브라운필드 → `Explore` 로 관련 코드를 먼저 지도화한다. **코드가 답하는 것은 묻지 않는다**; 코드 때문에 생긴 질문은 파일·심볼을 인용한다. **위키가 답하는 것도 묻지 않는다** — `"${CLAUDE_PLUGIN_ROOT}/skills/kb/kb-search.sh" <키워드>` 를 컴포넌트명으로 한 번 돌리고, 관련 결정·함정 페이지가 있으면 최대 3개를 읽어 `[[page]] (볼트, updated)` 로 인용한다(`hns:kb`).
 - 이전 스펙 `docs/specs/*/planning/requirements.md` 에서 이미 확정된 사실을 재활용한다.
 
 ## 3. 인터뷰 — `references/ambiguity-gating-protocol.md`

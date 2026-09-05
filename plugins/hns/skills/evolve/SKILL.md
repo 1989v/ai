@@ -22,7 +22,7 @@ argument-hint: "[failure description]"
 | 리뷰가 놓친 스펙 결함 | `skills/spec-review/reviewers/{dim}/` 체크리스트 | 다음 리뷰부터 |
 
 ## 절차
-1. 실패를 한 문장으로 적고, 위 표에서 대상을 **하나** 고른다. 두 곳에 같은 규칙을 쓰지 않는다. `HNS_KB_PATH` 가 있으면 먼저 `hns:kb` 로 같은 패턴의 개념 페이지가 있는지 본다 — 있으면 새 규칙 대신 그 페이지를 링크한다.
+1. 실패를 한 문장으로 적고, 위 표에서 대상을 **하나** 고른다. 두 곳에 같은 규칙을 쓰지 않는다. 먼저 `"${CLAUDE_PLUGIN_ROOT}/skills/kb/kb-search.sh" <키워드>` 로 같은 패턴의 개념 페이지가 있는지 본다 — 있으면 새 규칙 대신 그 페이지를 링크한다(`hns:kb`).
 2. 제안(규칙 문장 + 대상 파일 + 이유)을 보여주고 승인을 받는다.
 3. 적용. 훅이면 실패 입력을 주입해 빨간불을 본 뒤에만 켰다고 한다(`templates/hooks/README.md`).
 4. `docs/changelog/harness-changelog.md`: `[date] [evolve] [{target}: {rule}] [근거: {failure}]`.

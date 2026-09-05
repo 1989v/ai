@@ -169,12 +169,13 @@ CLAUDE.md에 명시된 `{domain}.{entity}.{event}` 형식:
 
 | Layer | 검사 |
 |---|---|
-| 1 docs 내부 | index.md 목록 실재, 상호 링크 유효, CLAUDE.md ↔ architecture/overview.md 모듈 목록 |
+| 1 docs 내부 | index.md 목록 실재, 상호 링크 유효, CLAUDE.md ↔ architecture/overview.md 모듈 목록(있을 때) |
 | 2 docs ↔ CLAUDE.md | standards 규칙 반영, 빌드 명령 일치 |
 | 3 product ↔ specs | mission 목표 반영, 미션 밖 범위 없음 |
 | 4 standards ↔ specs | 표준과 충돌하는 결정에 ADR 존재 |
 | 5 specs ↔ tasks | 모든 SR 에 task, 과잉 task 없음, AC → task 매핑 |
 | 6 tasks ↔ code | 완료 표시 task 의 구현 실재, 미완료 task 의 코드 선존재, task 에 매핑되지 않은 변경 |
+| 7 repo ↔ 지식베이스 (`HNS_KB_PATH` 있을 때) | `kb-search.sh` 로 living 페이지(현황판·플랫폼 entity)를 찾아 레포의 인프라·모듈·정책 서술과 대조. 모순은 `[[page]] (볼트, updated)` 와 레포 파일:줄을 나란히 보고 — 레포가 진실, 볼트 갱신은 `obsidian-organize` 로 |
 
 출력: 레이어별 PASS/WARN/FAIL 표 + 상세. 스펙 폴더가 있으면 `CROSSCHECK_REPORT.md` 를 거기에, 없으면 루트에.
 

@@ -33,14 +33,14 @@ Verify implementation against standards, lint, build, and tests. Record evidence
 
 ## Step 3: Build Verification
 
-1. Get build command from `docs/architecture/overview.md`
+1. Get build command from CLAUDE.md (or `docs/architecture/overview.md` if the project keeps commands there)
 2. Execute build
 3. Record result
 4. **Failure Policy**: Build failure = **FAIL**
 
 ## Step 4: Test Verification
 
-1. Get test command from `docs/architecture/overview.md`
+1. Get test command from CLAUDE.md (or `docs/architecture/overview.md`)
 2. Execute tests
 3. Record result (total, pass, fail)
 4. **Failure Policy**: Test failure = **FAIL**

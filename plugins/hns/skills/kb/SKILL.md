@@ -26,7 +26,7 @@ user-invocable: false
 "${CLAUDE_PLUGIN_ROOT}/skills/kb/kb-search.sh" 검색 임베딩 하이브리드   # score  page  updated  summary
 "${CLAUDE_PLUGIN_ROOT}/skills/kb/kb-search.sh" --page hybrid-search-local-embedding   # 파일 경로 + updated
 ```
-1. 키워드로 검색해 상위 결과를 본다. **최대 3페이지**만 Read 한다. `index.md` 전체나 볼트 전체를 읽지 않는다.
+1. 키워드 검색은 **한 번은 무조건** 돌린다(설정이 없으면 출력 없이 끝난다 — 비용이 없다). 상위 결과 중 관련 페이지만 **최대 3개** Read 한다. `index.md` 전체나 볼트 전체를 읽지 않는다.
 2. 인용 형식: `[[page]] (볼트명, updated YYYY-MM-DD)`. 페이지의 `(추정)`·기준 시점 표기를 그대로 옮긴다. 레포 문서와 모순되면 레포가 이기고, 모순을 한 줄로 보고한다.
 3. 결과가 없으면 없다고만 하고 진행한다.
 
