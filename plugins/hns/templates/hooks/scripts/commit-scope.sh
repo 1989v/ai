@@ -20,6 +20,15 @@ cd "$HNS_PROJECT" 2>/dev/null || exit 0
 git rev-parse --git-dir >/dev/null 2>&1 || exit 0
 
 staged=$(git diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
+
+# 플래그 판정에서 따옴표 안(커밋 메시지)은 뺀다 — `-m "fix -a handling"` 이 -a 로 읽히지 않게
+cmd_flags=$(printf '%s' "$cmd" | sed "s/'[^']*'//g; s/\"[^\"]*\"//g")
+all_flag=0
+printf '%s' "$cmd_flags" | grep -Eq '(^|[[:space:]])-[A-Za-z]*a[A-Za-z]*([[:space:]]|$)|--all' && all_flag=1
+
+# 담길 게 없으면 조용히 — `-a` 는 커밋 시점에 스테이지하므로 예외
+[ "$staged" = "0" ] && [ "$all_flag" = "0" ] && exit 0
+
 notes=""; blockers=""
 
 # 1) 스테이지된 서브모듈 포인터(gitlink) — HEAD 가 기록한 것보다 **뒤로 가는** 포인터를 잡는다.
@@ -45,7 +54,7 @@ sus=$(git diff --cached --name-only 2>/dev/null \
   | grep -Ei '(^|/)(node_modules|build|dist|out|target|bin|\.vscode|\.idea)/|(^|/)[^/]*\.(env|pem|key|p12|keystore)$|(^|/)(id_rsa|credentials)' | head -5)
 [ -n "$sus" ] && notes="${notes}  쓸려 들어갔을 수 있는 경로: $(printf '%s' "$sus" | tr '\n' ' ')
 "
-if printf '%s' "$cmd" | grep -Eq '(^|[[:space:]])-[A-Za-z]*a[A-Za-z]*([[:space:]]|$)|--all'; then
+if [ "$all_flag" = "1" ]; then
   notes="${notes}  -a 커밋 — 스테이지 밖 수정분도 함께 담긴다. 담길 것을 먼저 확인한다
 "
 fi
