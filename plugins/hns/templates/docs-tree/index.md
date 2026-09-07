@@ -10,6 +10,7 @@
 | [architecture/](architecture/) | System architecture, tech stack, layer diagrams |
 | [standards/](standards/) | Agent behavior standards (how the agent works) |
 | [conventions/](conventions/) | Code conventions — baseline + stack-specific bundles |
+| [checks/](checks/) | Code checks — the scar list. One line per defect that actually happened. Written only by `/hns:code-check`; read by the implementer before coding and by review as its hunting ground |
 | [product/](product/) | Product mission and context |
 | [plans/](plans/) | Project plans and roadmaps |
 | [specs/](specs/) | Feature specs (SDD pipeline output) |

@@ -1,4 +1,4 @@
-# hns (Harness) v0.14
+# hns (Harness) v0.16
 
 Claude Code 2.1 위에서 도는 하네스 엔지니어링 플러그인. 세 기둥 — **Context**(CLAUDE.md·rules·스킬), **Enforcement**(실제 훅·검증 게이트·리뷰), **Evolution**(evolve·diet·gc·audit) — 을 플랫폼 기능 위에 얇게 얹는다.
 
@@ -15,6 +15,7 @@ Claude Code 2.1 위에서 도는 하네스 엔지니어링 플러그인. 세 기
 | `/hns:validate [--docs\|--code\|--crosscheck]` | 문서↔코드, 규칙↔코드, 문서·스펙·태스크·코드 교차 |
 | `/hns:doctor` | 5 레이어 헬스체크 점수 (`scripts/doctor.py`) |
 | `/hns:glossary` | 도메인 사전 (8 소스 · 7 타입 · 품질 게이트) |
+| `/hns:code-check` | 흉터 목록(`docs/checks/`)의 유일한 입구 — fresh 심판 후 append, 구현·리뷰가 같은 파일을 본다 |
 | `/hns:wrapup` | 회고 → 반복 실패를 evolve 로 |
 | `/hns:evolve` · `/hns:diet` · `/hns:gc` · `/hns:audit` | 규칙 추가 · 사용 증거 기반 감량 · 청소 · 외부 벤치마크 |
 | `/hns:init` · `/hns:setup-hooks` · `/hns:doc-gen` · `/hns:health-mode` · `/hns:validate-fe-design` | 초기화 · 훅 설치 · 문서 생성 · CI 모드 · FE 디자인 린트 |
@@ -31,6 +32,7 @@ Claude Code 2.1 위에서 도는 하네스 엔지니어링 플러그인. 세 기
 |---|---|---|
 | `SessionStart` | 최신 progress.md · 결정 · 열린 pre-impl · 최근 커밋 주입 | 전부 |
 | `PreCompact` | 요약이 보존할 항목 지시 | 전부 |
+| `PreToolUse` `git commit` | 커밋 스코프를 드러낸다. 서브모듈 포인터 되감기만 차단, 나머지는 알림 | feedback+ |
 | `PreToolUse` `git commit` | 컴파일 실패 → feedback 알림 / enforce 차단 | feedback+ |
 | `PostToolUse` Write\|Edit | 바뀐 파일 린트 → 알림 | feedback+ |
 | `Stop` (prompt) | 근거 없는 "완료·통과" 주장 → 종료 차단 | enforce |
@@ -40,10 +42,10 @@ Claude Code 2.1 위에서 도는 하네스 엔지니어링 플러그인. 세 기
 ## 구조
 
 ```
-skills/<name>/SKILL.md      23개, 한 단계 (플러그인 skills/ 는 한 단계만 탐색한다)
+skills/<name>/SKILL.md      25개, 한 단계 (플러그인 skills/ 는 한 단계만 탐색한다)
   spec-review/reviewers/    6 차원 체크리스트 + skillsets
   glossary/procedure.md     8-phase 절차
-agents/                     implementer · verifier · spec-reviewer · gc-agent · harness-auditor
+agents/                     implementer · verifier · spec-reviewer · review-verdict · gc-agent · harness-auditor
 references/                 hooks-reference · ambiguity-gating · review-protocol · step-execution · diet-criteria · language-reference · glossary-extraction-rules · fe-design-validation · gc-protocol · prompting-tone · harness-philosophy · command-execution-contract
 templates/                  hooks/ (스크립트+settings 스니펫) · claude-md/ · docs-tree/ · conventions/ (→ .claude/rules) · specs/ · steps/ · ci/docs-health.yml
 scripts/                    doctor.py · doc_map.py · doc_scan.py

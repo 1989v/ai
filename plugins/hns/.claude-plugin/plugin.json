@@ -1,7 +1,7 @@
 {
   "name": "hns",
-  "description": "AI harness engineering for Claude Code 2.1: ambiguity-gated spec pipeline, parallel 6-dimension spec review, real lifecycle hooks (SessionStart recovery / PreCompact / commit gate / Stop evidence gate), doctor health-check, usage-evidence diet, glossary, read-only Obsidian LLM-wiki knowledge base adapter",
-  "version": "0.15.1",
+  "description": "AI harness engineering for Claude Code 2.1: ambiguity-gated spec pipeline, parallel 6-dimension spec review with a separate finding-verdict judge, an append-only code-check scar list shared by implementer and reviewer, real lifecycle hooks (SessionStart recovery / PreCompact / commit scope + compile gate / Stop evidence gate), doctor health-check, usage-evidence diet, glossary, read-only Obsidian LLM-wiki knowledge base adapter",
+  "version": "0.16.0",
   "author": {
     "name": "gideok-kwon"
   },

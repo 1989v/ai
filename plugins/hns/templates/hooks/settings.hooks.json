@@ -32,6 +32,13 @@
           {
             "type": "command",
             "if": "Bash(git commit *)",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/hns/commit-scope.sh\"",
+            "timeout": 20,
+            "statusMessage": "hns: 커밋 스코프"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
             "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/hns/commit-gate.sh\"",
             "timeout": 300,
             "statusMessage": "hns: 커밋 전 컴파일"

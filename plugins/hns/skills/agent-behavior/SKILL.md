@@ -13,6 +13,7 @@ user-invocable: false
 
 ## 1. 작업 전 (스펙이 있는 경우)
 `docs/specs/{feature}/context/key-decisions.md` → `spec.md` → `tasks.md`(현재 그룹) → `context/open-questions.yml`(`pre-impl` + `open` 이면 구현 금지).
+코드를 건드리기 전에 `docs/checks/common.md` 와 그 모듈의 `docs/checks/{module}.md` 를 읽는다(있으면). 이 프로젝트에서 실제로 터진 것들이고, 구현 후 리뷰가 같은 목록을 위반 관점으로 다시 본다.
 
 ## 2. 리스크 분류
 | Level | 종류 | 행동 |
@@ -30,7 +31,9 @@ L3 승인 요청 형식: `Task / Reason / Impact(files) / Evidence(docs·code) /
 
 ## 4. 구현 후 리뷰
 - L1·L2: 프로젝트 린터.
-- L3: `git diff` + spec + standards 만 주고 **fresh-context 서브에이전트**에 리뷰시킨다(구현 히스토리 제외). 판정 SHIP / REVISE(최대 2회) / BLOCK.
+- L3: `git diff` + spec + standards + 변경이 닿은 모듈의 `docs/checks/` 만 주고 **fresh-context 서브에이전트**에 리뷰시킨다(구현 히스토리 제외). 서브에이전트는 **발견만** 하고, 유지/강등/기각은 `hns:review-verdict` 가 판정한다 — 구현한 세션이 자기 발견을 재량으로 기각하면 재리뷰 루프가 그 편향을 못 잡는다. 판정 후 SHIP / REVISE(최대 2회) / BLOCK.
+- **서브에이전트를 못 부르면 내가 대신 리뷰하지 않는다** — 멈추고 사유를 알린다(저자가 검증자를 겸하면 이 단계가 무의미).
+- 유지된 발견 중 다른 변경에서도 재발할 만한 것은 `/hns:code-check` 후보로 올린다.
 - 변경 파일 키워드로 `docs/standards/` `docs/conventions/` 를 훑어 갱신할 문서를 보고한다.
 
 ## 5. 세션과 컨텍스트

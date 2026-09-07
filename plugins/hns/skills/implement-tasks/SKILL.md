@@ -19,7 +19,7 @@ user-invocable: false
 ## 2. 실행 방식
 | 방식 | 언제 | 어떻게 |
 |---|---|---|
-| **Task-Group** (기본) | 작은~중간 기능 | 그룹마다 `hns:implementer` 에 위임(스펙 경로·그룹·이전 그룹 요약). 순차. |
+| **Task-Group** (기본) | 작은~중간 기능 | 그룹마다 `hns:implementer` 에 위임(스펙 경로·그룹·이전 그룹 요약·그 그룹이 건드리는 모듈의 `docs/checks/` 경로). 순차. |
 | **Parallel** | 의존성 없는 그룹이 2개 이상 | 같은 위임을 `Agent` 도구로 동시에, 각각 `isolation: worktree`. 의존 순서로 머지, 충돌은 사용자에게. 통합 테스트 후 다음 단계. |
 | **Step** | 그룹 6개 이상, step 간 간섭 최소화 | `references/step-execution-protocol.md`: tasks.md → `steps/step{N}.md`(자기완결) + `steps/index.json` 상태머신 → step 마다 새 서브에이전트 → 자가교정 3회 → step 별 커밋. 사용자가 Workflow 도구를 요청했으면 그것을 드라이버로 쓴다. |
 

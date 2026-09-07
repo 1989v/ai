@@ -43,8 +43,12 @@ PY
 ```bash
 echo '{"tool_input":{"command":"git commit -m x"}}' | HNS_HOOK_TIER=enforce HNS_COMPILE_CMD=false .claude/hooks/hns/commit-gate.sh   # deny JSON
 echo '{"tool_input":{"command":"git commit -m x"}}' | HNS_HOOK_TIER=enforce HNS_COMPILE_CMD=true  .claude/hooks/hns/commit-gate.sh   # 출력 없음
+mkdir -p build && echo x > build/x && git add -f build/x
+echo '{"tool_input":{"command":"git commit -am x"}}' | HNS_HOOK_TIER=enforce .claude/hooks/hns/commit-scope.sh   # 의심 경로 + -a 알림
+git restore --staged build/x && rm -rf build
 echo '{"source":"compact"}' | .claude/hooks/hns/session-start-recover.sh   # 진행 노트가 있으면 additionalContext, 없으면 침묵
 ```
+서브모듈이 있는 레포면 `commit-scope` 의 차단 경로도 확인한다(재현법 = `templates/hooks/README.md` 검증 절).
 세션에 반영되려면 **새 세션**이 필요하다고 안내한다.
 
 ## 6. doctor 훅 + CI (`--no-ci` 로 생략)
