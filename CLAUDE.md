@@ -41,7 +41,7 @@ claude --plugin-dir ./plugins/{name}     # 로컬 테스트
 
 | Plugin | Commands | Description |
 |--------|----------|-------------|
-| hns | 15 + 8 hidden skills | 하네스 엔지니어링 — `/hns:start` 파이프라인(모호성 게이트 Shape · 6차원 병렬 리뷰 · Step 모드), 실제 훅(SessionStart 복구·PreCompact·커밋 게이트·Stop 증거 게이트), doctor, 사용 증거 기반 diet, `/hns:glossary`. v0.14.0 (2026-09-05, ADR-005) |
+| hns | 16 + 9 hidden skills | 하네스 엔지니어링 — `/hns:start` 파이프라인(모호성 게이트 Shape · 6차원 병렬 리뷰 · Step 모드), 실제 훅(SessionStart 복구·PreCompact·커밋 게이트·Stop 증거 게이트), doctor, 사용 증거 기반 diet, `/hns:glossary`. v0.16.1 (2026-09-08, ADR-007) |
 | ai-debugger | 2 | API 디버깅 |
 | private-repo | 1 | Private repo 분리 |
 | content-analyzer | 1 | 콘텐츠 분석 |
