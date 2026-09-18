@@ -1,0 +1,244 @@
+<title>__TITLE__</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #F1F1F4;
+    --surface: #FAFAFC;
+    --ink: #1E2230;
+    --muted: #6B7080;
+    --rule: #D9D9E1;
+    --accent: #2F4A8A;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #E3E8F5;
+    --mark: #F3E7B3;
+    --display: "Gowun Batang", "Noto Serif KR", Georgia, serif;
+    --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #15171E; --surface: #1C1F28; --ink: #E6E6EC; --muted: #9A9FB0; --rule: #2E3240;
+      --accent: #8FA8E6; --accent-ink: #10131C; --accent-soft: #26304A; --mark: #4A4220;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #15171E; --surface: #1C1F28; --ink: #E6E6EC; --muted: #9A9FB0; --rule: #2E3240;
+    --accent: #8FA8E6; --accent-ink: #10131C; --accent-soft: #26304A; --mark: #4A4220;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--body); font-size: 15px; line-height: 1.55;
+    font-variant-numeric: tabular-nums;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { max-width: 960px; margin: 0 auto; padding-inline: 20px; }
+
+  /* 헤더 — 제목·건수·검색이 한 줄, 스크롤해도 남는다 */
+  .head {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2;
+    background: var(--ground); border-bottom: 1px solid var(--rule);
+  }
+  .head .wrap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; padding-block: 14px 12px; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: 1.5rem; margin: 0; letter-spacing: -0.01em; }
+  .count { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+  .search { flex: 1 1 260px; display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .search input {
+    width: 100%; font: inherit; font-size: 0.95rem; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 7px 10px;
+  }
+  .search input::placeholder { color: var(--muted); }
+  .kbd { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; }
+
+  /* 프로젝트 칩 레일 + 보기 전환 */
+  .rail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-block: 14px 6px; }
+  .chip, .view button {
+    font: inherit; font-size: 0.82rem; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px; cursor: pointer;
+  }
+  .chip[aria-pressed="true"], .view button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .chip .n { font-family: var(--mono); font-size: 0.72rem; opacity: 0.75; margin-left: 4px; }
+  .view { display: flex; gap: 4px; margin-left: auto; }
+  .view button { border-radius: 6px; }
+
+  /* 섹션 — 카드가 아니라 괘선 목록 */
+  .sec { padding-block: 22px 8px; }
+  .sec h2 {
+    font-family: var(--display); font-weight: 700; font-size: 1.15rem; margin: 0 0 6px;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; text-wrap: balance;
+  }
+  .sec h2 .meta { font-family: var(--mono); font-weight: 400; font-size: 0.74rem; color: var(--muted); }
+  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .row {
+    display: grid; grid-template-columns: 1.6em minmax(0, 1fr) auto; align-items: baseline;
+    gap: 4px 10px; padding-block: 9px; border-bottom: 1px solid var(--rule);
+  }
+  .row .icon { font-size: 1rem; line-height: 1; text-align: center; }
+  .row .title { font-weight: 500; }
+  .row .title a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .row .sub { grid-column: 2; font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+  .row .dates { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); white-space: nowrap; text-align: right; }
+  .row .dates .upd { display: block; opacity: 0.8; }
+  .tag { font-size: 0.74rem; padding: 0 6px; border: 1px solid var(--rule); border-radius: 4px; }
+  mark { background: var(--mark); color: inherit; padding: 0 1px; border-radius: 2px; }
+
+  .empty { padding-block: 40px; text-align: center; color: var(--muted); }
+  .foot { padding-block: 28px 40px; font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--rule); margin-top: 24px; }
+  .foot .wrap { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+
+  @media (max-width: 560px) {
+    body { font-size: 14px; }
+    .row { grid-template-columns: 1.6em minmax(0, 1fr); }
+    .row .dates { grid-column: 2; text-align: left; white-space: normal; }
+    .row .dates .upd { display: inline; margin-left: 8px; }
+    .view { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .chip, .view button { transition: background-color 120ms ease, color 120ms ease; }
+  }
+</style>
+
+<header class="head">
+  <div class="wrap">
+    <h1>__TITLE__</h1>
+    <span class="count" id="count"></span>
+    <label class="search">
+      <input id="q" type="search" placeholder="제목 · 프로젝트 · 태그로 찾기" autocomplete="off" aria-label="아티팩트 검색">
+      <span class="kbd" aria-hidden="true">/</span>
+    </label>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="rail" id="rail"></div>
+  <div id="list"></div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>생성 __GENERATED__</span>
+    <span id="foot-total"></span>
+    <span>등록부는 <code>/artifact-catalog</code> 가 유지한다</span>
+  </div>
+</footer>
+
+<script type="application/json" id="catalog-data">__DATA_JSON__</script>
+<script>
+(function () {
+  var data = JSON.parse(document.getElementById('catalog-data').textContent);
+  var entries = data.entries;
+  var state = { q: '', project: null, view: 'project' };
+  try { var v = localStorage.getItem('catalog-view'); if (v === 'time' || v === 'project') state.view = v; } catch (e) {}
+
+  var $list = document.getElementById('list');
+  var $rail = document.getElementById('rail');
+  var $q = document.getElementById('q');
+  var $count = document.getElementById('count');
+  document.getElementById('foot-total').textContent = '전체 ' + entries.length + '건';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function hl(text, q) {
+    if (!q) return esc(text);
+    var i = text.toLowerCase().indexOf(q);
+    if (i < 0) return esc(text);
+    return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+  }
+  function haystack(e) {
+    return [e.title, e.project, e.summary, (e.tags || []).join(' ')].join(' ').toLowerCase();
+  }
+  function shortDate(d) { return d ? d.slice(2) : ''; }   // 2026-09-13 → 26-09-13
+
+  function matches(e) {
+    if (state.project && e.project !== state.project) return false;
+    if (state.q && haystack(e).indexOf(state.q) < 0) return false;
+    return true;
+  }
+
+  function projectStats() {
+    var m = {};
+    entries.forEach(function (e) {
+      var p = m[e.project] || (m[e.project] = { name: e.project, n: 0, latest: '' });
+      p.n += 1;
+      if (e.updated > p.latest) p.latest = e.updated;
+    });
+    return Object.keys(m).map(function (k) { return m[k]; }).sort(function (a, b) { return a.latest < b.latest ? 1 : a.latest > b.latest ? -1 : a.name.localeCompare(b.name, 'ko'); });
+  }
+
+  function rowHtml(e) {
+    var q = state.q;
+    var dates = '<span class="dates">' + shortDate(e.published) +
+      (e.updated && e.updated !== e.published ? '<span class="upd">갱신 ' + shortDate(e.updated) + '</span>' : '') + '</span>';
+    var sub = [];
+    if (state.view === 'time') sub.push('<span>' + hl(e.project, q) + '</span>');
+    (e.tags || []).forEach(function (t) { sub.push('<span class="tag">' + hl(t, q) + '</span>'); });
+    if (e.summary) sub.push('<span>' + hl(e.summary, q) + '</span>');
+    return '<li class="row">' +
+      '<span class="icon" aria-hidden="true">' + esc(e.icon || '·') + '</span>' +
+      '<span class="title"><a href="' + esc(e.url) + '" target="_blank" rel="noopener">' + hl(e.title, q) + '</a></span>' +
+      dates +
+      (sub.length ? '<span class="sub">' + sub.join('') + '</span>' : '') +
+      '</li>';
+  }
+
+  function render() {
+    var shown = entries.filter(matches);
+    var html = '';
+    if (!shown.length) {
+      html = '<p class="empty">맞는 아티팩트가 없다. 검색어를 줄이거나 프로젝트 필터를 풀어 본다.</p>';
+    } else if (state.view === 'project') {
+      var groups = {};
+      shown.forEach(function (e) { (groups[e.project] = groups[e.project] || []).push(e); });
+      projectStats().forEach(function (p) {
+        var g = groups[p.name];
+        if (!g) return;
+        html += '<section class="sec"><h2>' + hl(p.name, state.q) +
+          '<span class="meta">' + g.length + '건 · 최근 ' + shortDate(p.latest) + '</span></h2>' +
+          '<ul class="rows">' + g.map(rowHtml).join('') + '</ul></section>';
+      });
+    } else {
+      var byMonth = {};
+      shown.forEach(function (e) { var k = e.published.slice(0, 7); (byMonth[k] = byMonth[k] || []).push(e); });
+      Object.keys(byMonth).sort().reverse().forEach(function (k) {
+        html += '<section class="sec"><h2>' + k.replace('-', '년 ') + '월' +
+          '<span class="meta">' + byMonth[k].length + '건</span></h2>' +
+          '<ul class="rows">' + byMonth[k].map(rowHtml).join('') + '</ul></section>';
+      });
+    }
+    $list.innerHTML = html;
+    var np = {}; shown.forEach(function (e) { np[e.project] = 1; });
+    $count.textContent = shown.length + '건 · ' + Object.keys(np).length + ' 프로젝트';
+  }
+
+  function renderRail() {
+    var stats = projectStats();
+    var html = stats.map(function (p) {
+      return '<button class="chip" type="button" data-project="' + esc(p.name) + '" aria-pressed="' + (state.project === p.name) + '">' +
+        esc(p.name) + '<span class="n">' + p.n + '</span></button>';
+    }).join('');
+    html += '<div class="view" role="group" aria-label="보기">' +
+      '<button type="button" data-view="project" aria-pressed="' + (state.view === 'project') + '">프로젝트별</button>' +
+      '<button type="button" data-view="time" aria-pressed="' + (state.view === 'time') + '">최신순</button></div>';
+    $rail.innerHTML = html;
+  }
+
+  $rail.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button');
+    if (!b) return;
+    if (b.dataset.project !== undefined) {
+      state.project = state.project === b.dataset.project ? null : b.dataset.project;
+    } else if (b.dataset.view) {
+      state.view = b.dataset.view;
+      try { localStorage.setItem('catalog-view', state.view); } catch (e) {}
+    }
+    renderRail(); render();
+  });
+  $q.addEventListener('input', function () { state.q = $q.value.trim().toLowerCase(); render(); });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === '/' && document.activeElement !== $q) { ev.preventDefault(); $q.focus(); }
+    if (ev.key === 'Escape' && document.activeElement === $q) { $q.value = ''; state.q = ''; render(); $q.blur(); }
+  });
+
+  renderRail(); render();
+})();
+</script>

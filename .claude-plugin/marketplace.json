@@ -63,6 +63,11 @@
       "name": "webgame-guardrails",
       "source": "./plugins/webgame-guardrails",
       "description": "Quality guardrails and genre presets for browser games (screen scale, mobile floors, thermal budget, benchmark scale, parity audit)"
+    },
+    {
+      "name": "artifact-catalog",
+      "source": "./plugins/artifact-catalog",
+      "description": "Per-vault register of every Claude artifact the account has published + a searchable, project-grouped catalog page per vault. Survives the 50-item Artifact list window; company and personal never share a page."
     }
   ]
 }
