@@ -13,7 +13,7 @@
 | **ai-debugger** | `/ai-debugger:` | API 디버깅 에이전트 — IO 캡처, curl 생성, 로그 분석 |
 | **private-repo** | `/private-repo:` | git submodule로 디렉토리별 public/private 가시성 제어 |
 | **content-analyzer** | `/content-analyzer:` | URL 콘텐츠 분석 (YouTube, LinkedIn, web post, Git repo) |
-| **artifact-catalog** | `/artifact-catalog:` | 발행한 클로드 아티팩트의 볼트별 누적 등록부 + 프로젝트별·검색 카탈로그 페이지 (회사·개인 페이지 분리) |
+| **artifact-catalog** | `/artifact-catalog:` | 발행한 클로드 아티팩트의 볼트별 누적 등록부 + 프로젝트별·검색 카탈로그 페이지 (회사·개인 페이지 분리). 발행 직후 훅이 동기화를 지시해 이후 발행분이 계속 들어간다 |
 
 ---
 

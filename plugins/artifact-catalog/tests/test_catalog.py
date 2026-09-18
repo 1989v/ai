@@ -257,5 +257,68 @@ class CatalogTest(unittest.TestCase):
         self.assertIn("nope", p.stderr)
 
 
+
+
+HOOK = HERE.parent / "hooks" / "on-artifact-publish.sh"
+PUBLISH_TEXT = ("Published /tmp/x/report.html at https://claude.ai/artifact/AbCdEfGhIjKlMnOpQrStUv (Version 1) "
+                "Icon: \"chart\".\n\nLive subscription: arming in the background …")
+
+
+class HookTest(unittest.TestCase):
+    """발행 직후 훅 — 이 플러그인이 켜져 있으면 새 아티팩트가 카탈로그에 들어가라는 지시를 세션에 넣는다."""
+
+    def run_hook(self, payload, env=None):
+        p = subprocess.run(["bash", str(HOOK)], input=json.dumps(payload), capture_output=True, text=True,
+                           env={**os.environ, **(env or {})})
+        return p
+
+    def publish(self, **tool_input):
+        return {"session_id": "s1", "hook_event_name": "PostToolUse", "tool_name": "Artifact",
+                "tool_input": {"file_path": "/tmp/x/report.html", **tool_input}, "tool_response": PUBLISH_TEXT}
+
+    def test_publish_emits_additional_context_with_url_and_skill_name(self):
+        p = self.run_hook(self.publish())
+        self.assertEqual(0, p.returncode, p.stderr)
+        out = json.loads(p.stdout)
+        ctx = out["hookSpecificOutput"]["additionalContext"]
+        self.assertEqual("PostToolUse", out["hookSpecificOutput"]["hookEventName"])
+        self.assertIn("/artifact-catalog", ctx)
+        self.assertIn("https://claude.ai/artifact/AbCdEfGhIjKlMnOpQrStUv", ctx)
+
+    def test_republish_with_url_still_nudges(self):
+        p = self.run_hook(self.publish(url="https://claude.ai/artifact/AbCdEfGhIjKlMnOpQrStUv"))
+        self.assertIn("/artifact-catalog", p.stdout)
+
+    def test_silent_on_non_publish_actions_and_assets(self):
+        for payload in (
+            {**self.publish(), "tool_input": {"action": "list"}, "tool_response": "50 published artifacts…"},
+            {**self.publish(), "tool_input": {"action": "read", "url": "https://claude.ai/artifact/X"}},
+            self.publish(asset=True, url="https://claude.ai/artifact/X"),
+            {**self.publish(), "tool_name": "Write", "tool_response": {"filePath": "/tmp/x/report.html"}},
+        ):
+            p = self.run_hook(payload)
+            self.assertEqual(0, p.returncode, p.stderr)
+            self.assertEqual("", p.stdout.strip(), payload["tool_input"])
+
+    def test_silent_when_the_catalog_page_itself_is_published(self):
+        # 카탈로그 재발행이 또 카탈로그를 돌리라고 하면 끝이 없다
+        for path in ("/scratch/artifact-catalog/1989v.html", "/scratch/artifact-catalog/work.html"):
+            payload = self.publish(); payload["tool_input"]["file_path"] = path
+            payload["tool_response"] = PUBLISH_TEXT.replace("/tmp/x/report.html", path)
+            self.assertEqual("", self.run_hook(payload).stdout.strip(), path)
+
+    def test_trace_log_records_every_invocation_when_asked(self):
+        # 라이브 발화 증명용 — 발행이 아니어도(list) 한 줄은 남긴다
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "hook.log"
+            self.run_hook({**self.publish(), "tool_input": {"action": "list"}, "tool_response": "…"},
+                          env={"ARTIFACT_CATALOG_HOOK_LOG": str(log)})
+            self.run_hook(self.publish(), env={"ARTIFACT_CATALOG_HOOK_LOG": str(log)})
+            lines = log.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(2, len(lines))
+            self.assertIn("Artifact list", lines[0])
+            self.assertIn("nudge", lines[1])
+
+
 if __name__ == "__main__":
     unittest.main()

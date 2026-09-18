@@ -18,6 +18,20 @@ argument-hint: "[--no-publish]"
 분류가 모호한 아티팩트는 추정하지 말고 사용자에게 묻는다 — 공개용 개인 페이지에 회사 것이 실리는 쪽이
 개인 것이 회사 페이지에 실리는 것보다 나쁜 실수다.
 
+## 계속 동기화 — 이 플러그인이 켜져 있는 동안
+
+이 플러그인이 설치·활성인 세션에서는 **이후에 발행되는 아티팩트가 계속 카탈로그로 들어간다.** 장치는 둘이다.
+
+- **훅** `hooks/hooks.json` — `Artifact` 도구의 `publish` 가 끝날 때마다(PostToolUse) 세션 컨텍스트에
+  「이 세션이 끝나기 전에 `/artifact-catalog` 를 돌려라」와 발행 URL 을 넣는다. `list`·`read`·에셋 업로드·
+  **카탈로그 페이지 자신의 재발행**에는 침묵한다.
+- **이 스킬** — 그 지시를 받은 세션이 아래 절차를 한 번 돌린다. 같은 세션에서 여러 번 발행해도 **마지막에 한 번**이면
+  된다(sync 가 목록 전체를 대조한다).
+
+훅이 sync 를 대신하지는 않는다 — `Artifact list` 는 클로드 도구라 셸에서 못 부른다. 그래서 「발행 → 지시 → 이 스킬 실행」이
+한 세트다. 지시가 왔는데 돌리지 않고 세션을 끝내면 그 아티팩트는 다음 실행 때 `list` 에 남아 있을 때만 들어간다(50건 창).
+발화 여부를 확인하려면 `ARTIFACT_CATALOG_HOOK_LOG=<파일>` 을 환경에 두고 세션을 연다 — 호출마다 한 줄 남는다.
+
 ## 파일
 
 - 설정 `~/.claude/artifact-catalog.json` (`$ARTIFACT_CATALOG_CONFIG` 로 바꿀 수 있다):
@@ -25,6 +39,7 @@ argument-hint: "[--no-publish]"
 - 등록부 `<볼트>/claude/artifact/catalog.json` — `entries[]` + 그 볼트 페이지의 `pages.<page> = URL`
 - 읽기 전용 입력 `<볼트>/claude/artifact/index.md` — 발행일·노트 링크·이모지의 출처이자, 새 항목이 **어느 프로젝트 줄기인지** 볼
   선례. 이 스킬은 여기에 쓰지 않는다(사용자 하네스의 볼트 사본 규칙이 카탈로그 페이지 행을 넣는 것은 그 규칙의 몫이고, sync 가 걸러 낸다)
+- 훅 `${CLAUDE_PLUGIN_ROOT}/hooks/on-artifact-publish.sh` (`hooks/hooks.json` 이 `Artifact` 에 건다)
 - 스크립트 `${CLAUDE_PLUGIN_ROOT}/scripts/catalog.py` — 아래에서 `CAT` 으로 줄여 쓴다:
   `CAT="python3 ${CLAUDE_PLUGIN_ROOT}/scripts/catalog.py"` (`$CAT --help`). 템플릿 `templates/catalog.html`
 
