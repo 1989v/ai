@@ -22,6 +22,7 @@ LIST_TXT = """50 published artifacts (most recent first):
 - (mine) 사태 — 컨셉 원화 — https://claude.ai/artifact/1wtQqVUuyuVMLfWp32ZLQs — updated 2026-09-13
 - (mine) mrt-search PRD — https://claude.ai/artifact/MynhtQ5WKFQ5eGWC95MySt — updated 2026-09-18
 - (mine) 새로 나온 것 — https://claude.ai/artifact/NEWNEWNEWNEWNEWNEWNEWN — updated 2026-09-18
+- (mine) 파비콘 달린 것 — https://claude.ai/artifact/FAVFAVFAVFAVFAVFAVFAVF — favicon 🧠 — updated 2026-09-22
 - (shared) 남의 것 — https://claude.ai/artifact/OTHEROTHEROTHEROTHER — updated 2026-09-18
 (More may exist — pass a higher `limit` (up to 50).)
 """
@@ -166,9 +167,16 @@ class CatalogTest(unittest.TestCase):
         self.assertNotEqual(0, self.run_cli("queue", "--drop", "DROPDROPDROPDROPDROPDR", check=False).returncode)
 
     # --- 순수 함수 ---------------------------------------------------------
+    def test_parse_list_reads_optional_favicon_segment(self):
+        rows = {r["id"]: r for r in catalog.parse_list(LIST_TXT)}
+        self.assertEqual(("파비콘 달린 것", "🧠", "2026-09-22"),
+                         (rows["FAVFAVFAVFAVFAVFAVFAVF"]["title"], rows["FAVFAVFAVFAVFAVFAVFAVF"]["icon"],
+                          rows["FAVFAVFAVFAVFAVFAVFAVF"]["updated"]))
+        self.assertIsNone(rows["NEWNEWNEWNEWNEWNEWNEWN"]["icon"])
+
     def test_parse_list_keeps_mine_only_and_splits_title_with_dashes(self):
         rows = catalog.parse_list(LIST_TXT)
-        self.assertEqual(4, len(rows))
+        self.assertEqual(5, len(rows))
         self.assertEqual("전란 영웅 시안 — 광개토대왕·양만춘", rows[0]["title"])
         self.assertEqual("RQNmrsP57cGkchgxjVhBGH", rows[0]["id"])
         self.assertEqual("2026-09-13", rows[0]["updated"])
@@ -230,7 +238,7 @@ class CatalogTest(unittest.TestCase):
         ids2 = {e["id"] for e in c2["entries"]}
         self.assertEqual({"RQNmrsP57cGkchgxjVhBGH", "1wtQqVUuyuVMLfWp32ZLQs",
                           "069f5785-4f06-442a-90fd-33a512fca1e7"}, ids1)
-        self.assertEqual({"MynhtQ5WKFQ5eGWC95MySt", "NEWNEWNEWNEWNEWNEWNEWN"}, ids2)
+        self.assertEqual({"MynhtQ5WKFQ5eGWC95MySt", "NEWNEWNEWNEWNEWNEWNEWN", "FAVFAVFAVFAVFAVFAVFAVF"}, ids2)
         # 빈 project 는 거부
         bad = self.out / "bad.json"
         bad.write_text(json.dumps([{"id": "X", "title": "x", "vault": "work", "project": "",

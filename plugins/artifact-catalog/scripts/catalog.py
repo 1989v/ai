@@ -36,7 +36,8 @@ HERE = Path(__file__).resolve().parent
 TEMPLATE = HERE.parent / "templates" / "catalog.html"
 REL = Path("claude") / "artifact"
 
-LIST_RE = re.compile(r"^- \((\w+)\) (.+?) — (https?://\S+) — updated (\d{4}-\d{2}-\d{2})\s*$")
+# 2026-09-22 부터 목록 줄에 " — favicon 🧠" 가 끼어든다 — 없어도 되고 있으면 icon 으로 쓴다
+LIST_RE = re.compile(r"^- \((\w+)\) (.+?) — (https?://\S+)(?: — favicon (\S+))? — updated (\d{4}-\d{2}-\d{2})\s*$")
 INDEX_RE = re.compile(
     r"^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.+?)\s*\|\s*(?:\[\[([^\]|]+)(?:\|[^\]]*)?\]\])?[^|]*\|\s*\[[^\]]*\]\((https?://[^)\s]+)\)"
 )
@@ -78,7 +79,7 @@ def parse_list(text):
             continue
         url = m.group(3)
         rows.append({"id": id_from_url(url), "url": url, "title": m.group(2).strip(),
-                     "updated": m.group(4)})
+                     "icon": m.group(4), "updated": m.group(5)})
     return rows
 
 
@@ -217,7 +218,7 @@ def cmd_sync(args):
             continue
         item = {"id": row["id"], "url": row["url"], "title": row["title"], "vault": None,
                 "project": None, "published": row["updated"], "updated": row["updated"],
-                "source": "list"}
+                "icon": row.get("icon"), "source": "list"}
         ih = find_index(row)
         if ih:
             vault, r = ih
