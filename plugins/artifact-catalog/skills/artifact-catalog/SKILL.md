@@ -20,26 +20,33 @@ argument-hint: "[--no-publish]"
 
 ## 계속 동기화 — 이 플러그인이 켜져 있는 동안
 
-이 플러그인이 설치·활성인 세션에서는 **이후에 발행되는 아티팩트가 계속 카탈로그로 들어간다.** 장치는 둘이다.
+이 플러그인이 설치·활성인 세션에서는 **이후에 발행되는 아티팩트가 빠짐없이 카탈로그로 들어간다.** 장치는 셋이다.
 
-- **훅** `hooks/hooks.json` — `Artifact` 도구의 `publish` 가 끝날 때마다(PostToolUse) 세션 컨텍스트에
-  「이 세션이 끝나기 전에 `/artifact-catalog` 를 돌려라」와 발행 URL 을 넣는다. `list`·`read`·에셋 업로드·
-  **카탈로그 페이지 자신의 재발행**에는 침묵한다.
-- **이 스킬** — 그 지시를 받은 세션이 아래 절차를 한 번 돌린다. 같은 세션에서 여러 번 발행해도 **마지막에 한 번**이면
-  된다(sync 가 목록 전체를 대조한다).
+- **발행 훅** `hooks/on-artifact-publish.sh` (PostToolUse · `Artifact`) — `publish` 가 끝날 때마다
+  `catalog.py record` 로 **대기열**(`~/.claude/artifact-catalog.queue.json`)에 적는다. 셸이 결정론적으로 하므로
+  세션이 잊어도 남고, `Artifact list` 의 50건 창과 무관하다. 제목은 발행 파일의 `<title>`, 볼트는 작업 레포의
+  origin 소유자(설정 `owners`, 예: `1989v → 1989v`, `myrealtrip → work`)로 미리 채운다 — 레포 밖이면 비워 둔다.
+  이미 등록된 것의 재발행은 갱신일만 올린다. `list`·`read`·에셋 업로드·**카탈로그 페이지 자신의 재발행**에는 침묵한다.
+  같은 호출이 세션 컨텍스트에 「/artifact-catalog 를 돌려라」도 넣는다.
+- **Stop 훅** `hooks/on-stop.sh` — 대기열에 등록부에 없는 항목이 남아 있으면 **세션 종료를 막는다**(`decision: block`).
+  「지시만 넣는」 버전은 지켜지지 않아서 넣었다. 한 번 막아 이어진 턴(`stop_hook_active`)은 통과시켜 무한 루프를 막고,
+  `ARTIFACT_CATALOG_STOP_GATE=off` 로 끌 수 있다. 카탈로그에 안 넣기로 한 것은 `catalog.py queue --drop <id>` 로 뺀다.
+- **이 스킬** — 카탈로그 페이지는 `Artifact` 도구로만 다시 발행되므로 이 절반은 세션 몫이다. sync 가 대기열을
+  후보에 합치고, assign 이 등록부에 넣으며 대기열을 비운다. 같은 세션에서 여러 번 발행해도 **마지막에 한 번**이면 된다.
 
-훅이 sync 를 대신하지는 않는다 — `Artifact list` 는 클로드 도구라 셸에서 못 부른다. 그래서 「발행 → 지시 → 이 스킬 실행」이
-한 세트다. 지시가 왔는데 돌리지 않고 세션을 끝내면 그 아티팩트는 다음 실행 때 `list` 에 남아 있을 때만 들어간다(50건 창).
 발화 여부를 확인하려면 `ARTIFACT_CATALOG_HOOK_LOG=<파일>` 을 환경에 두고 세션을 연다 — 호출마다 한 줄 남는다.
 
 ## 파일
 
 - 설정 `~/.claude/artifact-catalog.json` (`$ARTIFACT_CATALOG_CONFIG` 로 바꿀 수 있다):
-  `vaults.<name> = <볼트 경로>`, `pages.<page> = { title, vault }` (페이지당 볼트 하나)
+  `vaults.<name> = <볼트 경로>`, `pages.<page> = { title, vault }` (페이지당 볼트 하나),
+  `owners.<github owner> = <name>` (선택 — 발행 훅이 작업 레포로 볼트를 미리 고른다)
+- 대기열 `~/.claude/artifact-catalog.queue.json` (`$ARTIFACT_CATALOG_QUEUE`) — 발행 훅이 쓰고 assign 이 비운다.
+  볼트 밖에 두는 이유: 볼트를 아직 모르는 항목(레포 밖 발행)도 잃지 않으려고
 - 등록부 `<볼트>/claude/artifact/catalog.json` — `entries[]` + 그 볼트 페이지의 `pages.<page> = URL`
 - 읽기 전용 입력 `<볼트>/claude/artifact/index.md` — 발행일·노트 링크·이모지의 출처이자, 새 항목이 **어느 프로젝트 줄기인지** 볼
   선례. 이 스킬은 여기에 쓰지 않는다(사용자 하네스의 볼트 사본 규칙이 카탈로그 페이지 행을 넣는 것은 그 규칙의 몫이고, sync 가 걸러 낸다)
-- 훅 `${CLAUDE_PLUGIN_ROOT}/hooks/on-artifact-publish.sh` (`hooks/hooks.json` 이 `Artifact` 에 건다)
+- 훅 `${CLAUDE_PLUGIN_ROOT}/hooks/on-artifact-publish.sh`(PostToolUse `Artifact`) · `on-stop.sh`(Stop) — `hooks/hooks.json`
 - 스크립트 `${CLAUDE_PLUGIN_ROOT}/scripts/catalog.py` — 아래에서 `CAT` 으로 줄여 쓴다:
   `CAT="python3 ${CLAUDE_PLUGIN_ROOT}/scripts/catalog.py"` (`$CAT --help`). 템플릿 `templates/catalog.html`
 
@@ -53,6 +60,7 @@ argument-hint: "[--no-publish]"
    (`- (mine) 제목 — URL — updated 날짜` 줄을 스크립트가 읽는다. 제목에 ` — ` 가 있어도 된다).
 2. **sync** — `$CAT sync --list W/list.txt --out W`
    기존 항목의 갱신일·URL 형식은 여기서 바로 반영되고, **처음 보는 것만** `W/pending.json` 에 남는다.
+   발행 훅이 넣어 둔 대기열 항목도 여기 합쳐진다(`source: hook`, vault 는 훅이 채운 값) — 목록 창 밖이어도 들어온다.
 3. **pending 채우기** — 비어 있으면 건너뛴다. 항목마다:
    - `vault`: null 이면 정한다. 판정 기준은 아티팩트의 **주제가 어느 볼트 소유인가**(회사 시스템·티켓·사내 지표 → 회사 볼트,
      개인 프로젝트 → 개인 볼트). 모호하면 위 하드 룰대로 묻는다.

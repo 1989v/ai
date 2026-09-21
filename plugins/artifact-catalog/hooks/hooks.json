@@ -7,7 +7,18 @@
           {
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/on-artifact-publish.sh",
-            "timeout": 10
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/on-stop.sh",
+            "timeout": 15
           }
         ]
       }

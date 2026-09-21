@@ -67,7 +67,7 @@
     {
       "name": "artifact-catalog",
       "source": "./plugins/artifact-catalog",
-      "description": "Keep a per-vault register of every Claude artifact the account has published and publish it as a searchable, project-grouped catalog page per vault. A PostToolUse hook nudges the session to sync after every publish, so new artifacts keep flowing in. Registry survives the 50-item Artifact list window; company and personal never share a page."
+      "description": "Keep a per-vault register of every Claude artifact the account has published and publish it as a searchable, project-grouped catalog page per vault. A PostToolUse hook records each publish into a queue and a Stop hook blocks the session until the queue is catalogued, so nothing slips past the 50-item Artifact list window; company and personal never share a page."
     },
     {
       "name": "media-gen",

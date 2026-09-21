@@ -13,6 +13,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SCRIPT = HERE.parent / "scripts" / "catalog.py"
+STOP_HOOK = HERE.parent / "hooks" / "on-stop.sh"
 sys.path.insert(0, str(SCRIPT.parent))
 import catalog  # noqa: E402
 
@@ -61,7 +62,9 @@ class CatalogTest(unittest.TestCase):
         self.list_txt = root / "list.txt"
         self.list_txt.write_text(LIST_TXT, encoding="utf-8")
         self.out = root / "out"
-        self.env = {**os.environ, "ARTIFACT_CATALOG_CONFIG": str(self.cfg)}
+        self.queue = root / "queue.json"
+        self.env = {**os.environ, "ARTIFACT_CATALOG_CONFIG": str(self.cfg),
+                    "ARTIFACT_CATALOG_QUEUE": str(self.queue)}
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -75,6 +78,92 @@ class CatalogTest(unittest.TestCase):
 
     def cat(self, vault):
         return json.loads((vault / "claude" / "artifact" / "catalog.json").read_text(encoding="utf-8"))
+
+    # --- record · pending · queue (훅 경로) ------------------------------------
+    def git_repo(self, origin):
+        d = Path(self.tmp.name) / ("repo-" + origin.rsplit("/", 1)[-1])
+        d.mkdir()
+        subprocess.run(["git", "-C", str(d), "init", "-q"], check=True)
+        subprocess.run(["git", "-C", str(d), "remote", "add", "origin", origin], check=True)
+        return d
+
+    def page_file(self, title):
+        f = Path(self.tmp.name) / (title + ".html")
+        f.write_text(f"<title>{title}</title>\n<style>body{{}}</style>\n<p>본문</p>", encoding="utf-8")
+        return f
+
+    def test_record_queues_with_title_from_file_and_vault_from_origin_owner(self):
+        cfg = json.loads(self.cfg.read_text(encoding="utf-8"))
+        cfg["owners"] = {"1989v": "1989v", "myrealtrip": "work"}
+        self.cfg.write_text(json.dumps(cfg), encoding="utf-8")
+        repo = self.git_repo("https://1989v@github.com/1989v/msa.git")
+        f = self.page_file("검색 세 축 현황판")
+        p = self.run_cli("record", "--url", "https://claude.ai/artifact/QUEUEQUEUEQUEUEQUEUEQU",
+                         "--file", str(f), "--cwd", str(repo), "--favicon", "🚦", "--description", "현황")
+        self.assertIn("queued QUEUEQUEUEQUEUEQUEUEQU · vault=1989v", p.stdout)
+        q = json.loads(self.queue.read_text(encoding="utf-8"))
+        self.assertEqual(1, len(q))
+        self.assertEqual({"title": "검색 세 축 현황판", "vault": "1989v", "origin": "1989v", "icon": "🚦",
+                          "summary": "현황", "source": "hook"},
+                         {k: q[0][k] for k in ("title", "vault", "origin", "icon", "summary", "source")})
+        # 회사 레포에서 발행하면 work — 볼트가 섞이지 않는다
+        repo2 = self.git_repo("git@github.com:myrealtrip/mrt3-search.git")
+        p = self.run_cli("record", "--url", "https://claude.ai/artifact/WORKWORKWORKWORKWORKWO",
+                         "--file", str(f), "--cwd", str(repo2))
+        self.assertIn("vault=work", p.stdout)
+        # 레포 밖이면 미정 — 추정하지 않는다
+        p = self.run_cli("record", "--url", "https://claude.ai/artifact/NOWHERENOWHERENOWHEREN",
+                         "--file", str(f), "--cwd", self.tmp.name)
+        self.assertIn("vault=?", p.stdout)
+        self.assertEqual("3", self.run_cli("pending", "--quiet").stdout.strip())
+
+    def test_record_skips_catalog_page_and_only_touches_updated_for_registered_ids(self):
+        self.run_cli("sync", "--list", str(self.list_txt), "--out", str(self.out))
+        pending = json.loads((self.out / "pending.json").read_text(encoding="utf-8"))
+        for p in pending:
+            p["vault"] = p["vault"] or "1989v"; p["project"] = "테스트"
+        (self.out / "pending.json").write_text(json.dumps(pending), encoding="utf-8")
+        self.run_cli("assign", str(self.out / "pending.json"))
+        registered = self.cat(self.v1)["entries"][0]
+        f = self.page_file(registered["title"])
+        p = self.run_cli("record", "--url", registered["url"], "--file", str(f))
+        self.assertIn("registered", p.stdout)
+        self.assertFalse(self.queue.exists(), "등록된 것은 대기열에 안 들어간다")
+        # 카탈로그 페이지 자신
+        f = self.page_file("1989v 아티팩트")
+        p = self.run_cli("record", "--url", "https://claude.ai/artifact/PAGEPAGEPAGEPAGEPAGEPA", "--file", str(f))
+        self.assertIn("skip-self", p.stdout)
+        self.assertFalse(self.queue.exists())
+
+    def test_sync_surfaces_queue_items_and_assign_drains_them(self):
+        f = self.page_file("훅으로만 들어온 것")
+        self.run_cli("record", "--url", "https://claude.ai/artifact/HOOKONLYHOOKONLYHOOKON", "--file", str(f))
+        # 목록에도 있는 것은 목록 행에 훅의 vault·icon 이 합쳐진다
+        f2 = self.page_file("새로 나온 것")
+        self.run_cli("record", "--url", "https://claude.ai/artifact/NEWNEWNEWNEWNEWNEWNEWN", "--file", str(f2),
+                     "--favicon", "🆕")
+        self.run_cli("sync", "--list", str(self.list_txt), "--out", str(self.out))
+        pending = {p["id"]: p for p in json.loads((self.out / "pending.json").read_text(encoding="utf-8"))}
+        self.assertEqual("hook", pending["HOOKONLYHOOKONLYHOOKON"]["source"])
+        self.assertEqual("list", pending["NEWNEWNEWNEWNEWNEWNEWN"]["source"])
+        self.assertEqual("🆕", pending["NEWNEWNEWNEWNEWNEWNEWN"]["icon"])
+        self.assertEqual("2", self.run_cli("pending", "--quiet").stdout.strip())
+        for p in pending.values():
+            p["vault"] = p["vault"] or "1989v"; p["project"] = "테스트"
+        (self.out / "pending.json").write_text(json.dumps(list(pending.values())), encoding="utf-8")
+        self.run_cli("assign", str(self.out / "pending.json"))
+        self.assertEqual("0", self.run_cli("pending", "--quiet").stdout.strip())
+        self.assertEqual([], json.loads(self.queue.read_text(encoding="utf-8")))
+        titles = {e["title"] for e in self.cat(self.v1)["entries"]}
+        self.assertIn("훅으로만 들어온 것", titles)
+
+    def test_queue_drop_is_the_only_way_out_without_registering(self):
+        f = self.page_file("안 넣을 것")
+        self.run_cli("record", "--url", "https://claude.ai/artifact/DROPDROPDROPDROPDROPDR", "--file", str(f))
+        self.assertEqual("1", self.run_cli("pending", "--quiet").stdout.strip())
+        self.run_cli("queue", "--drop", "DROPDROPDROPDROPDROPDR")
+        self.assertEqual("0", self.run_cli("pending", "--quiet").stdout.strip())
+        self.assertNotEqual(0, self.run_cli("queue", "--drop", "DROPDROPDROPDROPDROPDR", check=False).returncode)
 
     # --- 순수 함수 ---------------------------------------------------------
     def test_parse_list_keeps_mine_only_and_splits_title_with_dashes(self):
@@ -265,12 +354,58 @@ PUBLISH_TEXT = ("Published /tmp/x/report.html at https://claude.ai/artifact/AbCd
 
 
 class HookTest(unittest.TestCase):
-    """발행 직후 훅 — 이 플러그인이 켜져 있으면 새 아티팩트가 카탈로그에 들어가라는 지시를 세션에 넣는다."""
+    """발행 직후 훅 — 대기열에 적고, 카탈로그에 넣으라는 지시를 세션에 넣는다. Stop 훅은 대기열이 남으면 종료를 막는다."""
 
-    def run_hook(self, payload, env=None):
-        p = subprocess.run(["bash", str(HOOK)], input=json.dumps(payload), capture_output=True, text=True,
-                           env={**os.environ, **(env or {})})
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        (root / "v" / "claude" / "artifact").mkdir(parents=True)
+        self.cfg = root / "config.json"
+        self.cfg.write_text(json.dumps({"vaults": {"1989v": str(root / "v")},
+                                        "pages": {"1989v": {"title": "1989v 아티팩트", "vault": "1989v"}}}),
+                            encoding="utf-8")
+        self.queue = root / "queue.json"
+        self.page = root / "report.html"
+        self.page.write_text("<title>훅 검사 보고서</title><p>본문</p>", encoding="utf-8")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_hook(self, payload, env=None, hook=None):
+        base = {"ARTIFACT_CATALOG_CONFIG": str(self.cfg), "ARTIFACT_CATALOG_QUEUE": str(self.queue)}
+        p = subprocess.run(["bash", str(hook or HOOK)], input=json.dumps(payload), capture_output=True, text=True,
+                           env={**os.environ, **base, **(env or {})})
         return p
+
+    def stop(self, active=False):
+        return self.run_hook({"session_id": "s1", "hook_event_name": "Stop", "stop_hook_active": active},
+                             hook=STOP_HOOK)
+
+    def test_publish_records_into_queue_and_stop_hook_blocks_until_registered(self):
+        payload = self.publish(); payload["tool_input"]["file_path"] = str(self.page)
+        payload["tool_response"] = PUBLISH_TEXT.replace("/tmp/x/report.html", str(self.page))
+        p = self.run_hook(payload)
+        self.assertEqual(0, p.returncode, p.stderr)
+        self.assertIn("대기열: queued AbCdEfGhIjKlMnOpQrStUv", p.stdout)
+        q = json.loads(self.queue.read_text(encoding="utf-8"))
+        self.assertEqual([("AbCdEfGhIjKlMnOpQrStUv", "훅 검사 보고서")], [(x["id"], x["title"]) for x in q])
+        # 대기열이 남아 있으면 세션 종료를 막는다 — 빨간불
+        out = json.loads(self.stop().stdout)
+        self.assertEqual("block", out["decision"])
+        self.assertIn("훅 검사 보고서", out["reason"])
+        self.assertIn("/artifact-catalog", out["reason"])
+        # 이미 한 번 막아 이어진 턴은 통과(무한 루프 방지) · 끄기 스위치 · 대기열 제거 뒤엔 통과
+        self.assertEqual("", self.stop(active=True).stdout.strip())
+        self.assertEqual("", self.run_hook({"hook_event_name": "Stop"}, env={"ARTIFACT_CATALOG_STOP_GATE": "off"},
+                                           hook=STOP_HOOK).stdout.strip())
+        self.queue.write_text("[]", encoding="utf-8")
+        self.assertEqual("", self.stop().stdout.strip())
+
+    def test_stop_hook_is_silent_without_config(self):
+        p = self.run_hook({"hook_event_name": "Stop"}, env={"ARTIFACT_CATALOG_CONFIG": str(Path(self.tmp.name) / "none.json")},
+                          hook=STOP_HOOK)
+        self.assertEqual(0, p.returncode)
+        self.assertEqual("", p.stdout.strip())
 
     def publish(self, **tool_input):
         return {"session_id": "s1", "hook_event_name": "PostToolUse", "tool_name": "Artifact",

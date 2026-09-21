@@ -7,10 +7,16 @@
     catalog.py assign DIR/pending.json          # vault·project 를 채운 pending 을 catalog.json 에 넣는다
     catalog.py build --out DIR                  # 페이지별 HTML 생성 (데이터 인라인)
     catalog.py page-url PAGE URL                # 첫 발행 뒤 페이지 URL 을 기록 (재발행 시 같은 URL)
+    catalog.py record --url U --file F --cwd D  # (훅) 발행 직후 대기열에 넣는다 — 목록 50건 창과 무관하게 남는다
+    catalog.py pending [--quiet]                # (Stop 훅) 등록부에 아직 없는 대기열 항목 — 있으면 세션을 못 끝낸다
+    catalog.py queue --list | --drop ID         # 대기열 확인·수동 제거(카탈로그에 안 넣기로 한 것)
 
 설정: $ARTIFACT_CATALOG_CONFIG 또는 ~/.claude/artifact-catalog.json
     { "vaults": { "<name>": "<path>" },
-      "pages":  { "<page>": { "title": "...", "vault": "<name>" } } }
+      "pages":  { "<page>": { "title": "...", "vault": "<name>" } },
+      "owners": { "<github owner>": "<name>" } }   # (선택) 작업 레포의 origin 소유자 → 볼트. 훅이 vault 를 미리 채운다
+
+대기열: $ARTIFACT_CATALOG_QUEUE 또는 ~/.claude/artifact-catalog.queue.json — 훅이 쓰고 assign 이 비운다.
 
 볼트마다 <path>/claude/artifact/catalog.json 이 등록부다. index.md(발행일·노트·이모지)는 읽기만 한다.
 **페이지는 볼트 하나만 담는다** — 회사·개인 아티팩트가 한 페이지에 섞이는 설정은 여기서 거부한다.
@@ -18,9 +24,11 @@
 """
 import argparse
 import datetime
+import html
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -99,7 +107,23 @@ def load_config():
             sys.exit(f"pages.{page}: 페이지는 vault 하나만 갖는다 — 여러 볼트를 한 페이지에 섞을 수 없다")
         if spec["vault"] not in cfg["vaults"]:
             sys.exit(f"pages.{page}.vault 가 모르는 볼트다: {spec['vault']!r} (vaults: {list(cfg['vaults'])})")
+    for owner, vault in cfg.get("owners", {}).items():
+        if vault not in cfg["vaults"]:
+            sys.exit(f"owners.{owner} 가 모르는 볼트다: {vault!r} (vaults: {list(cfg['vaults'])})")
     return cfg
+
+
+def queue_path():
+    return Path(os.environ.get("ARTIFACT_CATALOG_QUEUE") or Path.home() / ".claude" / "artifact-catalog.queue.json")
+
+
+def load_queue():
+    p = queue_path()
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+
+
+def save_queue(items):
+    write_json(queue_path(), items)
 
 
 def catalog_path(cfg, vault):
@@ -204,6 +228,25 @@ def cmd_sync(args):
                 item["altId"], item["altUrl"] = r["id"], r["url"]
         pending.append(item)
 
+    # 훅이 발행 직후 넣어 둔 것 — 목록 창과 무관하게 남아 있다. 이미 등록된 것은 여기서 대기열에서 뺀다
+    queue, kept = load_queue(), []
+    by_pending_id = {p["id"]: p for p in pending}
+    for q in queue:
+        if lookup.find(q) or is_catalog_page(q):
+            continue
+        kept.append(q)
+        target = by_pending_id.get(q["id"])
+        if target is None:
+            target = {"id": q["id"], "url": q["url"], "title": q["title"], "vault": None, "project": None,
+                      "published": q.get("published"), "updated": q.get("updated") or q.get("published"),
+                      "source": "hook"}
+            pending.append(target)
+            by_pending_id[q["id"]] = target
+        for k in ("vault", "icon", "summary"):
+            target[k] = target.get(k) or q.get(k)
+    if len(kept) != len(queue):
+        save_queue(kept)
+
     # 목록 창 밖으로 밀린 것 — 인덱스에만 남아 있다
     for vault, rows in indexes.items():
         for r in rows:
@@ -282,6 +325,12 @@ def cmd_assign(args):
         counts[vault] = counts.get(vault, 0) + 1
     for vault, cat in catalogs.items():
         save_catalog(cfg, vault, cat)
+    registered = {e["id"] for cat in catalogs.values() for e in cat["entries"]}
+    registered |= {e["altId"] for cat in catalogs.values() for e in cat["entries"] if e.get("altId")}
+    queue = load_queue()
+    left = [q for q in queue if q["id"] not in registered]
+    if len(left) != len(queue):
+        save_queue(left)
     print("반영: " + (" · ".join(f"{v} +{n}" for v, n in counts.items()) or "0"))
     for vault, cat in catalogs.items():
         print(f"  {vault}: {len(cat['entries'])}건 → {catalog_path(cfg, vault)}")
@@ -319,6 +368,102 @@ def cmd_page_url(args):
     print(f"{args.page} → {args.url} ({catalog_path(cfg, vault)})")
 
 
+# --- record · pending · queue (훅이 부른다) ------------------------------------------
+def read_title(path):
+    """발행 파일의 <title> — Artifact 도구가 이름으로 쓰는 것과 같다(앞 8KB). 없으면 None."""
+    try:
+        head = Path(path).read_text(encoding="utf-8", errors="replace")[:8192]
+    except OSError:
+        return None
+    m = re.search(r"<title>(.*?)</title>", head, re.S | re.I)
+    return html.unescape(m.group(1)).strip() or None if m else None
+
+
+def origin_owner(cwd):
+    """작업 폴더 레포의 origin 소유자(github.com/<owner>/…). 레포 밖이면 None."""
+    if not cwd:
+        return None
+    try:
+        out = subprocess.run(["git", "-C", cwd, "remote", "get-url", "origin"], capture_output=True,
+                             text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    m = re.search(r"github\.com[:/]([^/\s]+)/", out.stdout.strip())
+    return m.group(1).lower() if m else None
+
+
+def registered_ids(catalogs):
+    ids = set()
+    for cat in catalogs.values():
+        for e in cat["entries"]:
+            ids.add(e["id"])
+            if e.get("altId"):
+                ids.add(e["altId"])
+    return ids
+
+
+def cmd_record(args):
+    cfg = load_config()
+    catalogs = {v: load_catalog(cfg, v) for v in cfg["vaults"]}
+    entry_id = id_from_url(args.url)
+    title = args.title or read_title(args.file) or Path(args.file).stem
+    page_ids = {id_from_url(u) for cat in catalogs.values() for u in cat.get("pages", {}).values()}
+    page_titles = {norm_title(spec["title"]) for spec in cfg["pages"].values()}
+    if entry_id in page_ids or norm_title(title) in page_titles:
+        print(f"skip-self {entry_id}")
+        return
+    today = datetime.date.today().isoformat()
+    for vault, cat in catalogs.items():
+        for e in cat["entries"]:
+            if entry_id in (e["id"], e.get("altId")):
+                e["updated"] = max(e.get("updated") or "", today)
+                save_catalog(cfg, vault, cat)
+                print(f"registered {entry_id} · {vault} · updated={e['updated']}")
+                return
+    owner = origin_owner(args.cwd)
+    vault = cfg.get("owners", {}).get(owner) or (owner if owner in cfg["vaults"] else None)
+    queue = [q for q in load_queue() if q["id"] != entry_id]
+    queue.append({"id": entry_id, "url": args.url, "title": title, "icon": args.favicon or None,
+                  "summary": args.description or None, "vault": vault, "origin": owner,
+                  "published": today, "updated": today, "source": "hook"})
+    save_queue(queue)
+    print(f"queued {entry_id} · vault={vault or '?'} · {title}")
+
+
+def pending_items(cfg):
+    catalogs = {v: load_catalog(cfg, v) for v in cfg["vaults"]}
+    done = registered_ids(catalogs)
+    queue = load_queue()
+    left = [q for q in queue if q["id"] not in done]
+    if len(left) != len(queue):
+        save_queue(left)
+    return left
+
+
+def cmd_pending(args):
+    left = pending_items(load_config())
+    if args.quiet:
+        print(len(left))
+        return
+    for q in left:
+        print(f"{q['id']} · {q.get('vault') or '?'} · {q['title']} · {q['url']}")
+    print(f"{len(left)}건 대기")
+
+
+def cmd_queue(args):
+    queue = load_queue()
+    if args.drop:
+        left = [q for q in queue if q["id"] != args.drop]
+        if len(left) == len(queue):
+            sys.exit(f"대기열에 없다: {args.drop}")
+        save_queue(left)
+        print(f"dropped {args.drop} ({len(left)}건 남음)")
+        return
+    for q in queue:
+        print(f"{q['id']} · {q.get('vault') or '?'} · {q['title']} · {q['url']}")
+    print(f"{len(queue)}건 · {queue_path()}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -327,6 +472,11 @@ def main():
     a = sub.add_parser("assign"); a.add_argument("pending"); a.set_defaults(fn=cmd_assign)
     b = sub.add_parser("build"); b.add_argument("--out", required=True); b.set_defaults(fn=cmd_build)
     u = sub.add_parser("page-url"); u.add_argument("page"); u.add_argument("url"); u.set_defaults(fn=cmd_page_url)
+    r = sub.add_parser("record"); r.add_argument("--url", required=True); r.add_argument("--file", required=True)
+    r.add_argument("--cwd", default=""); r.add_argument("--title"); r.add_argument("--favicon"); r.add_argument("--description")
+    r.set_defaults(fn=cmd_record)
+    pd = sub.add_parser("pending"); pd.add_argument("--quiet", action="store_true"); pd.set_defaults(fn=cmd_pending)
+    q = sub.add_parser("queue"); q.add_argument("--list", action="store_true"); q.add_argument("--drop"); q.set_defaults(fn=cmd_queue)
     args = ap.parse_args()
     args.fn(args)
 
