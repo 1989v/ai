@@ -1,0 +1,8 @@
+{
+  "name": "media-gen",
+  "description": "AI media pipeline — intake gate → provider/cost estimate (credits · USD · KRW, free path alongside) → identity-locked generation per genre (person-photo transformation shorts, game character sheets, game backgrounds, images, background photos) → review checkpoints → job record. Higgsfield MCP calls are hook-gated behind explicit user approval.",
+  "version": "0.1.0",
+  "author": { "name": "gideok-kwon" },
+  "license": "MIT",
+  "keywords": ["media", "video", "image", "higgsfield", "motion-transfer", "game-art", "shortform", "cost-gate"]
+}

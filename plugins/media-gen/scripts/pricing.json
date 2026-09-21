@@ -1,0 +1,38 @@
+{
+  "verified": "2026-09-21",
+  "confidence": "secondary-source — 2026-08~09 리뷰 기사 기준. 잔액·비용 조회 도구가 있으면 그 값이 이 표를 이기고, 그때 이 파일을 갱신한다",
+  "sources": [
+    "https://www.scopeful.org/blog/higgsfield-pricing-2026",
+    "https://www.layer3labs.io/guides/higgsfield-ai-pricing",
+    "https://www.pippit.ai/resource/higgsfield-genjutsu",
+    "https://github.com/QalaLabs/claude-higgsfield-mcp"
+  ],
+  "krw_per_usd_default": 1400,
+  "providers": {
+    "higgsfield": {
+      "mcp": "https://mcp.higgsfield.ai/mcp",
+      "usd_per_credit_topup": 0.0625,
+      "plans": {
+        "starter": { "usd_month": 19, "credits": 270 },
+        "plus": { "usd_month": 59, "credits": 1200 },
+        "ultra": { "usd_month": 129, "credits": 3000 }
+      },
+      "free_path": "힉스필드 웹 UI 무료 생성(일일 한도 · 워터마크 · 모델 제한). 프롬프트와 순서만 내주고 사용자가 직접 돌린다 — ₩0",
+      "models": {
+        "soul-2.0": { "kind": "image", "credits": 0.12, "note": "사진풍 인물" },
+        "nano-banana": { "kind": "image", "credits": 1 },
+        "nano-banana-pro": { "kind": "image", "credits": 2, "note": "참조 이미지 편집 · 텍스트 · 4K. 앵커·변신 후 이미지 기본" },
+        "flux-2-max": { "kind": "image", "credits": 4 },
+        "kling-3.0-720p-5s": { "kind": "video", "credits": 7 },
+        "kling-3.0-720p-5s-audio": { "kind": "video", "credits": 10 },
+        "veo-3.1-lite-8s": { "kind": "video", "credits": 8 },
+        "seedance-2.0-720p-5s": { "kind": "video", "credits": 22 },
+        "veo-3.1-4s": { "kind": "video", "credits": 29 },
+        "genjutsu-motion-transfer-480p-15s": { "kind": "video", "credits": 40, "note": "레퍼런스 영상 3~30초 · 참조 이미지 최대 30장" },
+        "genjutsu-motion-transfer-720p-15s": { "kind": "video", "credits": 104 },
+        "genjutsu-motion-transfer-1080p-15s": { "kind": "video", "credits": 144 },
+        "soul-character-training": { "kind": "training", "credits": 40, "note": "같은 인물을 여러 장면에 — 3회 이상 쓸 때만" }
+      }
+    }
+  }
+}

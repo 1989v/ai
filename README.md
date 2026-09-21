@@ -14,6 +14,7 @@
 | **private-repo** | `/private-repo:` | git submodule로 디렉토리별 public/private 가시성 제어 |
 | **content-analyzer** | `/content-analyzer:` | URL 콘텐츠 분석 (YouTube, LinkedIn, web post, Git repo) |
 | **artifact-catalog** | `/artifact-catalog:` | 발행한 클로드 아티팩트의 볼트별 누적 등록부 + 프로젝트별·검색 카탈로그 페이지 (회사·개인 페이지 분리). 발행 직후 훅이 동기화를 지시해 이후 발행분이 계속 들어간다 |
+| **media-gen** | `/media-gen:` | AI 미디어 생성 파이프라인 — 인물 사진 변신 숏폼·게임 캐릭터 시트·게임 배경·이미지·배경 사진을 인테이크 게이트 → 비용 견적(크레딧·$·₩ + ₩0 경로) → 정체성 고정 프롬프트 → 단계별 검수 → 기록으로. 힉스필드 유료 호출은 훅이 승인 없이는 거부 |
 
 ---
 
@@ -34,6 +35,7 @@ claude plugins install ai-debugger@ai-common
 claude plugins install private-repo@ai-common
 claude plugins install content-analyzer@ai-common
 claude plugins install artifact-catalog@ai-common
+claude plugins install media-gen@ai-common
 
 # 세션 내 리로드
 /reload-plugins

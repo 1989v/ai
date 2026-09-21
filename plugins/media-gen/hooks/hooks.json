@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*higgsfield.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/hooks/guard-higgsfield.py",
+            "timeout": 10,
+            "statusMessage": "media-gen: 힉스필드 호출 승인 확인"
+          }
+        ]
+      }
+    ]
+  }
+}

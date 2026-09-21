@@ -68,6 +68,11 @@
       "name": "artifact-catalog",
       "source": "./plugins/artifact-catalog",
       "description": "Keep a per-vault register of every Claude artifact the account has published and publish it as a searchable, project-grouped catalog page per vault. A PostToolUse hook nudges the session to sync after every publish, so new artifacts keep flowing in. Registry survives the 50-item Artifact list window; company and personal never share a page."
+    },
+    {
+      "name": "media-gen",
+      "source": "./plugins/media-gen",
+      "description": "AI media pipeline — intake gate → cost estimate (credits/USD/KRW + free path) → identity-locked generation per genre (person-photo transformation shorts, game character sheets, game backgrounds, images, background photos) → review checkpoints → job record. Higgsfield MCP calls are hook-gated behind explicit user approval."
     }
   ]
 }
