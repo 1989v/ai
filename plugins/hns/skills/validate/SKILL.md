@@ -80,6 +80,18 @@ docs/policies/ 하위 문서에 명시된 규칙:
 코드가 하네스 규칙(CLAUDE.md, docs/architecture/, docs/standards/)에 맞게 작성되었는지 검증한다.
 검증 방향: **rules → code** (규칙이 source of truth).
 
+### Step 0: 프로젝트 게이트 먼저 — 프로그램으로 판정할 수 있는 건 읽어서 판정하지 않는다
+
+CLAUDE.md(또는 `docs/architecture/overview.md`, `docs/standards/agent-behavior.md`)에 구조·규칙 게이트
+명령이 있으면(예: `./gradlew verifyArchitecture`, `npm run lint:arch`) **먼저 실행하고 결과 줄을 인용한다.**
+아래 Check 가운데 그 게이트가 이미 판정하는 항목은 샘플을 다시 읽지 않고 게이트 결과로 채운다.
+
+게이트가 없는 규칙이라도 import·파일명·정규식으로 참/거짓이 나오는 것(금지 import, 네이밍, 반환 타입,
+의존 방향)은 이 스킬이 읽어서 판정한 뒤 끝내지 않는다 — 리포트의 **Follow-up** 에 "게이트로 옮길 것"을
+적는다. 샘플 판정은 느리고, 표본 밖 위반을 놓치며, 돌릴 때마다 결과가 다르다. 실제로 이 스킬이
+테스트 규칙을 샘플로 판정하던 동안 아무것도 검사하지 않는 StringSpec 네 개가 레포에 남아 있었다.
+LLM 판정은 판단이 필요한 것(레이어 배치의 적절성, 규칙의 의도적 예외 여부)에만 쓴다.
+
 ### Check 1: 아키텍처 원칙 준수
 
 CLAUDE.md와 docs/architecture/에 명시된 아키텍처 규칙:
@@ -181,7 +193,7 @@ CLAUDE.md에 명시된 `{domain}.{entity}.{event}` 형식:
 
 ## 제약
 
-- 정책/코드 검증은 패턴 매칭 기반 샘플 확인 (100% 커버리지 아님)
+- 게이트가 없는 정책/코드 검증은 패턴 매칭 기반 샘플 확인 (100% 커버리지 아님) — 그래서 Step 0 이 판정 가능한 규칙을 게이트로 옮기라고 보고한다
 - 자동 트리거는 훅으로: 커밋 전 컴파일·편집 후 린트는 `/hns:setup-hooks`, 이 스킬은 수동·파이프라인 PHASE 7 에서 실행
 
 ## Integration
