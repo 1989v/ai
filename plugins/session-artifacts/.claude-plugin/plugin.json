@@ -1,7 +1,7 @@
 {
   "name": "session-artifacts",
-  "version": "0.2.0",
-  "description": "Pins the claude.ai artifact links published in the current session above the prompt (latest 3), with /session-artifacts listing all of them. Recovers publishes from before compaction or install out of the session transcript.",
+  "version": "0.3.0",
+  "description": "Pins the claude.ai artifact links published in the current session above the prompt, three to a row with a button that unfolds the rest; /session-artifacts lists all of them. Recovers publishes from before compaction or install out of the session transcript.",
   "author": {
     "name": "gideok-kwon"
   },

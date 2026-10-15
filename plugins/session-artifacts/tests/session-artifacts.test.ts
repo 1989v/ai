@@ -2,7 +2,7 @@ import { expect, mock, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
 import type { On, RenderElement, SessionMessage } from 'claude-code'
 
-import { fitCells, TRANSCRIPT_PATTERNS } from '../hooks/artifacts'
+import { fitCells, layout, TRANSCRIPT_PATTERNS } from '../hooks/artifacts'
 
 const PLUGIN = 'session-artifacts'
 const A = 'https://claude.ai/code/artifact/aaaa1111'
@@ -67,14 +67,17 @@ async function listed($: Engine) {
   return out.text ?? ''
 }
 
-const BAND_PROPS = {
-  hasSurvey: false,
-  isWorking: false,
-  maxRows: 10,
-  bodyColumns: 40,
-  scroll: { offset: 0, bodyRows: 9, contentRows: 0 },
-  view: {},
-} as never
+const band = (bodyColumns: number) =>
+  ({
+    hasSurvey: false,
+    isWorking: false,
+    maxRows: 10,
+    bodyColumns,
+    scroll: { offset: 0, bodyRows: 9, contentRows: 0 },
+    view: {},
+  }) as never
+/** 80칸 터미널: 엔진이 오른쪽 다섯 칸을 쓰고 남은 폭. */
+const BAND_PROPS = band(75)
 
 test('발행만 모으고 같은 URL 은 한 줄로 합친다', async ($, on) => {
   const clock = world(on, { sessionId: 'S1', messages: [] })
@@ -95,7 +98,7 @@ test('발행만 모으고 같은 URL 은 한 줄로 합친다', async ($, on) =>
   expect(text).not.toContain(D)
 })
 
-test('0건이면 밴드를 그리지 않고, 4건이면 최근 3건 + 외 1건', async ($, on) => {
+test('0건이면 밴드를 그리지 않고, 3건까지는 한 줄에 나란히 버튼 없이', async ($, on) => {
   world(on, { sessionId: 'S1', messages: [] })
   await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
 
@@ -109,16 +112,62 @@ test('0건이면 밴드를 그리지 않고, 4건이면 최근 3건 + 외 1건',
   await publish($, A, '첫째')
   await publish($, B, '둘째')
   await publish($, C, '셋째')
-  await publish($, D, '아주 긴 제목이 붙은 넷째 아티팩트 페이지라서 잘려야 한다')
 
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ plugin: PLUGIN, surface, component: 'AbovePrompt', props: BAND_PROPS })
     const links = await ui.findAll({ type: 'Link' })
-    expect(links.map(one => one.props.href)).toEqual([D, C, B])
-    expect(String(links[0]?.props.label).endsWith('…')).toBe(true)
-    expect(await ui.find({ type: 'Text', text: /외 1건/ })).toBeDefined()
+    expect(links.map(one => one.props.href)).toEqual([C, B, A])
+    expect(await ui.find({ key: 'row-0' })).toBeDefined()
+    expect(await ui.find({ key: 'row-1' })).toBeUndefined()
+    expect(await ui.find({ type: 'Button' })).toBeUndefined()
     await ui.unmount()
   }
+})
+
+test('4건이면 첫 줄 끝의 전체보기 버튼이 나머지를 펼치고 접는다', async ($, on) => {
+  world(on, { sessionId: 'S1', messages: [] })
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await publish($, A, '첫째')
+  await publish($, B, '둘째')
+  await publish($, C, '셋째')
+  await publish($, D, '아주 긴 제목이 붙은 넷째 아티팩트 페이지라서 잘려야 한다')
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({ plugin: PLUGIN, surface, component: 'AbovePrompt', props: BAND_PROPS })
+    const folded = await ui.findAll({ type: 'Link' })
+    expect(folded.map(one => one.props.href)).toEqual([D, C, B])
+    expect(String(folded[0]?.props.label).endsWith('…')).toBe(true)
+    expect((await ui.find({ type: 'Button' }))?.props.label).toBe('외 1건 전체보기')
+    expect(await ui.find({ key: 'row-1' })).toBeUndefined()
+
+    await ui.press({ key: 'toggle' })
+    const open = await ui.findAll({ type: 'Link' })
+    expect(open.map(one => one.props.href)).toEqual([D, C, B, A])
+    expect(await ui.find({ key: 'row-1' })).toBeDefined()
+    expect((await ui.find({ type: 'Button' }))?.props.label).toBe('접기')
+
+    await ui.press({ key: 'toggle' })
+    expect((await ui.findAll({ type: 'Link' })).map(one => one.props.href)).toEqual([D, C, B])
+    expect((await ui.find({ type: 'Button' }))?.props.label).toBe('외 1건 전체보기')
+    await ui.unmount()
+  }
+})
+
+test('열이 좁으면 줄당 개수를 줄이고 나머지는 버튼 뒤로', async ($, on) => {
+  world(on, { sessionId: 'S1', messages: [] })
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await publish($, A, '첫째')
+  await publish($, B, '둘째')
+  await publish($, C, '셋째')
+  await publish($, D, '넷째')
+
+  const ui = await $.ui.mount({ plugin: PLUGIN, surface: 'terminal', component: 'AbovePrompt', props: band(48) })
+  expect((await ui.findAll({ type: 'Link' })).map(one => one.props.href)).toEqual([D, C])
+  expect((await ui.find({ type: 'Button' }))?.props.label).toBe('외 2건 전체보기')
+  await ui.press({ key: 'toggle' })
+  expect((await ui.findAll({ type: 'Link' })).map(one => one.props.href)).toEqual([D, C, B, A])
+  expect(await ui.find({ key: 'row-1' })).toBeDefined()
+  await ui.unmount()
 })
 
 test('세션이 바뀌면 대화 기록의 발행 호출로 복구하고 list·open·오류는 뺀다', async ($, on) => {
@@ -226,4 +275,11 @@ test('칸 수로 자르고 한글은 두 칸으로 센다', () => {
   expect(fitCells('abcd', 3)).toBe('ab…')
   expect(fitCells('가나다', 5)).toBe('가나…')
   expect(fitCells('가나', 4)).toBe('가나')
+})
+
+test('줄 배치: 3건까지는 한 줄, 넘치면 버튼 폭을 빼고, 좁은 열은 줄당 개수를 줄인다', () => {
+  expect(layout(75, 2)).toEqual({ perRow: 3, itemCells: 23, hidden: 0 })
+  expect(layout(75, 4)).toEqual({ perRow: 3, itemCells: 16, hidden: 1 })
+  expect(layout(48, 3)).toEqual({ perRow: 3, itemCells: 14, hidden: 0 })
+  expect(layout(48, 4)).toEqual({ perRow: 2, itemCells: 12, hidden: 2 })
 })

@@ -102,21 +102,71 @@ function isWide(code: number): boolean {
   )
 }
 
-/** 터미널 칸 수 기준으로 자른다. 한글·CJK·이모지는 두 칸. */
+const width = (ch: string) => (isWide(ch.codePointAt(0) ?? 0) ? 2 : 1)
+
+/** 터미널에서 차지하는 칸 수. 한글·CJK·이모지는 두 칸. */
+export function cellsOf(text: string): number {
+  return Array.from(text).reduce((sum, ch) => sum + width(ch), 0)
+}
+
+/** 터미널 칸 수 기준으로 자른다. */
 export function fitCells(text: string, cells: number): string {
   if (cells <= 0) return ''
-  const chars = Array.from(text)
-  const width = (ch: string) => (isWide(ch.codePointAt(0) ?? 0) ? 2 : 1)
-  if (chars.reduce((sum, ch) => sum + width(ch), 0) <= cells) return text
+  if (cellsOf(text) <= cells) return text
 
   let used = 0
   let out = ''
-  for (const ch of chars) {
+  for (const ch of Array.from(text)) {
     if (used + width(ch) > cells - 1) break
     out += ch
     used += width(ch)
   }
   return `${out}…`
+}
+
+export const PER_ROW = 3
+/** 줄 안 항목 사이, 그리고 마지막 항목과 버튼 사이 칸. */
+export const GAP = 2
+/** 한 항목이 이보다 좁으면 제목이 전부 … 이 되니 줄당 개수를 줄인다. */
+const MIN_ITEM = 12
+/** 버튼 테두리 `[ ` · ` ]` 칸. */
+const BUTTON_CHROME = 4
+
+export function toggleLabel(hidden: number): string {
+  return `외 ${hidden}건 전체보기`
+}
+
+export type RowLayout = {
+  /** 한 줄에 놓는 항목 수. 열이 좁으면 PER_ROW 보다 적다. */
+  perRow: number
+  /** 항목 하나의 칸 수(화살표 두 칸 포함). */
+  itemCells: number
+  /** 접힌 상태에서 첫 줄에 못 보이는 항목 수. 0 이면 버튼이 없다. */
+  hidden: number
+}
+
+/**
+ * 첫 줄에 최근 PER_ROW 건을 나란히 두고, 다 못 보이면 줄 끝에 전체보기 버튼 자리를 뺀다.
+ * 항목 폭은 펼침 여부와 무관하게 접힌 상태의 버튼 폭으로 정해 토글해도 열이 흔들리지 않는다.
+ */
+export function layout(cells: number, count: number): RowLayout {
+  const fits = (reserved: number) =>
+    Math.max(1, Math.min(PER_ROW, Math.floor((cells - reserved + GAP) / (MIN_ITEM + GAP))))
+  let perRow = fits(0)
+  if (count <= perRow) {
+    return { perRow, itemCells: Math.floor((cells - GAP * (perRow - 1)) / perRow), hidden: 0 }
+  }
+  // 버튼 폭은 숨은 건수에 따라 다른데 그 수는 perRow 에 달렸으니, 가장 넓은 라벨로 먼저 자리를 뺀다.
+  perRow = fits(cellsOf(toggleLabel(count - 1)) + BUTTON_CHROME + GAP)
+  const hidden = count - perRow
+  const button = cellsOf(toggleLabel(hidden)) + BUTTON_CHROME + GAP
+  return { perRow, itemCells: Math.floor((cells - button - GAP * (perRow - 1)) / perRow), hidden }
+}
+
+export function chunk<T>(items: readonly T[], size: number): T[][] {
+  const rows: T[][] = []
+  for (let i = 0; i < items.length; i += size) rows.push(items.slice(i, i + size))
+  return rows
 }
 
 export function ago(now: number, at: number | undefined): string {

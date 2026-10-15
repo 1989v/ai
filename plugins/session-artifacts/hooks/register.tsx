@@ -4,25 +4,29 @@ import type { EngineInterface, Register } from 'claude-code'
 import type { ArtifactEntry, SessionArtifacts } from '../types'
 import {
   ago,
+  chunk,
   combine,
   entriesFrom,
   fitCells,
+  GAP,
   htmlTitle,
   isPublishCall,
+  layout,
   mergePublish,
   publishedFrom,
   scanToolUses,
   scanTranscript,
+  toggleLabel,
   TRANSCRIPT_PATTERNS,
 } from './artifacts'
 
-const COMMAND = 'session-artifacts'
-const SHOWN = 3
 const STORE_KEY = 'sessions'
 const KEPT_SESSIONS = 30
+const TOGGLE = 'toggle'
 
 const EMPTY: SessionArtifacts = { sessionId: null, entries: [] }
 const current = atom({ plugin: 'session-artifacts', key: 'current' } as const, EMPTY)
+const expanded = atom({ plugin: 'session-artifacts', key: 'expanded' } as const, false)
 
 type Saved = Record<string, { savedAt: number; entries: ArtifactEntry[] }>
 
@@ -117,6 +121,7 @@ export const register: Register = on => {
   on('session.end', async ($, e, next) => {
     if (e.reason === 'clear' || e.reason === 'resume') {
       await update($, current, () => EMPTY)
+      await update($, expanded, () => false)
     }
     return next(e)
   })
@@ -145,32 +150,38 @@ export const register: Register = on => {
     return { text: listText(entries, await $.clock.now()) }
   })
 
+  // 첫 줄에 최근 것부터 나란히. 다 못 보이면 줄 끝 버튼이 전체를 펼치고 다시 접는다.
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
     const { entries } = await read($, current)
     if (entries.length === 0) return next(e)
 
-    const { Box, Text, Link } = $.ui.resolve(e)
-    const cells = Math.max(8, e.props.bodyColumns)
-    const room = Math.max(1, Math.min(SHOWN, e.props.maxRows - 1))
-    const recent = entries.slice(-room).reverse()
-    const more = entries.length - recent.length
-    const footer =
-      more > 0
-        ? `외 ${more}건 · 전체 /${COMMAND}`
-        : `이 세션 아티팩트 ${entries.length}건 · /${COMMAND}`
+    const { Box, Text, Link, Button } = $.ui.resolve(e)
+    const { perRow, itemCells, hidden } = layout(Math.max(8, e.props.bodyColumns), entries.length)
+    const isOpen = hidden > 0 && (await read($, expanded))
+    const newest = [...entries].reverse()
+    const rows = chunk(isOpen ? newest : newest.slice(0, perRow), perRow)
 
     return (
       <Box flexDirection="column">
-        {recent.map(one => (
-          <Box key={one.url}>
-            <Text color="suggestion">↗ </Text>
-            <Link href={one.url} label={fitCells(one.title, cells - 2)} />
+        {rows.map((row, i) => (
+          <Box key={`row-${i}`} gap={GAP}>
+            {row.map(one => (
+              <Box key={one.url} width={itemCells}>
+                <Text color="suggestion">↗ </Text>
+                <Link href={one.url} label={fitCells(one.title, itemCells - 2)} />
+              </Box>
+            ))}
+            {i === 0 && hidden > 0 ? (
+              <Button
+                key={TOGGLE}
+                label={isOpen ? '접기' : toggleLabel(hidden)}
+                dimColor
+                onPress={() => update($, expanded, open => !open)}
+              />
+            ) : null}
           </Box>
         ))}
-        <Text dimColor wrap="truncate">
-          {fitCells(footer, cells)}
-        </Text>
       </Box>
     )
   })

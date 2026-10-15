@@ -14,6 +14,10 @@ export type SessionArtifacts = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'session-artifacts': { current: SessionArtifacts }
+    'session-artifacts': {
+      current: SessionArtifacts
+      /** 전체보기 버튼으로 첫 줄 너머까지 펼쳤는지. */
+      expanded: boolean
+    }
   }
 }
