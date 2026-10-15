@@ -1,11 +1,16 @@
 {
   "name": "session-artifacts",
-  "version": "0.1.0",
-  "description": "Pins the claude.ai artifact links published in the current session above the prompt (latest 3), with /session-artifacts listing all of them. Survives /resume and compaction.",
+  "version": "0.2.0",
+  "description": "Pins the claude.ai artifact links published in the current session above the prompt (latest 3), with /session-artifacts listing all of them. Recovers publishes from before compaction or install out of the session transcript.",
   "author": {
     "name": "gideok-kwon"
   },
   "license": "MIT",
-  "keywords": ["claude-artifact", "mods", "session", "links"],
+  "keywords": [
+    "claude-artifact",
+    "mods",
+    "session",
+    "links"
+  ],
   "types": "./types/index.d.ts"
 }

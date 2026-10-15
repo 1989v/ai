@@ -2,7 +2,19 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
 import type { ArtifactEntry, SessionArtifacts } from '../types'
-import { ago, combine, fitCells, isPublishCall, mergePublish, publishedFrom, scanToolUses } from './artifacts'
+import {
+  ago,
+  combine,
+  entriesFrom,
+  fitCells,
+  htmlTitle,
+  isPublishCall,
+  mergePublish,
+  publishedFrom,
+  scanToolUses,
+  scanTranscript,
+  TRANSCRIPT_PATTERNS,
+} from './artifacts'
 
 const COMMAND = 'session-artifacts'
 const SHOWN = 3
@@ -42,8 +54,39 @@ async function ensureCurrent($: EngineInterface): Promise<void> {
   const stored = (await loadSaved($))[sessionId]?.entries ?? []
   const messages = await $.session.messages()
   const scanned = scanToolUses(messages.flatMap(message => message.toolUses))
-  const next: SessionArtifacts = { sessionId, entries: combine(stored, scanned) }
+  const history = await transcriptEntries($, sessionId)
+  const next: SessionArtifacts = { sessionId, entries: combine(stored, combine(scanned, history)) }
   await update($, current, () => next)
+}
+
+/**
+ * 세션 기록 파일 전체에서 발행을 다시 모은다. 대화(`$.session.messages`)에는 컴팩션 뒤 부분만 남고,
+ * 플러그인을 켜기 전 발행은 저장본에도 없다. 기록 파일은 수십 MB 라 grep 으로 필요한 조각만 읽는다.
+ * 기록 형식은 공개 계약이 아니어서, 무엇이 실패하든 빈 목록으로 두고 다른 경로를 막지 않는다.
+ */
+async function transcriptEntries($: EngineInterface, sessionId: string): Promise<ArtifactEntry[]> {
+  if (!/^[A-Za-z0-9-]+$/.test(sessionId)) return []
+  try {
+    const configDir = (await $.env.get('CLAUDE_CONFIG_DIR')) ?? `${await $.env.get('HOME')}/.claude`
+    const found = await $.process.run(['find', `${configDir}/projects`, '-maxdepth', '2', '-name', `${sessionId}.jsonl`])
+    const path = found.stdout.split('\n').find(line => line.trim() !== '')
+    if (path === undefined) return []
+    const grep = await $.process.run(['grep', '-oE', '-e', TRANSCRIPT_PATTERNS[0], '-e', TRANSCRIPT_PATTERNS[1], path])
+    const publishes = scanTranscript(grep.stdout)
+    const titles = new Map<string, string>()
+    for (const filePath of new Set(publishes.flatMap(one => (one.filePath ? [one.filePath] : [])))) {
+      try {
+        const html = await $.fs.read(filePath)
+        const title = typeof html === 'string' ? htmlTitle(html) : undefined
+        if (title) titles.set(filePath, title)
+      } catch {
+        // 지운 파일은 파일 이름을 제목으로 둔다.
+      }
+    }
+    return entriesFrom(publishes.map(one => ({ ...one, title: (one.filePath && titles.get(one.filePath)) || one.title })))
+  } catch {
+    return []
+  }
 }
 
 function listText(entries: readonly ArtifactEntry[], now: number): string {

@@ -2,7 +2,7 @@ import { expect, mock, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
 import type { On, RenderElement, SessionMessage } from 'claude-code'
 
-import { fitCells } from '../hooks/artifacts'
+import { fitCells, TRANSCRIPT_PATTERNS } from '../hooks/artifacts'
 
 const PLUGIN = 'session-artifacts'
 const A = 'https://claude.ai/code/artifact/aaaa1111'
@@ -10,7 +10,7 @@ const B = 'https://claude.ai/artifact/bbbb2222'
 const C = 'https://claude.ai/code/artifact/cccc3333'
 const D = 'https://claude.ai/code/artifact/dddd4444'
 
-type World = { sessionId: string; messages: SessionMessage[] }
+type World = { sessionId: string; messages: SessionMessage[]; transcript?: string; files?: Record<string, string> }
 
 /** 엔진 밑바닥: 세션 id·대화 기록·명령 등록·Artifact 도구 결과를 테스트가 정한다. */
 function world(on: On, w: World) {
@@ -27,6 +27,25 @@ function world(on: On, w: World) {
   })
   on('session.messages', () => ({ value: w.messages }))
   on('command.register', ($, e) => ({ value: { command: e.name } }))
+  // 세션 기록 파일: HOME 아래 projects/<프로젝트>/<세션 id>.jsonl 로 두고, find·grep 은 그 내용으로 답한다.
+  on('env.get', ($, e) => ({ value: (e as unknown as { name: string }).name === 'HOME' ? '/home/u' : undefined }))
+  on('process.run', ($, e) => {
+    const argv = (e as unknown as { argv: string[] }).argv
+    const path = `/home/u/.claude/projects/-p/${w.sessionId}.jsonl`
+    if (argv[0] === 'find') return { value: { exitCode: 0, stdout: w.transcript === undefined ? '' : `${path}\n`, stderr: '' } }
+    if (argv[0] === 'grep' && argv.at(-1) === path && w.transcript !== undefined) {
+      const pieces: string[] = []
+      const all = new RegExp(TRANSCRIPT_PATTERNS.map(one => `(?:${one})`).join('|'), 'g')
+      for (const line of w.transcript.split('\n')) pieces.push(...(line.match(all) ?? []))
+      return { value: { exitCode: pieces.length ? 0 : 1, stdout: pieces.map(one => `${one}\n`).join(''), stderr: '' } }
+    }
+    return { value: { exitCode: 2, stdout: '', stderr: 'no such file' } }
+  })
+  on('fs.read', ($, e) => {
+    const file = w.files?.[(e as unknown as { path: string }).path]
+    if (file === undefined) throw new Error('ENOENT')
+    return { value: file }
+  })
   on('tool.call', { tool: 'Artifact' }, ($, e) => {
     const args = e as unknown as Record<string, unknown>
     const action = args.action ?? 'publish'
@@ -153,6 +172,53 @@ test('/session-artifacts 가 전체 목록을 낸다', async ($, on) => {
   const text = await listed($)
   expect(text).toContain(`1. 둘 (갱신 방금)\n   ${B}`)
   expect(text).toContain(`2. 하나 (갱신 방금)\n   ${A}`)
+})
+
+/** 기록 파일 한 줄: 실제 jsonl 처럼 본문 문자열 속 따옴표는 이스케이프된다. */
+function record(content: unknown[]): string {
+  return JSON.stringify({ type: 'assistant', message: { content } })
+}
+
+test('컴팩션·설치 이전 발행은 세션 기록 파일에서 되살리고 <title> 을 제목으로 쓴다', async ($, on) => {
+  const w: World = {
+    sessionId: 'S3',
+    messages: [],
+    files: { '/w/plan.html': '<!doctype html><title>시장 지도 샘플</title>' },
+    transcript: [
+      record([{ type: 'tool_use', id: 't1', name: 'Artifact', input: { file_path: '/w/plan.html', icon: 'map' } }]),
+      record([{ tool_use_id: 't1', type: 'tool_result', content: `Published /w/plan.html at ${B} (Version 1)` }]),
+      record([{ type: 'tool_use', id: 't2', name: 'Artifact', input: { action: 'list', limit: 50 } }]),
+      record([{ tool_use_id: 't2', type: 'tool_result', content: `- (mine) x — ${C}` }]),
+      record([{ type: 'tool_use', id: 't3', name: 'Artifact', input: { file_path: '/w/gone.html' } }]),
+      record([{ tool_use_id: 't3', type: 'tool_result', content: [{ type: 'text', text: `Published /w/gone.html at ${D}` }] }]),
+      record([{ type: 'tool_use', id: 't4', name: 'Artifact', input: { file_path: '/w/plan.html' } }]),
+      record([{ tool_use_id: 't4', type: 'tool_result', content: `Published /w/plan.html at ${B} (Version 2)` }]),
+      // 대화 본문에 인용된 결과 문자열은 이스케이프돼 있어 발행으로 치지 않는다.
+      record([{ type: 'text', text: `"tool_use_id":"t9","type":"tool_result","content":"Published /w/q.html at ${A}"` }]),
+    ].join('\n'),
+  }
+  world(on, w)
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+
+  const text = await listed($)
+  expect(text).toContain('이 세션 아티팩트 2건')
+  expect(text).toContain(`1. 시장 지도 샘플 (갱신 시각 모름 · 발행 2회)\n   ${B}`)
+  expect(text).toContain(`2. gone.html (갱신 시각 모름)\n   ${D}`)
+  expect(text).not.toContain(A)
+  expect(text).not.toContain(C)
+
+  await publish($, A, '새 발행')
+  const after = await listed($)
+  expect(after).toContain(`1. 새 발행 (갱신 방금)\n   ${A}`)
+  expect(after).toContain('이 세션 아티팩트 3건')
+})
+
+test('기록 파일이 없거나 grep 이 실패해도 목록은 그대로 동작한다', async ($, on) => {
+  world(on, { sessionId: 'S4', messages: [] })
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  expect(await listed($)).toBe('이 세션에서 발행한 아티팩트가 없습니다.')
+  await publish($, A, '하나')
+  expect(await listed($)).toContain(`1. 하나 (갱신 방금)\n   ${A}`)
 })
 
 test('칸 수로 자르고 한글은 두 칸으로 센다', () => {
