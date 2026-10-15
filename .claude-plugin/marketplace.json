@@ -73,6 +73,11 @@
       "name": "media-gen",
       "source": "./plugins/media-gen",
       "description": "AI media pipeline — intake gate → cost estimate (credits/USD/KRW + free path) → identity-locked generation per genre (person-photo transformation shorts, game character sheets, game backgrounds, images, background photos) → review checkpoints → job record. Higgsfield MCP calls are hook-gated behind explicit user approval."
+    },
+    {
+      "name": "session-artifacts",
+      "source": "./plugins/session-artifacts",
+      "description": "Pins the claude.ai artifact links published in the current session above the prompt; /session-artifacts lists all of them"
     }
   ]
 }
