@@ -78,6 +78,11 @@
       "name": "session-artifacts",
       "source": "./plugins/session-artifacts",
       "description": "Pins the claude.ai artifact links published in the current session above the prompt; /session-artifacts lists all of them"
+    },
+    {
+      "name": "work-evidence",
+      "source": "./plugins/work-evidence",
+      "description": "Privacy-reviewed offline work timeline and project handoff skills for authorized Git, Jira, wiki and metric evidence."
     }
   ]
 }

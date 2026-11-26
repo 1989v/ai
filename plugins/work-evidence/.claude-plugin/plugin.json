@@ -1,0 +1,16 @@
+{
+  "name": "work-evidence",
+  "version": "0.1.0",
+  "description": "Privacy-reviewed offline work timelines and project handoffs from authorized evidence.",
+  "author": {
+    "name": "gideok-kwon"
+  },
+  "license": "MIT",
+  "keywords": [
+    "work-timeline",
+    "handoff",
+    "evidence",
+    "privacy",
+    "offline"
+  ]
+}
